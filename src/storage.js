@@ -2,19 +2,31 @@ const fs = require('fs');
 const path = require('path');
 
 // Check if Upstash Redis credentials exist in environment
-const hasRedis = Boolean(
-  (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) ||
-  (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
-);
+const redisUrl =
+  process.env.UPSTASH_REDIS_REST_URL ||
+  process.env.KV_REST_API_URL ||
+  process.env.STORAGE_REST_API_URL ||
+  process.env.STORAGE_URL ||
+  process.env.REDIS_URL;
+
+const redisToken =
+  process.env.UPSTASH_REDIS_REST_TOKEN ||
+  process.env.KV_REST_API_TOKEN ||
+  process.env.STORAGE_REST_API_TOKEN ||
+  process.env.STORAGE_TOKEN ||
+  process.env.REDIS_TOKEN;
+
+const hasRedis = Boolean(redisUrl && redisToken);
 
 let redisClient = null;
 if (hasRedis) {
   try {
     const { Redis } = require('@upstash/redis');
     redisClient = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN
+      url: redisUrl,
+      token: redisToken
     });
+    console.log('[Storage] Redis client initialized successfully');
   } catch (e) {
     console.warn('[Storage] Could not initialize Redis client:', e.message);
   }
