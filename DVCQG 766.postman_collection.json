@@ -1,0 +1,583 @@
+{
+  "info": {
+    "_postman_id": "3140d58b-cb14-4de8-9042-b1c57d8865bc",
+    "name": "DVCQG 766",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "206828",
+    "_collection_link": "https://go.postman.co/collection/206828-3140d58b-cb14-4de8-9042-b1c57d8865bc?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Cong khai Minh bach - transparency",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Origin",
+            "value": "https://dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "{{dvc_cookie}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"timeType\": \"year\",\r\n    \"year\": 2026,\r\n    \"rootDepartmentId\": \"019d2be3-6a85-74ec-a33c-a7c04919ba00\",\r\n    \"currentPage\": 1,\r\n    \"pageSize\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dichvucong.gov.vn/api/v1/reporting/evaluation/transparency",
+          "protocol": "https",
+          "host": [
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "reporting",
+            "evaluation",
+            "transparency"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Muc do hai long - handling-satisfaction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Origin",
+            "value": "https://dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "{{dvc_cookie}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"fromDate\": \"2026-01-01\",\r\n    \"toDate\": \"2026-12-31\",\r\n    \"rootDepartmentId\": \"019d2be3-6a85-74ec-a33c-a7c04919ba00\",\r\n    \"currentPage\": 1,\r\n    \"pageSize\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dichvucong.gov.vn/api/v1/reporting/evaluation/handling-satisfaction",
+          "protocol": "https",
+          "host": [
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "reporting",
+            "evaluation",
+            "handling-satisfaction"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Số hóa - dossier-digitized",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Origin",
+            "value": "https://dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "{{dvc_cookie}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"timeType\": \"year\",\r\n    \"year\": 2026,\r\n    \"rootDepartmentId\": \"019d2be3-6a85-74ec-a33c-a7c04919ba00\",\r\n    \"currentPage\": 1,\r\n    \"pageSize\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dichvucong.gov.vn/api/v1/reporting/evaluation/dossier-digitized",
+          "protocol": "https",
+          "host": [
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "reporting",
+            "evaluation",
+            "dossier-digitized"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Thanh toán trực tuyến - formality-online-payment-tree",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Origin",
+            "value": "https://dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "{{dvc_cookie}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"timeType\": \"year\",\r\n    \"year\": 2026,\r\n    \"rootDepartmentId\": \"019d2be3-6a85-74ec-a33c-a7c04919ba00\",\r\n    \"currentPage\": 1,\r\n    \"pageSize\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "Thanh toán trực tuyến - formality-online-payment-tree",
+          "host": [
+            "Thanh toán trực tuyến - formality-online-payment-tree"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Dịch vụ công trực tuyến - provide-online-tree",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Origin",
+            "value": "https://dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "{{dvc_cookie}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"timeType\": \"year\",\r\n    \"year\": 2026,\r\n    \"rootDepartmentId\": \"019d2be3-6a85-74ec-a33c-a7c04919ba00\",\r\n    \"currentPage\": 1,\r\n    \"pageSize\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dichvucong.gov.vn/api/v1/reporting/evaluation/provide-online-tree",
+          "protocol": "https",
+          "host": [
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "reporting",
+            "evaluation",
+            "provide-online-tree"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tiến độ giải quyết - dvc-progress-tree",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Origin",
+            "value": "https://dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "{{dvc_cookie}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"timeType\": \"year\",\r\n    \"year\": 2026,\r\n    \"rootDepartmentId\": \"019d2be3-6a85-74ec-a33c-a7c04919ba00\",\r\n    \"currentPage\": 1,\r\n    \"pageSize\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dichvucong.gov.vn/api/v1/reporting/evaluation/dvc-progress-tree",
+          "protocol": "https",
+          "host": [
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "reporting",
+            "evaluation",
+            "dvc-progress-tree"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Tu dong lay Cookie WAF tu trang goc dichvucong.gov.vn",
+          "const lastFetch = pm.collectionVariables.get(\"last_cookie_time\");",
+          "const now = Date.now();",
+          "if (!pm.collectionVariables.get(\"dvc_cookie\") || !lastFetch || (now - Number(lastFetch) > 600000)) {",
+          "    pm.sendRequest({",
+          "        url: \"https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu\",",
+          "        method: \"GET\",",
+          "        header: {",
+          "            \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36\"",
+          "        }",
+          "    }, function (err, res) {",
+          "        if (!err && res) {",
+          "            const setCookies = res.headers.filter(h => h.key.toLowerCase() === \"set-cookie\");",
+          "            const cookieStr = setCookies.map(h => h.value.split(\";\")[0]).join(\"; \");",
+          "            if (cookieStr) {",
+          "                pm.collectionVariables.set(\"dvc_cookie\", cookieStr);",
+          "                pm.collectionVariables.set(\"last_cookie_time\", now);",
+          "                console.log(\"[Anti-WAF] Da lay cookie WAF moi thanh cong:\", cookieStr);",
+          "            }",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "dvc_cookie",
+      "value": ""
+    },
+    {
+      "key": "last_cookie_time",
+      "value": "0"
+    }
+  ]
+}

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống Theo dõi & Phân tích Bộ Chỉ số 766 DVCQG - Tỉnh Đắk Lắk</title>
+  <meta name="description" content="Hệ thống tự động theo dõi, phân tích và báo cáo 6 nhóm chỉ số chất lượng phục vụ hành chính công theo Quyết định 766/QĐ-TTg từ Cổng DVC Quốc gia.">
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Container -->
+  <div class="app-layout">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand-block">
+          <div class="national-emblem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="badge-govt">CỔNG DỊCH VỤ CÔNG QUỐC GIA • QUYẾT ĐỊNH 766/QĐ-TTg</span>
+            <h1 class="brand-title">HỆ THỐNG THEO DÕI & ĐÁNH GIÁ BỘ CHỈ SỐ 766</h1>
+            <p class="brand-subtitle">Ủy ban Nhân dân tỉnh Đắk Lắk <span class="dept-code">(Mã cơ quan: H15)</span></p>
+          </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <div class="cron-status-pill" title="Hệ thống tự động chạy lúc 06:00 AM hàng ngày">
+            <span class="pulse-dot"></span>
+            <div class="cron-text">
+              <span class="cron-title">Lịch thu thập tự động</span>
+              <span class="cron-time">06:00:00 Sáng hàng ngày</span>
+            </div>
+          </div>
+
+          <div class="date-selector-wrapper">
+            <label for="date-select" class="date-label">Ngày dữ liệu:</label>
+            <select id="date-select" class="custom-select">
+              <option value="" disabled selected>Đang tải danh sách ngày...</option>
+            </select>
+          </div>
+
+          <button id="btn-export-excel" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Tải Báo cáo Excel</span>
+          </button>
+
+          <button id="btn-crawl-now" class="btn btn-primary">
+            <svg id="crawl-spinner" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+            <span>Thu thập dữ liệu ngay</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Loading Skeleton Overlay -->
+      <div id="main-loader" class="loader-overlay">
+        <div class="loader-box">
+          <div class="spinner"></div>
+          <p class="loader-text">Đang đồng bộ dữ liệu Bộ chỉ số 766 từ Cổng DVCQG...</p>
+        </div>
+      </div>
+
+      <!-- Dashboard Body -->
+      <div id="dashboard-content" class="dashboard-body" style="display: none;">
+        <!-- Top Banner / Summary Strip -->
+        <section class="summary-banner">
+          <!-- Total Score Card -->
+          <div class="card card-overall">
+            <div class="overall-header">
+              <span class="card-tag">TỔNG HỢP TOÀN TỈNH</span>
+              <span id="classification-badge" class="badge-grade">Đang tải...</span>
+            </div>
+            <div class="score-display">
+              <div class="score-main">
+                <span id="total-score-val" class="score-number">--</span>
+                <span class="score-max">/ 100 điểm</span>
+              </div>
+              <div id="score-delta" class="score-delta">
+                <!-- Delta text inserted by JS -->
+              </div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-track">
+                <div id="total-progress-bar" class="progress-fill" style="width: 0%;"></div>
+              </div>
+              <div class="progress-labels">
+                <span>Tỷ lệ đạt: <strong id="total-ratio-val">0%</strong></span>
+                <span>Mục tiêu: <strong>>= 80 điểm (Tốt)</strong></span>
+              </div>
+            </div>
+            <div class="overall-footer">
+              <span class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="meta-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Cập nhật: <strong id="data-updated-time">--</strong>
+              </span>
+              <span class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="meta-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                Đơn vị trực thuộc: <strong id="units-count-val">119</strong>
+              </span>
+            </div>
+          </div>
+
+          <!-- 6 Indicators Grid -->
+          <div class="indicators-grid">
+            <!-- 1. Công khai minh bạch -->
+            <div class="indicator-card" data-key="transparency">
+              <div class="ind-head">
+                <div class="ind-icon ind-icon-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <div class="ind-titles">
+                  <span class="ind-code">CHỈ SỐ 1 (Tối đa 18đ)</span>
+                  <h3 class="ind-name">Công khai, minh bạch</h3>
+                </div>
+              </div>
+              <div class="ind-score-row">
+                <span class="ind-score" id="score-transparency">--</span>
+                <span class="ind-max">/ 18 điểm</span>
+                <span class="ind-percent" id="ratio-transparency">0%</span>
+              </div>
+              <div class="ind-progress">
+                <div class="progress-bar-small" id="bar-transparency" style="width: 0%;"></div>
+              </div>
+              <button class="btn-detail-link" onclick="openMetricModal('transparency')">
+                <span>Chi tiết 4 tiêu chí</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- 2. Tiến độ giải quyết -->
+            <div class="indicator-card" data-key="progress">
+              <div class="ind-head">
+                <div class="ind-icon ind-icon-emerald">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                </div>
+                <div class="ind-titles">
+                  <span class="ind-code">CHỈ SỐ 2 (Tối đa 20đ)</span>
+                  <h3 class="ind-name">Tiến độ giải quyết</h3>
+                </div>
+              </div>
+              <div class="ind-score-row">
+                <span class="ind-score" id="score-progress">--</span>
+                <span class="ind-max">/ 20 điểm</span>
+                <span class="ind-percent" id="ratio-progress">0%</span>
+              </div>
+              <div class="ind-progress">
+                <div class="progress-bar-small bar-emerald" id="bar-progress" style="width: 0%;"></div>
+              </div>
+              <button class="btn-detail-link" onclick="openMetricModal('progress')">
+                <span>Chi tiết hồ sơ xử lý</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- 3. DVC trực tuyến -->
+            <div class="indicator-card" data-key="onlineService">
+              <div class="ind-head">
+                <div class="ind-icon ind-icon-indigo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                </div>
+                <div class="ind-titles">
+                  <span class="ind-code">CHỈ SỐ 3 (Tối đa 12đ)</span>
+                  <h3 class="ind-name">Dịch vụ công trực tuyến</h3>
+                </div>
+              </div>
+              <div class="ind-score-row">
+                <span class="ind-score" id="score-onlineService">--</span>
+                <span class="ind-max">/ 12 điểm</span>
+                <span class="ind-percent" id="ratio-onlineService">0%</span>
+              </div>
+              <div class="ind-progress">
+                <div class="progress-bar-small bar-indigo" id="bar-onlineService" style="width: 0%;"></div>
+              </div>
+              <button class="btn-detail-link" onclick="openMetricModal('onlineService')">
+                <span>Chi tiết dịch vụ trực tuyến</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- 4. Số hóa hồ sơ -->
+            <div class="indicator-card" data-key="digitized">
+              <div class="ind-head">
+                <div class="ind-icon ind-icon-purple">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                </div>
+                <div class="ind-titles">
+                  <span class="ind-code">CHỈ SỐ 4 (Tối đa 22đ)</span>
+                  <h3 class="ind-name">Số hóa hồ sơ</h3>
+                </div>
+              </div>
+              <div class="ind-score-row">
+                <span class="ind-score" id="score-digitized">--</span>
+                <span class="ind-max">/ 22 điểm</span>
+                <span class="ind-percent" id="ratio-digitized">0%</span>
+              </div>
+              <div class="ind-progress">
+                <div class="progress-bar-small bar-purple" id="bar-digitized" style="width: 0%;"></div>
+              </div>
+              <button class="btn-detail-link" onclick="openMetricModal('digitized')">
+                <span>Chi tiết 7 tiêu chí số hóa</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- 5. Thanh toán trực tuyến -->
+            <div class="indicator-card" data-key="payment">
+              <div class="ind-head">
+                <div class="ind-icon ind-icon-amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                </div>
+                <div class="ind-titles">
+                  <span class="ind-code">CHỈ SỐ 5 (Tối đa 10đ)</span>
+                  <h3 class="ind-name">Thanh toán trực tuyến</h3>
+                </div>
+              </div>
+              <div class="ind-score-row">
+                <span class="ind-score" id="score-payment">--</span>
+                <span class="ind-max">/ 10 điểm</span>
+                <span class="ind-percent" id="ratio-payment">0%</span>
+              </div>
+              <div class="ind-progress">
+                <div class="progress-bar-small bar-amber" id="bar-payment" style="width: 0%;"></div>
+              </div>
+              <button class="btn-detail-link" onclick="openMetricModal('payment')">
+                <span>Chi tiết giao dịch tài chính</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- 6. Mức độ hài lòng -->
+            <div class="indicator-card" data-key="satisfaction">
+              <div class="ind-head">
+                <div class="ind-icon ind-icon-rose">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                </div>
+                <div class="ind-titles">
+                  <span class="ind-code">CHỈ SỐ 6 (Tối đa 18đ)</span>
+                  <h3 class="ind-name">Mức độ hài lòng</h3>
+                </div>
+              </div>
+              <div class="ind-score-row">
+                <span class="ind-score" id="score-satisfaction">--</span>
+                <span class="ind-max">/ 18 điểm</span>
+                <span class="ind-percent" id="ratio-satisfaction">0%</span>
+              </div>
+              <div class="ind-progress">
+                <div class="progress-bar-small bar-rose" id="bar-satisfaction" style="width: 0%;"></div>
+              </div>
+              <button class="btn-detail-link" onclick="openMetricModal('satisfaction')">
+                <span>Chi tiết đánh giá của người dân</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+          <!-- Radar Chart Card -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Mô hình Radar 6 Chỉ số Đánh giá</h2>
+                <p class="card-desc">So sánh điểm thực tế với khung điểm tối đa chuẩn 100 điểm</p>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Trend Chart Card -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Xu hướng Điểm số theo Thời gian</h2>
+                <p class="card-desc">Theo dõi sự biến động của Bộ chỉ số qua các ngày thu thập</p>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- Subordinate Units Table Section -->
+        <section class="table-section">
+          <div class="card table-card">
+            <div class="table-header-bar">
+              <div class="table-title-block">
+                <h2 class="card-title">Bảng Xếp hạng & Đánh giá 119 Đơn vị Trực thuộc</h2>
+                <p class="card-desc">Toàn bộ Sở, Ban, Ngành và UBND cấp huyện, xã thuộc tỉnh Đắk Lắk</p>
+              </div>
+
+              <!-- Table Filters -->
+              <div class="table-filters">
+                <div class="search-input-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="unit-search-input" placeholder="Tìm tên hoặc mã đơn vị..." class="search-field">
+                </div>
+
+                <select id="level-filter-select" class="custom-select filter-select">
+                  <option value="ALL">Tất cả cấp đơn vị (119)</option>
+                  <option value="DEPARTMENT">Sở / Ban / Ngành</option>
+                  <option value="DISTRICT">UBND Huyện / Thị xã / TP</option>
+                  <option value="COMMUNE">Cấp Xã / Phường / Khác</option>
+                </select>
+
+                <select id="sort-select" class="custom-select filter-select">
+                  <option value="score_desc">Tổng điểm: Cao đến thấp</option>
+                  <option value="score_asc">Tổng điểm: Thấp đến cao</option>
+                  <option value="name_asc">Tên đơn vị: A - Z</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Responsive Table Container -->
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px; text-align: center;">Hạng</th>
+                    <th>Cơ quan / Đơn vị</th>
+                    <th>Cấp đơn vị</th>
+                    <th style="text-align: right;" title="Tối đa 18 điểm">Công khai</th>
+                    <th style="text-align: right;" title="Tối đa 20 điểm">Tiến độ</th>
+                    <th style="text-align: right;" title="Tối đa 12 điểm">DVC TT</th>
+                    <th style="text-align: right;" title="Tối đa 22 điểm">Số hóa</th>
+                    <th style="text-align: right;" title="Tối đa 10 điểm">T.Toán</th>
+                    <th style="text-align: right;" title="Tối đa 18 điểm">Hài lòng</th>
+                    <th style="text-align: right;" title="Thang điểm 100">TỔNG ĐIỂM</th>
+                    <th style="text-align: center;">Xếp loại</th>
+                  </tr>
+                </thead>
+                <tbody id="units-table-body">
+                  <!-- Generated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Pagination / Footer -->
+            <div class="table-footer-bar">
+              <div class="table-info">
+                Hiển thị <span id="showing-count">0</span> / <span id="total-filtered-count">0</span> đơn vị
+              </div>
+              <div class="pagination-controls" id="pagination-wrap">
+                <!-- Pagination buttons inserted by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal for Detailed Metrics (Standard 5 Indicators) -->
+    <div id="metric-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-tag" id="modal-ind-code">CHỈ SỐ THÀNH PHẦN</span>
+            <h3 class="modal-title" id="modal-ind-title">Chi tiết chỉ số</h3>
+          </div>
+          <button class="modal-close-btn" onclick="closeMetricModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body-content">
+          <!-- Populated by JS -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeMetricModal()">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- [FORM RIÊNG] Modal chuyên biệt cho Tiêu chí Thanh toán trực tuyến (3 chỉ tiêu con) -->
+    <div id="payment-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card modal-card-payment">
+        <div class="modal-header modal-header-payment">
+          <div class="modal-title-wrap">
+            <span class="modal-tag payment-tag" id="paymodal-ind-code">CHỈ SỐ 5 • THANH TOÁN TRỰC TUYẾN</span>
+            <h3 class="modal-title" id="paymodal-ind-title">Chi tiết Thanh toán trực tuyến</h3>
+            <p class="modal-unit-subtitle" id="paymodal-unit-name">Ủy ban Nhân dân tỉnh Đắk Lắk</p>
+          </div>
+          <button class="modal-close-btn" onclick="closePaymentModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="modal-body modal-body-payment">
+          <!-- Banner tổng điểm & hướng dẫn -->
+          <div class="payment-overview-banner">
+            <div class="pay-banner-score">
+              <span class="pay-banner-score-label">Điểm chỉ số đạt được:</span>
+              <span class="pay-banner-score-val" id="paymodal-score-val">-- / 10 điểm</span>
+            </div>
+            <div class="pay-banner-notice">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pay-notice-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span>Hiển thị 3 chỉ tiêu con theo dõi tỷ lệ thực hiện (Tử số, Mẫu số & Tỷ lệ %). Chưa áp khung điểm thành phần riêng.</span>
+            </div>
+          </div>
+
+          <!-- Danh sách 3 card chỉ tiêu con riêng biệt -->
+          <div class="payment-cards-list" id="paymodal-cards-container">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closePaymentModal()">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- [FORM RIÊNG] Modal chuyên biệt cho Tiêu chí Tiến độ giải quyết -->
+    <div id="progress-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card modal-card-progress">
+        <div class="modal-header modal-header-progress">
+          <div class="modal-title-wrap">
+            <span class="modal-tag progress-tag" id="progmodal-ind-code">CHỈ SỐ 2 • TIẾN ĐỘ GIẢI QUYẾT</span>
+            <h3 class="modal-title" id="progmodal-ind-title">Tiến độ giải quyết</h3>
+            <p class="modal-unit-subtitle" id="progmodal-unit-name">Ủy ban Nhân dân tỉnh Đắk Lắk</p>
+          </div>
+          <button class="modal-close-btn" onclick="closeProgressModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="modal-body modal-body-progress">
+          <!-- Phía trên: Dạng thông tin tổng quan -->
+          <div class="progress-info-strip">
+            <div class="prog-info-card">
+              <div class="prog-info-icon prog-icon-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              </div>
+              <div class="prog-info-content">
+                <span class="prog-info-label">Tổng số hồ sơ tiếp nhận</span>
+                <span class="prog-info-val" id="progmodal-total-received">--</span>
+              </div>
+            </div>
+
+            <div class="prog-info-card">
+              <div class="prog-info-icon prog-icon-purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="prog-info-content">
+                <span class="prog-info-label">Thời gian xử lý trung bình</span>
+                <span class="prog-info-val" id="progmodal-avg-days">-- ngày</span>
+              </div>
+            </div>
+
+            <div class="prog-info-card prog-info-score-card">
+              <div class="prog-info-icon prog-icon-emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              </div>
+              <div class="prog-info-content">
+                <span class="prog-info-label">Tổng điểm chỉ số đạt được</span>
+                <span class="prog-info-val prog-score-val" id="progmodal-score-val">-- / 20 điểm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phía dưới: 2 khối chỉ tiêu đúng hạn & quá hạn -->
+          <div class="progress-details-grid">
+            <!-- 1. Đúng hạn (áp dụng tính điểm) -->
+            <div class="prog-criterion-card prog-card-ontime">
+              <div class="prog-crit-head">
+                <div class="prog-crit-title-wrap">
+                  <span class="badge-ontime">Chỉ tiêu đánh giá tính điểm</span>
+                  <h4 class="prog-crit-title">Hồ sơ giải quyết đúng hạn</h4>
+                </div>
+                <div class="prog-score-badge" id="progmodal-ontime-score">
+                  -- / 20 điểm
+                </div>
+              </div>
+              <p class="prog-crit-desc">Số hồ sơ giải quyết đúng hạn và trước hạn trên tổng số hồ sơ tiếp nhận</p>
+
+              <div class="prog-stats-row">
+                <div class="prog-stat-box">
+                  <span class="prog-stat-lbl">Tử số (Đúng hạn)</span>
+                  <span class="prog-stat-num num-emerald" id="progmodal-ontime-num">--</span>
+                </div>
+                <div class="prog-stat-box">
+                  <span class="prog-stat-lbl">Mẫu số (Tổng tiếp nhận)</span>
+                  <span class="prog-stat-num" id="progmodal-ontime-den">--</span>
+                </div>
+                <div class="prog-ratio-box ratio-emerald">
+                  <div class="prog-ratio-top">
+                    <span class="prog-ratio-lbl">TỶ LỆ ĐÚNG HẠN</span>
+                    <span class="prog-ratio-num" id="progmodal-ontime-ratio">--%</span>
+                  </div>
+                  <div class="prog-track">
+                    <div class="prog-fill fill-emerald" id="progmodal-ontime-bar" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Quá hạn (chỉ tử/mẫu/tỷ lệ) -->
+            <div class="prog-criterion-card prog-card-overdue">
+              <div class="prog-crit-head">
+                <div class="prog-crit-title-wrap">
+                  <span class="badge-overdue">Chỉ tiêu theo dõi</span>
+                  <h4 class="prog-crit-title">Hồ sơ giải quyết quá hạn</h4>
+                </div>
+                <div class="prog-overdue-tag">Chưa áp thang điểm</div>
+              </div>
+              <p class="prog-crit-desc">Số hồ sơ xử lý quá thời hạn quy định trên tổng số hồ sơ tiếp nhận</p>
+
+              <div class="prog-stats-row">
+                <div class="prog-stat-box">
+                  <span class="prog-stat-lbl">Tử số (Quá hạn)</span>
+                  <span class="prog-stat-num num-rose" id="progmodal-overdue-num">--</span>
+                </div>
+                <div class="prog-stat-box">
+                  <span class="prog-stat-lbl">Mẫu số (Tổng tiếp nhận)</span>
+                  <span class="prog-stat-num" id="progmodal-overdue-den">--</span>
+                </div>
+                <div class="prog-ratio-box ratio-rose">
+                  <div class="prog-ratio-top">
+                    <span class="prog-ratio-lbl">TỶ LỆ QUÁ HẠN</span>
+                    <span class="prog-ratio-num num-rose-text" id="progmodal-overdue-ratio">--%</span>
+                  </div>
+                  <div class="prog-track">
+                    <div class="prog-fill fill-rose" id="progmodal-overdue-bar" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeProgressModal()">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <p>Hệ thống tự động đồng bộ từ <strong>Cổng Dịch vụ công Quốc gia (dichvucong.gov.vn)</strong> theo Quyết định số 766/QĐ-TTg ngày 23/06/2022 của Thủ tướng Chính phủ.</p>
+        <p class="footer-sub">Chạy tự động định kỳ vào 06:00:00 sáng mỗi ngày • Lưu trữ và phân tích theo ngày • Sẵn sàng triển khai trên Vercel.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

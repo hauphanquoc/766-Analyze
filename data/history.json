@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2026-09-17T09:27:01.949Z",
+    "type": "MANUAL_CRAWL",
+    "date": "2026-09-17",
+    "durationMs": 13077,
+    "totalScore": 64.08,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 119
+  }
+]
