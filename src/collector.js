@@ -145,7 +145,7 @@ async function fetchWithRetry(url, options, maxRetries = 3) {
       await cookieManager.initSession(false);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout to fail fast on firewall drop
 
       // Attach current dynamic cookies
       const cookieStr = cookieManager.getCookieString();
@@ -154,11 +154,20 @@ async function fetchWithRetry(url, options, maxRetries = 3) {
         ...(cookieStr ? { 'Cookie': cookieStr } : {})
       };
 
-      const response = await fetch(url, {
-        ...options,
-        headers: requestHeaders,
-        signal: controller.signal
-      });
+      let response;
+      try {
+        response = await fetch(url, {
+          ...options,
+          headers: requestHeaders,
+          signal: controller.signal
+        });
+      } catch (fetchErr) {
+        clearTimeout(timeoutId);
+        if (fetchErr.name === 'AbortError') {
+          throw new Error('Không thể kết nối đến Cổng DVCQG (14.238.3.76): Tường lửa Trung tâm Dữ liệu VNPT đang chặn kết nối từ máy chủ đám mây nước ngoài (Vercel/AWS). Vui lòng đồng bộ dữ liệu từ máy trạm trong nước.');
+        }
+        throw fetchErr;
+      }
       clearTimeout(timeoutId);
 
       // Extract any updated cookies returned
