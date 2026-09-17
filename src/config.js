@@ -24,8 +24,8 @@ module.exports = {
   },
 
   // Polite delay range between API calls (milliseconds) to prevent WAF rate-limiting
-  CRAWL_DELAY_MIN: 1200,
-  CRAWL_DELAY_MAX: 2400,
+  CRAWL_DELAY_MIN: 350,
+  CRAWL_DELAY_MAX: 700,
 
   INDICATORS: [
     {

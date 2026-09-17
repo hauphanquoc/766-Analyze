@@ -182,7 +182,13 @@ async function handleCrawlNow() {
 
   try {
     const res = await fetch('/api/crawl', { method: 'POST' });
-    const json = await res.json();
+    const text = await res.text();
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch (e) {
+      throw new Error(`Máy chủ Vercel phản hồi (${res.status}): ${text.slice(0, 100)}`);
+    }
 
     if (!json.success) {
       throw new Error(json.error || 'Thu thập thất bại');
