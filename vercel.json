@@ -21,6 +21,10 @@
       "dest": "/api/crawl.js"
     },
     {
+      "src": "/api/test-fetch",
+      "dest": "/api/test-fetch.js"
+    },
+    {
       "src": "/api/data",
       "dest": "/api/data.js"
     },
