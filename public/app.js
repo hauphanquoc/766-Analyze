@@ -74,12 +74,14 @@ const dom = {
   progmodalOverdueDen: document.getElementById('progmodal-overdue-den'),
   progmodalOverdueRatio: document.getElementById('progmodal-overdue-ratio'),
   progmodalOverdueBar: document.getElementById('progmodal-overdue-bar'),
+  welcomeModal: document.getElementById('welcome-modal'),
   toastContainer: document.getElementById('toast-container')
 };
 
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initEventListeners();
+  initWelcomeNotice();
   loadInitialData();
 });
 
@@ -844,6 +846,30 @@ function renderMetricItemCard(m, idx, meta) {
 window.closeMetricModal = function () {
   dom.metricModal.style.display = 'none';
 };
+
+/**
+ * [POPUP LƯU Ý] Handle Agree & Dismiss Welcome Notice
+ */
+window.agreeWelcomeNotice = function () {
+  if (dom.welcomeModal) {
+    dom.welcomeModal.style.opacity = '0';
+    dom.welcomeModal.style.transition = 'opacity 0.25s ease';
+    setTimeout(() => {
+      dom.welcomeModal.style.display = 'none';
+      dom.welcomeModal.style.opacity = '1';
+    }, 250);
+  }
+  try {
+    sessionStorage.setItem('dvc766_welcome_agreed', '1');
+  } catch (e) {}
+};
+
+function initWelcomeNotice() {
+  const agreed = sessionStorage.getItem('dvc766_welcome_agreed');
+  if (!agreed && dom.welcomeModal) {
+    dom.welcomeModal.style.display = 'flex';
+  }
+}
 
 /**
  * Toast notification

@@ -555,6 +555,51 @@
       </div>
     </div>
 
+    <!-- [POPUP THÔNG BÁO] Lưu ý & Khuyến cáo sử dụng hệ thống -->
+    <div id="welcome-modal" class="modal-backdrop welcome-backdrop" style="display: none;">
+      <div class="modal-card welcome-card">
+        <div class="welcome-header">
+          <div class="welcome-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="welcome-title-wrap">
+            <span class="welcome-badge">LƯU Ý QUAN TRỌNG</span>
+            <h3 class="welcome-title">Khuyến cáo Sử dụng Dữ liệu</h3>
+          </div>
+        </div>
+
+        <div class="welcome-body">
+          <div class="welcome-callout">
+            <p class="welcome-para">
+              Hệ thống hỗ trợ tổng hợp dữ liệu nhằm mục đích hỗ trợ cán bộ dễ dàng đối chiếu, kiểm soát trong quá trình thực hiện kstthc.
+            </p>
+            <div class="welcome-alert-box">
+              <div class="welcome-alert-icon">⚠️</div>
+              <p class="welcome-alert-text">
+                Cán bộ cần đối chiếu lại với số liệu thực tế, dữ liệu trên hệ thống mang tính chất tham khảo. <strong>Vui lòng không sử dụng làm nguồn báo cáo chính thống.</strong>
+              </p>
+            </div>
+            <p class="welcome-wishes">
+              Chúc anh/chị hoàn thành tốt nhiệm vụ!
+            </p>
+          </div>
+        </div>
+
+        <div class="welcome-footer">
+          <button id="btn-agree-welcome" class="btn btn-primary btn-agree" onclick="agreeWelcomeNotice()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="btn-check-icon">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Đồng ý</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- App Footer -->
     <footer class="app-footer">
       <div class="footer-inner">
