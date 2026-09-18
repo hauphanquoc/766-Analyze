@@ -1,6 +1,25 @@
 const fs = require('fs');
 const path = require('path');
 
+// Auto-load .env file if running locally
+const envFile = path.resolve(__dirname, '..', '.env');
+if (fs.existsSync(envFile)) {
+  try {
+    const lines = fs.readFileSync(envFile, 'utf8').split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const idx = trimmed.indexOf('=');
+        if (idx > 0) {
+          const k = trimmed.slice(0, idx).trim();
+          const v = trimmed.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
+          if (!process.env[k]) process.env[k] = v;
+        }
+      }
+    }
+  } catch (e) {}
+}
+
 // Check if Upstash Redis credentials exist in environment
 const redisUrl =
   process.env.UPSTASH_REDIS_REST_URL ||
