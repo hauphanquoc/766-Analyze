@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-09-18T01:07:40.091Z",
+    "type": "LOCAL_SYNC_TO_CLOUD",
+    "date": "2026-09-18",
+    "durationMs": 7082,
+    "totalScore": 64.09,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 119
+  },
+  {
+    "timestamp": "2026-09-17T23:00:12.438Z",
+    "type": "LOCAL_CRON_6AM",
+    "date": "2026-09-17",
+    "totalScore": 64.09,
+    "classification": "Trung bình",
+    "success": true
+  },
+  {
     "timestamp": "2026-09-17T09:27:01.949Z",
     "type": "MANUAL_CRAWL",
     "date": "2026-09-17",

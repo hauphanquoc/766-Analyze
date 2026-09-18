@@ -33,9 +33,7 @@ const dom = {
   loader: document.getElementById('main-loader'),
   dashboard: document.getElementById('dashboard-content'),
   dateSelect: document.getElementById('date-select'),
-  btnCrawlNow: document.getElementById('btn-crawl-now'),
   btnExportExcel: document.getElementById('btn-export-excel'),
-  crawlSpinner: document.getElementById('crawl-spinner'),
   totalScoreVal: document.getElementById('total-score-val'),
   classificationBadge: document.getElementById('classification-badge'),
   scoreDelta: document.getElementById('score-delta'),
@@ -90,7 +88,6 @@ function initEventListeners() {
     loadDateData(e.target.value);
   });
 
-  dom.btnCrawlNow.addEventListener('click', handleCrawlNow);
   dom.btnExportExcel.addEventListener('click', handleExportExcel);
 
   dom.unitSearchInput.addEventListener('input', (e) => {
@@ -169,54 +166,6 @@ async function loadDateData(date) {
     showToast(err.message, 'error');
   } finally {
     showLoader(false);
-  }
-}
-
-/**
- * Handle Manual Crawl Now button click
- */
-async function handleCrawlNow() {
-  dom.btnCrawlNow.disabled = true;
-  dom.crawlSpinner.classList.add('spinning');
-  showToast('Đang kết nối 6 API Cổng DVCQG để thu thập và phân tích dữ liệu...', 'info');
-
-  try {
-    const res = await fetch('/api/crawl', { method: 'POST' });
-    const text = await res.text();
-    let json;
-    try {
-      json = JSON.parse(text);
-    } catch (e) {
-      throw new Error(`Máy chủ Vercel phản hồi (${res.status}): ${text.slice(0, 100)}`);
-    }
-
-    if (!json.success) {
-      throw new Error(json.error || 'Thu thập thất bại');
-    }
-
-    appState.currentData = json.data;
-    appState.selectedDate = json.data.date;
-
-    // Refresh dates list
-    const datesRes = await fetch('/api/data?action=dates');
-    const datesJson = await datesRes.json();
-    if (datesJson.success && datesJson.dates) {
-      appState.availableDates = datesJson.dates;
-    } else {
-      if (!appState.availableDates.includes(json.data.date)) {
-        appState.availableDates.unshift(json.data.date);
-      }
-    }
-
-    renderDateOptions();
-    renderAll(json.data);
-    showToast('Thu thập và phân tích dữ liệu 6 chỉ số thành công!', 'success');
-  } catch (err) {
-    console.error(err);
-    showToast('Lỗi khi thu thập dữ liệu: ' + err.message, 'error');
-  } finally {
-    dom.btnCrawlNow.disabled = false;
-    dom.crawlSpinner.classList.remove('spinning');
   }
 }
 

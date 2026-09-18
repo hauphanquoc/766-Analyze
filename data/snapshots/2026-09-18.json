@@ -1,6 +1,6 @@
 {
-  "date": "2026-09-17",
-  "timestamp": "2026-09-17T23:00:12.421Z",
+  "date": "2026-09-18",
+  "timestamp": "2026-09-18T01:07:38.586Z",
   "year": 2026,
   "department": {
     "id": "019d2be3-6a85-74ec-a33c-a7c04919ba00",
@@ -16,11 +16,11 @@
       "grade": "average",
       "color": "#ec4899"
     },
-    "deltaScore": 0.01,
-    "deltaDirection": "up",
+    "deltaScore": 0,
+    "deltaDirection": "same",
     "collectedCount": 6,
     "totalExpected": 6,
-    "durationMs": 12102
+    "durationMs": 5577
   },
   "indicators": {
     "transparency": {
