@@ -1,6 +1,6 @@
 {
-  "date": "2026-09-18",
-  "timestamp": "2026-09-18T23:00:10.721Z",
+  "date": "2026-09-19",
+  "timestamp": "2026-09-19T02:46:48.144Z",
   "year": 2026,
   "department": {
     "id": "019d2be3-6a85-74ec-a33c-a7c04919ba00",
@@ -20,7 +20,7 @@
     "deltaDirection": "same",
     "collectedCount": 6,
     "totalExpected": 6,
-    "durationMs": 7853
+    "durationMs": 5853
   },
   "indicators": {
     "transparency": {

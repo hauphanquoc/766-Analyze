@@ -372,8 +372,18 @@ function analyzeData(collectionResult, previousSnapshot = null) {
   const topUnits = units.slice(0, 5);
   const bottomUnits = units.slice(-5).reverse();
 
-  // Date strings (YYYY-MM-DD)
-  const dateStr = timestamp ? timestamp.slice(0, 10) : new Date().toISOString().slice(0, 10);
+  // Date strings (YYYY-MM-DD) formatted in Vietnam timezone (Asia/Ho_Chi_Minh / UTC+7)
+  let dateStr;
+  try {
+    const d = timestamp ? new Date(timestamp) : new Date();
+    if (!isNaN(d.getTime())) {
+      dateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(d);
+    } else {
+      dateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+    }
+  } catch (e) {
+    dateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+  }
 
   return {
     date: dateStr,

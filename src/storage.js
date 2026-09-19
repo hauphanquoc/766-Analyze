@@ -91,7 +91,11 @@ async function saveSnapshot(analyzedData) {
     try {
       await redisClient.set(`dvc:snapshot:${date}`, JSON.stringify(analyzedData));
       await redisClient.set('dvc:latest', date);
-      const existingDates = (await redisClient.get('dvc:dates')) || [];
+      let existingDates = (await redisClient.get('dvc:dates')) || [];
+      if (typeof existingDates === 'string') {
+        try { existingDates = JSON.parse(existingDates); } catch (e) { existingDates = []; }
+      }
+      if (!Array.isArray(existingDates)) existingDates = [];
       if (!existingDates.includes(date)) {
         existingDates.unshift(date);
         await redisClient.set('dvc:dates', JSON.stringify(existingDates));
