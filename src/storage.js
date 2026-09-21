@@ -157,6 +157,64 @@ async function getSnapshot(date) {
 }
 
 /**
+ * Delete a snapshot by date (both Redis and local)
+ */
+async function deleteSnapshot(date) {
+  memoryCache.snapshots.delete(date);
+  memoryCache.dates = memoryCache.dates.filter((d) => d !== date);
+
+  // 1. Delete from Redis if available
+  if (redisClient) {
+    try {
+      await redisClient.del(`dvc:snapshot:${date}`);
+      let existingDates = (await redisClient.get('dvc:dates')) || [];
+      if (typeof existingDates === 'string') {
+        try { existingDates = JSON.parse(existingDates); } catch (e) { existingDates = []; }
+      }
+      if (Array.isArray(existingDates)) {
+        const filtered = existingDates.filter((d) => d !== date);
+        await redisClient.set('dvc:dates', JSON.stringify(filtered));
+        const latest = await redisClient.get('dvc:latest');
+        if (latest === date) {
+          await redisClient.set('dvc:latest', filtered[0] || '');
+        }
+      }
+
+      // Clean up history entries for this date
+      const historyData = await redisClient.get('dvc:history');
+      if (historyData) {
+        const hist = typeof historyData === 'string' ? JSON.parse(historyData) : historyData;
+        if (Array.isArray(hist)) {
+          const filteredHist = hist.filter((h) => h.date !== date);
+          await redisClient.set('dvc:history', JSON.stringify(filteredHist));
+        }
+      }
+    } catch (err) {
+      console.error('[Storage] Redis delete error:', err.message);
+    }
+  }
+
+  // 2. Delete from local disk
+  try {
+    const filePath = path.join(SNAPSHOTS_DIR, `${date}.json`);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    if (fs.existsSync(HISTORY_FILE)) {
+      const hist = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf-8'));
+      if (Array.isArray(hist)) {
+        const filteredHist = hist.filter((h) => h.date !== date);
+        fs.writeFileSync(HISTORY_FILE, JSON.stringify(filteredHist, null, 2), 'utf-8');
+      }
+    }
+  } catch (err) {
+    // Ignore
+  }
+
+  return true;
+}
+
+/**
  * Get list of available snapshot dates (sorted newest first)
  */
 async function listDates() {
@@ -262,6 +320,7 @@ async function getHistory() {
 module.exports = {
   saveSnapshot,
   getSnapshot,
+  deleteSnapshot,
   getLatestSnapshot,
   listDates,
   recordLog,
