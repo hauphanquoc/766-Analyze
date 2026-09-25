@@ -35,7 +35,8 @@ const redisToken =
   process.env.STORAGE_TOKEN ||
   process.env.REDIS_TOKEN;
 
-const hasRedis = Boolean(redisUrl && redisToken);
+const isLocalOnly = process.env.SYNC_LOCAL_ONLY === 'true' || process.env.LOCAL_ONLY === 'true';
+const hasRedis = Boolean(redisUrl && redisToken) && !isLocalOnly;
 
 let redisClient = null;
 if (hasRedis) {
@@ -79,15 +80,16 @@ ensureDirectories();
 /**
  * Save snapshot by date
  */
-async function saveSnapshot(analyzedData) {
+async function saveSnapshot(analyzedData, options = {}) {
   const date = analyzedData.date;
   memoryCache.snapshots.set(date, analyzedData);
   if (!memoryCache.dates.includes(date)) {
     memoryCache.dates.unshift(date);
   }
 
-  // 1. Save to Redis if available
-  if (redisClient) {
+  // 1. Save to Redis if available and NOT localOnly
+  const localOnly = options.localOnly || process.env.SYNC_LOCAL_ONLY === 'true' || process.env.LOCAL_ONLY === 'true';
+  if (redisClient && !localOnly) {
     try {
       await redisClient.set(`dvc:snapshot:${date}`, JSON.stringify(analyzedData));
       await redisClient.set('dvc:latest', date);
@@ -267,11 +269,12 @@ async function getLatestSnapshot() {
 /**
  * Record a run log entry
  */
-async function recordLog(logEntry) {
+async function recordLog(logEntry, options = {}) {
   memoryCache.history.unshift(logEntry);
   if (memoryCache.history.length > 50) memoryCache.history.pop();
 
-  if (redisClient) {
+  const localOnly = options.localOnly || process.env.SYNC_LOCAL_ONLY === 'true' || process.env.LOCAL_ONLY === 'true';
+  if (redisClient && !localOnly) {
     try {
       await redisClient.set('dvc:history', JSON.stringify(memoryCache.history));
     } catch (err) {

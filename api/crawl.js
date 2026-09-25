@@ -11,6 +11,17 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
+  const host = req.headers.host || '';
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+
+  if (process.env.VERCEL === '1' || !isLocal) {
+    return res.status(503).json({
+      success: false,
+      suspended: true,
+      message: 'Hệ thống ngừng hoạt động cho tới khi có thông báo mới.'
+    });
+  }
+
   const startTime = Date.now();
   console.log('[Manual Crawl] Starting collection from DVCQG...');
 

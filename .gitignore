@@ -9,3 +9,5 @@ yarn-debug.log*
 yarn-error.log*
 .vercel/
 data/sync.log
+data/snapshots/
+data/history.json

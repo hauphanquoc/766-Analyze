@@ -38,7 +38,7 @@ cron.schedule('0 6 * * *', async () => {
     const raw = await collectAll();
     const prev = await storage.getLatestSnapshot();
     const analyzed = analyzeData(raw, prev);
-    await storage.saveSnapshot(analyzed);
+    await storage.saveSnapshot(analyzed, { localOnly: true });
     await storage.recordLog({
       timestamp: new Date().toISOString(),
       type: 'LOCAL_CRON_6AM',
@@ -46,7 +46,7 @@ cron.schedule('0 6 * * *', async () => {
       totalScore: analyzed.overview.totalScore,
       classification: analyzed.overview.classification?.label,
       success: true
-    });
+    }, { localOnly: true });
     console.log('[Local Cron] Task finished successfully for date:', analyzed.date);
   } catch (err) {
     console.error('[Local Cron] Task failed:', err);

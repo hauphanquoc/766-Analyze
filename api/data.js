@@ -11,6 +11,18 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
+  const host = req.headers.host || '';
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+
+  // Chặn truy cập trên Vercel / domain công khai khi đang tạm ngừng
+  if (process.env.VERCEL === '1' || !isLocal) {
+    return res.status(503).json({
+      success: false,
+      suspended: true,
+      message: 'Hệ thống ngừng hoạt động cho tới khi có thông báo mới.'
+    });
+  }
+
   const { date, action } = req.query || {};
 
   try {

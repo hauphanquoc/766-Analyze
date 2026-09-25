@@ -78,8 +78,68 @@ const dom = {
   toastContainer: document.getElementById('toast-container')
 };
 
+// System Environment & Suspension Control
+function isLocalEnvironment() {
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || window.location.protocol === 'file:';
+}
+
+function shouldSuspendSystem() {
+  const urlParams = new URLSearchParams(window.location.search);
+  // Cho phép giả lập xem màn hình tạm ngừng trên localhost bằng ?suspended=1 hoặc ?lock=1
+  if (urlParams.get('suspended') === '1' || urlParams.get('lock') === '1') {
+    return true;
+  }
+  // Nếu là local web trên máy tính (localhost / 127.0.0.1): Không tạm ngừng, cho phép xem dữ liệu nội bộ
+  if (isLocalEnvironment()) {
+    return false;
+  }
+  // Mọi domain bên ngoài (Vercel, v.v.): Luôn tạm ngừng hoạt động
+  return true;
+}
+
+function applySuspendedMode() {
+  document.title = 'Thông báo Tạm ngừng - Hệ thống Bộ chỉ số 766';
+
+  // Ẩn loader
+  if (dom.loader) dom.loader.style.display = 'none';
+
+  // Ẩn toàn bộ layout và dữ liệu bên trong
+  const appLayout = document.querySelector('.app-layout');
+  if (appLayout) appLayout.style.display = 'none';
+
+  // Ẩn popup cũ
+  if (dom.welcomeModal) dom.welcomeModal.style.display = 'none';
+
+  // Hiển thị màn hình thông báo tạm ngừng hệ thống
+  const suspendedScreen = document.getElementById('system-suspended-screen');
+  if (suspendedScreen) {
+    suspendedScreen.style.display = 'flex';
+  }
+}
+
+function initLocalModeBanner() {
+  const cronPill = document.querySelector('.cron-status-pill');
+  if (cronPill) {
+    cronPill.classList.add('local-pill');
+    cronPill.title = 'Hệ thống đang chạy trên máy cục bộ (Local Only)';
+    const dot = cronPill.querySelector('.pulse-dot');
+    if (dot) dot.classList.add('green-dot');
+    const title = cronPill.querySelector('.cron-title');
+    if (title) title.textContent = 'BẢN NỘI BỘ (LOCAL ONLY)';
+    const time = cronPill.querySelector('.cron-time');
+    if (time) time.textContent = 'Lưu trữ cục bộ • Không đẩy lên Vercel';
+  }
+}
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
+  if (shouldSuspendSystem()) {
+    applySuspendedMode();
+    return; // Dừng hoàn toàn, không tải bất kỳ dữ liệu nào
+  }
+
+  initLocalModeBanner();
   initEventListeners();
   initWelcomeNotice();
   loadInitialData();

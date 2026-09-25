@@ -3,6 +3,17 @@ const { analyzeData } = require('../src/analyzer');
 const storage = require('../src/storage');
 
 module.exports = async function handler(req, res) {
+  const host = req.headers.host || '';
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+
+  if (process.env.VERCEL === '1' || !isLocal) {
+    return res.status(503).json({
+      success: false,
+      suspended: true,
+      message: 'Hệ thống ngừng hoạt động cho tới khi có thông báo mới.'
+    });
+  }
+
   // Verify Vercel Cron authorization if secret is configured
   const authHeader = req.headers.authorization;
   if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
