@@ -1727,7 +1727,7 @@ body {
 }
 
 .suspended-card {
-  max-width: 640px;
+  max-width: 560px;
   width: 100%;
   background: #ffffff;
   border-radius: 24px;
@@ -1750,7 +1750,7 @@ body {
 
 .suspended-header {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
-  padding: 32px 30px 26px;
+  padding: 24px 30px 20px;
   text-align: center;
   color: #ffffff;
   position: relative;
@@ -1780,23 +1780,6 @@ body {
   height: 26px;
 }
 
-.suspended-agency {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #fef08a;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.suspended-system-name {
-  font-size: 19px;
-  font-weight: 800;
-  line-height: 1.35;
-  color: #ffffff;
-  margin-bottom: 14px;
-}
-
 .suspended-badge {
   display: inline-block;
   font-size: 11px;
@@ -1811,7 +1794,7 @@ body {
 }
 
 .suspended-body {
-  padding: 32px 32px 24px;
+  padding: 32px 32px 28px;
   text-align: center;
   background: #ffffff;
 }
@@ -1838,8 +1821,8 @@ body {
   background: #fef2f2;
   border: 2px solid #fca5a5;
   border-radius: 14px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
+  padding: 18px 24px;
+  margin-bottom: 0;
 }
 
 .suspended-main-msg {
