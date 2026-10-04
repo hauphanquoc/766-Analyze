@@ -1,9 +1,7 @@
 /**
- * Script thu thập dữ liệu Bộ Chỉ số 766 và lưu trữ cục bộ (Local Only)
+ * Script thu thập dữ liệu Bộ Chỉ số 766 và lưu trữ (Local Disk + Upstash Cloud nếu có)
  * Cách dùng: node sync-to-cloud.js (hoặc npm run sync)
- * Chế độ: Chỉ lưu vào data/snapshots/ trên máy tính, KHÔNG đẩy lên Vercel Cloud
  */
-process.env.SYNC_LOCAL_ONLY = 'true';
 
 const fs = require('fs');
 const path = require('path');
@@ -19,25 +17,43 @@ if (fs.existsSync(envPath)) {
       if (idx > 0) {
         const k = trimmed.slice(0, idx).trim();
         const v = trimmed.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
-        process.env[k] = v;
+        if (!process.env[k]) process.env[k] = v;
       }
     }
   }
 }
-process.env.SYNC_LOCAL_ONLY = 'true';
 
 const collector = require('./src/collector');
 const analyzer = require('./src/analyzer');
 const storage = require('./src/storage');
 
+async function waitForNetwork(maxWaitMs = 30000) {
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    try {
+      const res = await fetch('https://dichvucong.gov.vn', {
+        method: 'GET',
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        signal: AbortSignal.timeout(5000)
+      });
+      if (res && res.status) return true;
+    } catch (e) {
+      console.log('[Mạng] Đang chờ kết nối Internet sẵn sàng (sau khi mở máy)...');
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+  return false;
+}
+
 async function sync() {
   console.log('====================================================');
-  console.log('  BẮT ĐẦU THU THẬP & LƯU TRỮ DỮ LIỆU BỘ CHỈ SỐ 766  ');
-  console.log('  [CHẾ ĐỘ NỘI BỘ - LƯU MÁY CỤC BỘ / KHÔNG ĐẨY CLOUD] ');
+  console.log('  BẮT ĐẦU THU THẬP & ĐỒNG BỘ DỮ LIỆU BỘ CHỈ SỐ 766  ');
   console.log('====================================================');
 
   const startTime = Date.now();
   try {
+    await waitForNetwork();
+
     console.log('\n[1/3] Đang thu thập 6 chỉ số từ Cổng DVCQG (mạng trong nước)...');
     const rawResult = await collector.collectAll();
 
@@ -45,19 +61,30 @@ async function sync() {
       throw new Error('Thu thập dữ liệu thất bại: ' + JSON.stringify(rawResult.errors));
     }
 
-    console.log(`[1/3] Thu thập thành công 6/6 chỉ số trong ${(rawResult.durationMs / 1000).toFixed(1)}s!`);
+    const previousSnapshot = await storage.getLatestSnapshot();
+
+    // Bảo vệ dữ liệu: Nếu lần chạy này bị thiếu chỉ số (< 6/6)
+    if (rawResult.successCount < rawResult.totalCount) {
+      const todayDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+      if (previousSnapshot && previousSnapshot.date === todayDate && previousSnapshot.overview.collectedCount === 6) {
+        console.warn(`\n[BẢO VỆ DỮ LIỆU] Lần chạy này chỉ lấy được ${rawResult.successCount}/6 chỉ số (có thể do mạng gián đoạn).`);
+        console.warn(`Hôm nay (${todayDate}) đã có sẵn snapshot 6/6 hoàn chỉnh. Hệ thống giữ nguyên dữ liệu đầy đủ, KHÔNG ghi đè.`);
+        return;
+      }
+    }
+
+    console.log(`[1/3] Thu thập thành công ${rawResult.successCount}/6 chỉ số trong ${(rawResult.durationMs / 1000).toFixed(1)}s!`);
 
     console.log('\n[2/3] Đang phân tích số liệu toàn tỉnh và 119 đơn vị...');
-    const previousSnapshot = await storage.getLatestSnapshot();
     const analyzed = analyzer.analyzeData(rawResult, previousSnapshot);
     console.log(`[2/3] Phân tích hoàn tất: Tổng điểm ${analyzed.overview.totalScore}đ (${analyzed.overview.classification?.label})`);
 
-    console.log('\n[3/3] Đang lưu trữ dữ liệu cục bộ vào thư mục data/snapshots/...');
-    await storage.saveSnapshot(analyzed, { localOnly: true });
+    console.log('\n[3/3] Đang lưu trữ dữ liệu (Local Snapshots + Upstash Cloud nếu có)...');
+    await storage.saveSnapshot(analyzed);
 
     const logEntry = {
       timestamp: new Date().toISOString(),
-      type: 'LOCAL_SYNC_ONLY',
+      type: 'SYNC',
       date: analyzed.date,
       durationMs: Date.now() - startTime,
       totalScore: analyzed.overview.totalScore,
@@ -65,15 +92,13 @@ async function sync() {
       success: true,
       unitsCount: analyzed.units?.length || 0
     };
-    await storage.recordLog(logEntry, { localOnly: true });
+    await storage.recordLog(logEntry);
 
     console.log('====================================================');
-    console.log('  LƯU TRỮ DỮ LIỆU CỤC BỘ THÀNH CÔNG!                ');
+    console.log('  LƯU TRỮ VÀ ĐỒNG BỘ DỮ LIỆU THÀNH CÔNG!            ');
     console.log(`  Ngày dữ liệu: ${analyzed.date}                  `);
     console.log(`  Tổng điểm:    ${analyzed.overview.totalScore} / 100 điểm       `);
-    console.log(`  Chế độ:       Nội bộ (Local Web)                  `);
     console.log(`  File lưu:     data/snapshots/${analyzed.date}.json `);
-    console.log(`  Địa chỉ Web:  http://localhost:3000               `);
     console.log('====================================================');
   } catch (err) {
     console.error('\n[LỖI THU THẬP/LƯU TRỮ]:', err.message);

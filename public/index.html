@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hệ thống Theo dõi & Phân tích Bộ Chỉ số 766 DVCQG - Tỉnh Đắk Lắk</title>
-  <meta name="description" content="Hệ thống tự động theo dõi, phân tích và báo cáo 6 nhóm chỉ số chất lượng phục vụ hành chính công theo Quyết định 766/QĐ-TTg từ Cổng DVC Quốc gia.">
+  <title>Hệ thống Hỗ trợ Dịch vụ công - Tỉnh Đắk Lắk</title>
+  <meta name="description" content="Hệ thống hỗ trợ dịch vụ công, theo dõi và phân tích dữ liệu giải quyết thủ tục hành chính tỉnh Đắk Lắk.">
   
   <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,93 +20,191 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- [MÀN HÌNH THÔNG BÁO TẠM NGỪNG HỆ THỐNG] -->
-  <div id="system-suspended-screen" class="suspended-overlay" style="display: none;">
-    <div class="suspended-card">
-      <div class="suspended-header">
-        <div class="suspended-emblem-wrap">
-          <div class="suspended-emblem">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-          </div>
-        </div>
-        <div class="suspended-badge">THÔNG BÁO TẠM DỪNG HOẠT ĐỘNG</div>
-      </div>
-
-      <div class="suspended-body">
-        <div class="suspended-icon-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-        </div>
-
-        <div class="suspended-notice-box">
-          <h2 class="suspended-main-msg">Hệ thống ngừng hoạt động cho tới khi có thông báo mới.</h2>
-        </div>
-      </div>
-
-      <div class="suspended-footer">
-        <span>Trân trọng thông báo!</span>
-      </div>
-    </div>
-  </div>
-
   <!-- Main Container -->
   <div class="app-layout">
-    <!-- Top Header -->
-    <header class="app-header">
-      <div class="header-inner">
+    <!-- TẦNG 1: BRAND HEADER (Nền trắng, h-16, border-b border-slate-200) -->
+    <header class="brand-header">
+      <div class="brand-header-inner">
+        <!-- Cụm nhận diện bên trái (Branding) -->
         <div class="brand-block">
           <div class="national-emblem">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
           </div>
           <div class="brand-text">
-            <span class="badge-govt">CỔNG DỊCH VỤ CÔNG QUỐC GIA • QUYẾT ĐỊNH 766/QĐ-TTg</span>
-            <h1 class="brand-title">HỆ THỐNG THEO DÕI & ĐÁNH GIÁ BỘ CHỈ SỐ 766</h1>
+            <h1 class="brand-title">HỆ THỐNG HỖ TRỢ DỊCH VỤ CÔNG</h1>
             <p class="brand-subtitle">Ủy ban Nhân dân tỉnh Đắk Lắk <span class="dept-code">(Mã cơ quan: H15)</span></p>
           </div>
         </div>
 
-        <!-- Header Actions -->
-        <div class="header-actions">
-          <div class="cron-status-pill" title="Hệ thống tự động chạy lúc 06:00 AM hàng ngày">
+        <!-- Thông tin phụ trợ bên phải -->
+        <div class="header-meta-group">
+          <div class="system-status-badge">
             <span class="pulse-dot"></span>
-            <div class="cron-text">
-              <span class="cron-title">Lịch thu thập tự động</span>
-              <span class="cron-time">06:00:00 Sáng hàng ngày</span>
-            </div>
+            <span class="status-text">Trực tuyến</span>
           </div>
-
-          <div class="date-selector-wrapper">
-            <label for="date-select" class="date-label">Ngày dữ liệu:</label>
-            <select id="date-select" class="custom-select">
-              <option value="" disabled selected>Đang tải danh sách ngày...</option>
-            </select>
-          </div>
-
-          <button id="btn-export-excel" class="btn btn-secondary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <span>Tải Báo cáo Excel</span>
-          </button>
         </div>
       </div>
     </header>
 
+    <!-- TẦNG 2: NAVIGATION BAR (Thanh menu riêng biệt nằm ngay phía dưới) -->
+    <nav class="sub-nav-bar" aria-label="Main Navigation">
+      <div class="sub-nav-inner">
+        <ul class="nav-tabs-list">
+          <li class="nav-tab-item">
+            <button class="nav-tab-btn active" id="tab-btn-portals" data-tab="tab-content-portals">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>Đường dẫn các cổng</span>
+            </button>
+          </li>
+          <li class="nav-tab-item">
+            <button class="nav-tab-btn" id="tab-btn-766" data-tab="tab-content-766">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18"></path>
+                <path d="M18 17V9"></path>
+                <path d="M13 17V5"></path>
+                <path d="M8 17v-3"></path>
+              </svg>
+              <span>Bộ chỉ số 766</span>
+            </button>
+          </li>
+          <li class="nav-tab-item">
+            <button class="nav-tab-btn" id="tab-btn-formula" data-tab="tab-content-formula">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                <line x1="8" y1="6" x2="16" y2="6"></line>
+                <line x1="16" y1="14" x2="16" y2="18"></line>
+                <path d="M16 10h.01"></path>
+                <path d="M12 10h.01"></path>
+                <path d="M8 10h.01"></path>
+                <path d="M12 14h.01"></path>
+                <path d="M8 14h.01"></path>
+                <path d="M12 18h.01"></path>
+                <path d="M8 18h.01"></path>
+              </svg>
+              <span>Công thức tính 766</span>
+            </button>
+          </li>
+          <li class="nav-tab-item">
+            <button class="nav-tab-btn" id="tab-btn-tools" data-tab="tab-content-tools">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+              <span>Tiện ích</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
     <!-- Main Content Area -->
     <main class="app-main">
-      <!-- Loading Skeleton Overlay -->
-      <div id="main-loader" class="loader-overlay">
+      <!-- TAB 1: ĐƯỜNG DẪN CÁC CỔNG (HIỂN THỊ MẶC ĐỊNH) -->
+      <div id="tab-content-portals" class="tab-pane active" style="display: block;">
+        <div class="portals-container">
+          <!-- UNIFIED ENTERPRISE CARD (MỘT CARD DUY NHẤT) -->
+          <div class="portals-unified-card">
+            
+            <!-- Phần trên: Card Header (Tiêu đề, Badge, Thông tin) -->
+            <div class="portals-card-header">
+              <div class="portals-header-top">
+                <div class="portals-title-row">
+                  <h2 class="portals-clean-title">Đường dẫn các Cổng Thông tin & Dịch vụ công</h2>
+                  <div class="portals-badge-gov">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="portals-badge-icon">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span>Mạng lưới Điều phối & Tác nghiệp DVC</span>
+                  </div>
+                </div>
+                <div class="portals-stats-strip">
+                  <span class="portal-stat-chip"><strong id="portal-total-count">32</strong> Hệ thống trực tuyến</span>
+                  <span class="portal-stat-chip"><strong id="portal-group-count">5</strong> Nhóm tác nghiệp</span>
+                  <span class="portal-stat-chip"><strong>Đắk Lắk</strong> Ưu tiên liên kết</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Phần thân (Card Body) -->
+            <div class="portals-card-body">
+              <!-- Search Bar (shadcn/ui style, clean & centered) -->
+              <div class="portals-search-wrap">
+                <div class="portal-search-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="portal-search-lead-icon">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="portal-search-input" placeholder="Tìm kiếm hệ thống tác nghiệp (VD: một cửa, hộ tịch, tư pháp, thuế, đảng...)..." />
+                  <button id="portal-search-clear" class="btn-clear-search" style="display: none;" title="Xóa tìm kiếm">✕</button>
+                  <button class="btn-portal-search-submit" type="button" id="btn-portal-search-submit">
+                    <span>Tìm kiếm</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Portals Sections Container (All sections on 1 page) -->
+              <div class="portals-sections-container" id="portals-sections-container">
+                <!-- Dynamically rendered by JS from PORTAL_SECTIONS -->
+              </div>
+
+              <!-- Empty search state -->
+              <div class="portal-empty-state" id="portal-empty-state" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="empty-icon">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <h3>Không tìm thấy hệ thống phù hợp</h3>
+                <p>Không có kết quả nào trùng với từ khóa tìm kiếm. Vui lòng thử lại với từ khóa khác.</p>
+                <button class="btn btn-secondary" onclick="resetPortalSearch()">Xem tất cả hệ thống</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: BỘ CHỈ SỐ 766 -->
+      <div id="tab-content-766" class="tab-pane" style="display: none;">
+        <!-- 766 Control Toolbar: Thông báo bản lưu trữ, Ngày dữ liệu, Tải Excel -->
+        <div class="toolbar-766">
+          <div class="toolbar-766-left">
+            <div class="toolbar-766-title-group">
+              <span class="toolbar-766-badge">THEO DÕI & ĐÁNH GIÁ</span>
+              <h2 class="toolbar-766-title">Bộ chỉ số phục vụ người dân, doanh nghiệp (QĐ 766/QĐ-TTg)</h2>
+            </div>
+          </div>
+
+          <div class="toolbar-766-right">
+            <div class="date-selector-wrapper">
+              <label for="date-select" class="date-label">Ngày dữ liệu:</label>
+              <select id="date-select" class="custom-select">
+                <option value="" disabled selected>Đang tải danh sách ngày...</option>
+              </select>
+            </div>
+
+            <button id="btn-export-excel" class="btn btn-export-excel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Tải Báo cáo Excel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading Skeleton Overlay -->
+        <div id="main-loader" class="loader-overlay">
         <div class="loader-box">
           <div class="spinner"></div>
           <p class="loader-text">Đang đồng bộ dữ liệu Bộ chỉ số 766 từ Cổng DVCQG...</p>
@@ -403,7 +501,1949 @@
           </div>
         </section>
       </div>
-    </main>
+      </div>
+
+      <!-- TAB 3: CÔNG THỨC TÍNH BỘ CHỈ SỐ 766 -->
+      <div id="tab-content-formula" class="tab-pane" style="display: none;">
+        <div class="formula-container">
+          <!-- UNIFIED ENTERPRISE CARD -->
+          <div class="formula-unified-card">
+            
+            <!-- Card Header -->
+            <div class="formula-card-header">
+              <div class="formula-header-top">
+                <div class="formula-title-row">
+                  <h2 class="formula-clean-title">Công thức & Phương pháp tính Bộ chỉ số 766</h2>
+                  <div class="formula-badge-gov">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="formula-badge-icon">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <span>Quyết định số 766/QĐ-TTg ngày 23/06/2022 của Thủ tướng Chính phủ</span>
+                  </div>
+                </div>
+                <div class="formula-stats-strip">
+                  <span class="formula-stat-chip"><strong>100 điểm</strong> Tổng điểm đánh giá</span>
+                  <span class="formula-stat-chip"><strong>5</strong> Nhóm chỉ số</span>
+                  <span class="formula-stat-chip"><strong>20</strong> Tiêu chí thành phần</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="formula-card-body">
+
+              <!-- CONTROLS: Segmented Tabs & Instant Filter Search -->
+              <div class="formula-controls-row">
+                <!-- Segmented Control Tabs (shadcn/ui style) -->
+                <div class="formula-segmented-tabs" role="tablist">
+                  <button type="button" class="formula-tab-btn active" data-group="all">
+                    <span>Tất cả nhóm (100đ)</span>
+                  </button>
+                  <button type="button" class="formula-tab-btn" data-group="group1">
+                    <span>1. Công khai (18đ)</span>
+                  </button>
+                  <button type="button" class="formula-tab-btn" data-group="group2">
+                    <span>2. Tiến độ (20đ)</span>
+                  </button>
+                  <button type="button" class="formula-tab-btn" data-group="group3">
+                    <span>3. DVC trực tuyến (22đ)</span>
+                  </button>
+                  <button type="button" class="formula-tab-btn" data-group="group4">
+                    <span>4. Số hóa (22đ)</span>
+                  </button>
+                  <button type="button" class="formula-tab-btn" data-group="group5">
+                    <span>5. Hài lòng (18đ)</span>
+                  </button>
+                </div>
+
+                <!-- Search Box -->
+                <div class="formula-search-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="formula-search-lead-icon">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="formula-search-input" placeholder="Tìm theo tên chỉ số, công thức, trường CSDL (VD: ngày hẹn trả, 80%, VNeID, số hóa...)..." />
+                  <button id="formula-search-clear" class="btn-clear-search" style="display: none;" title="Xóa tìm kiếm">✕</button>
+                </div>
+              </div>
+
+              <!-- FORMULA SECTIONS CONTAINER -->
+              <div class="formula-sections-wrap" id="formula-sections-wrap">
+
+                <!-- NHÓM 1: CÔNG KHAI, MINH BẠCH (18 ĐIỂM) -->
+                <section class="formula-group-section" data-group="group1">
+                  <div class="formula-group-header">
+                    <div class="formula-group-title-wrap">
+                      <span class="formula-group-pill pill-blue">NHÓM CHỈ SỐ 1</span>
+                      <h3 class="formula-group-name">Công khai, minh bạch</h3>
+                    </div>
+                    <span class="formula-group-maxscore">Tối đa: <strong>18 điểm</strong></span>
+                  </div>
+
+                  <div class="formula-cards-grid">
+                    <!-- 1.1 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">1.1</span>
+                          <h4 class="formula-card-title">Tỷ lệ thủ tục hành chính công bố đúng hạn</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ CB đúng hạn</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số TTHC công bố đúng hạn</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số TTHC đã công bố trong kỳ</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">📌</span>
+                          <div class="rule-content">
+                            <strong>Quy tắc Tỉnh Đắk Lắk:</strong> Ngày quyết định của QĐ Công bố &le; <em>"Ngày hiệu lực"</em> mới nhất của văn bản cơ sở pháp lý &minus; <strong>5 ngày làm việc</strong>.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">🏢</span>
+                          <div class="rule-content">
+                            <strong>Quy tắc Cấp Bộ:</strong> Ngày quyết định của QĐ Công bố &le; <em>"Ngày hiệu lực"</em> mới nhất &minus; <strong>20 ngày làm việc</strong>.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">⚠️</span>
+                          <div class="rule-content">
+                            <strong>Lưu ý xét kỳ:</strong> Nếu 1 TTHC sửa đổi nhiều lần trong cùng 1 kỳ: chỉ cần có ít nhất 1 lần quá hạn thì cả kỳ tính quá hạn.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL Quốc gia về TTHC</span>
+                        <span class="meta-note-tag">Làm tròn 2 chữ số thập phân</span>
+                      </div>
+                    </div>
+
+                    <!-- 1.2 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">1.2</span>
+                          <h4 class="formula-card-title">Tỷ lệ thủ tục hành chính được cập nhật, công khai đúng hạn</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ CK đúng hạn</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số TTHC công khai đúng hạn trên CSDL QG</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số TTHC phải cập nhật, công khai trong kỳ</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">📌</span>
+                          <div class="rule-content">
+                            <strong>Quy tắc Tỉnh Đắk Lắk:</strong> Ngày click Công khai của TTHC &le; <strong>5 ngày làm việc</strong> so với "Ngày quyết định" của QĐ Công bố.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">🏢</span>
+                          <div class="rule-content">
+                            <strong>Quy tắc Cấp Bộ:</strong> Ngày click Công khai của TTHC &le; <strong>10 ngày làm việc</strong> so với "Ngày quyết định" của QĐ Công bố.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">ℹ️</span>
+                          <div class="rule-content">
+                            <strong>Phạm vi:</strong> Chỉ thống kê theo cấp Tỉnh, Bộ Ngành (không tính đơn vị cấp con).
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL Quốc gia về TTHC</span>
+                      </div>
+                    </div>
+
+                    <!-- 1.3 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">1.3</span>
+                          <h4 class="formula-card-title">Tỷ lệ TTHC công khai có đầy đủ các nội dung cấu thành</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ đủ cấu thành</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số TTHC có đủ 7 bộ phận theo K2 Đ8 NĐ 63/2010</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số TTHC đã cập nhật, công khai trên CSDL QG</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">📋</span>
+                          <div class="rule-content">
+                            <strong>Đủ 7 bộ phận bắt buộc:</strong> (a) Tên TTHC; (b) Trình tự thực hiện; (c) Cách thức thực hiện; (d) Thành phần, số lượng hồ sơ; (đ) Thời hạn giải quyết; (e) Đối tượng thực hiện; (g) Cơ quan thực hiện.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">⏱️</span>
+                          <div class="rule-content">
+                            <strong>Tính thời điểm:</strong> Đánh giá trạng thái tại thời điểm hiện tại của CSDL (không phụ thuộc mốc kỳ thời gian).
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL Quốc gia về TTHC</span>
+                      </div>
+                    </div>
+
+                    <!-- 1.4 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">1.4</span>
+                          <h4 class="formula-card-title">Tỷ lệ hồ sơ đồng bộ lên Cổng Dịch vụ công quốc gia</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ đồng bộ</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số lượng hồ sơ đã đồng bộ có Ngày tiếp nhận trong kỳ</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Max(Tổng hồ sơ tiếp nhận trên DVCQG, Hệ thống Báo cáo QG)</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">⚖️</span>
+                          <div class="rule-content">
+                            <strong>Đối chiếu chéo mẫu số:</strong> So sánh giữa số tiếp nhận trên Hệ thống Báo cáo quốc gia và số liệu đồng bộ DVCQG. Nếu số BCQG lớn hơn thì lấy theo BCQG.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">🔄</span>
+                          <div class="rule-content">
+                            <strong>Hồ sơ đồng bộ:</strong> Tính cả đồng bộ 1 chiều (bao gồm chiều từ DVCQG đến Hệ thống Một cửa BNĐP).
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- NHÓM 2: TIẾN ĐỘ, KẾT QUẢ GIẢI QUYẾT (20 ĐIỂM) -->
+                <section class="formula-group-section" data-group="group2">
+                  <div class="formula-group-header">
+                    <div class="formula-group-title-wrap">
+                      <span class="formula-group-pill pill-emerald">NHÓM CHỈ SỐ 2</span>
+                      <h3 class="formula-group-name">Tiến độ, kết quả giải quyết</h3>
+                    </div>
+                    <span class="formula-group-maxscore">Tối đa: <strong>20 điểm</strong></span>
+                  </div>
+
+                  <div class="formula-cards-grid">
+                    <!-- 2.1 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">2.1</span>
+                          <h4 class="formula-card-title">Tỷ lệ hồ sơ xử lý trước hạn, đúng hạn</h4>
+                        </div>
+                        <span class="formula-type-badge badge-success">Trọng số 20 điểm</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ đúng hạn</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ đã và đang xử lý đúng hạn/trong hạn trong kỳ</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ được tiếp nhận, xử lý trong kỳ</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">⏱️</span>
+                          <div class="rule-content">
+                            <strong>Điều kiện đúng hạn:</strong> <code>NgayKetThucXuLy &le; NgayHenTra</code>. Ưu tiên lấy thời gian Đã xử lý xong &gt; Đã trả kết quả.
+                          </div>
+                        </div>
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">✂️</span>
+                          <div class="rule-content">
+                            <strong>Trừ thời gian công dân bổ sung:</strong> Nếu hồ sơ có <em>"Yêu cầu bổ sung"</em>, hệ thống tự động trừ khoảng thời gian công dân chuẩn bị: <code>Thời gian xử lý = Thời gian kết thúc &minus; (Ngày nộp lại &minus; Ngày yêu cầu BS)</code>.
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">⚠️</span>
+                          <div class="rule-content">
+                            <strong>Yêu cầu bổ sung nhiều lần:</strong> Nếu cán bộ yêu cầu bổ sung hồ sơ <strong>hơn 01 lần</strong> thì bị tính quá hạn theo quy định.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+
+                    <!-- 2.2 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">2.2</span>
+                          <h4 class="formula-card-title">Thời gian giải quyết TTHC trung bình theo từng TTHC</h4>
+                        </div>
+                        <span class="formula-type-badge">Thời gian trung bình</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Thời gian TB</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">&sum; ThoiGianGiaiQuyet của tất cả hồ sơ hoàn thành</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ hoàn thành (Đã xử lý xong, Đã trả KQ)</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">📊</span>
+                          <div class="rule-content">
+                            <strong>Đơn vị đo lường:</strong> Giờ, Ngày làm việc, hoặc Tháng tùy theo thời hạn tối đa của TTHC (trường <code>DonViTinh</code>).
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">🔍</span>
+                          <div class="rule-content">
+                            <strong>Phạm vi hiển thị:</strong> Chỉ kích hoạt hiển thị khi lọc theo từng TTHC cụ thể.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- NHÓM 3: CUNG CẤP DỊCH VỤ CÔNG TRỰC TUYẾN & THANH TOÁN (22 ĐIỂM) -->
+                <section class="formula-group-section" data-group="group3">
+                  <div class="formula-group-header">
+                    <div class="formula-group-title-wrap">
+                      <span class="formula-group-pill pill-indigo">NHÓM CHỈ SỐ 3</span>
+                      <h3 class="formula-group-name">Dịch vụ công trực tuyến & Thanh toán trực tuyến</h3>
+                    </div>
+                    <span class="formula-group-maxscore">Tối đa: <strong>22 điểm</strong> (DVCTT: 12đ + TT: 10đ)</span>
+                  </div>
+
+                  <div class="formula-cards-grid">
+                    <!-- 3.1 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">3.1</span>
+                          <h4 class="formula-card-title">Tỷ lệ TTHC cung cấp dịch vụ công trực tuyến</h4>
+                        </div>
+                        <span class="formula-benchmark-badge">Ngưỡng: &ge; 80% đạt 12đ</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ DVCTT</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số TTHC cung cấp DVCTT một phần + toàn trình</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số TTHC thuộc thẩm quyền giải quyết</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="benchmark-box">
+                        <div class="benchmark-header">
+                          <span class="benchmark-tag">🏆 CƠ CHẾ CHẤM ĐIỂM</span>
+                          <span class="benchmark-target">Đạt &ge; 80% &rarr; 12.00 điểm</span>
+                        </div>
+                        <p class="benchmark-formula">Nếu Tỷ lệ &lt; 80%: <code>Điểm đạt = (Tỷ lệ % &times; 12) / 80%</code></p>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">⭐</span>
+                          <div class="rule-content">
+                            <strong>Trùng mức cung cấp:</strong> Trường hợp 1 TTHC có cả DVCTT một phần và toàn trình thì ưu tiên tính cho mức DVCTT cao nhất.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL Quốc gia về TTHC</span>
+                      </div>
+                    </div>
+
+                    <!-- 3.2 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">3.2</span>
+                          <h4 class="formula-card-title">Tỷ lệ DVCTT có phát sinh hồ sơ</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ phát sinh HS</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số DVCTT có hồ sơ nộp trực tuyến tiếp nhận trong kỳ</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số DVCTT đang áp dụng công khai</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">⚙️</span>
+                          <div class="rule-content">
+                            <strong>Trạng thái DVCTT:</strong> Xét các dịch vụ có trạng thái <em>Đang công khai, Chờ dừng công khai, Đang kiểm thử</em>.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL QG & Hệ thống Điều phối</span>
+                      </div>
+                    </div>
+
+                    <!-- 3.3 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">3.3</span>
+                          <h4 class="formula-card-title">Tỷ lệ hồ sơ TTHC nộp trực tuyến</h4>
+                        </div>
+                        <span class="formula-benchmark-badge">Ngưỡng: &ge; 50% đạt điểm tối đa</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ nộp trực tuyến</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số hồ sơ trực tuyến (Kênh = 2) có cấp kết quả điện tử</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ tiếp nhận trong kỳ</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">&times; Tỷ lệ đồng bộ &times; 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="benchmark-box">
+                        <div class="benchmark-header">
+                          <span class="benchmark-tag">🏆 CƠ CHẾ CHẤM ĐIỂM</span>
+                          <span class="benchmark-target">Đạt &ge; 50% &rarr; Điểm tối đa</span>
+                        </div>
+                        <p class="benchmark-formula">Nếu Tỷ lệ &lt; 50%: <code>Điểm đạt = (Tỷ lệ % &times; Điểm tối đa) / 50%</code></p>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">🔒</span>
+                          <div class="rule-content">
+                            <strong>Điều kiện kèm theo:</strong> Bắt buộc phải cấp kết quả điện tử đối với TTHC có trả giấy tờ (có <code>MaKetQua</code> + <code>DuongDanTepTinKetQua</code>).
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+
+                    <!-- 3.5 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">3.5</span>
+                          <h4 class="formula-card-title">Tỷ lệ TTHC tích hợp thanh toán trực tuyến</h4>
+                        </div>
+                        <span class="formula-benchmark-badge">Ngưỡng: &ge; 80% đạt 10đ</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ TTHC tích hợp TT</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số (X)</span>
+                              <span class="math-text">TTHC có hồ sơ đồng bộ dữ liệu phí, lệ phí trên Cổng</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số (Y)</span>
+                              <span class="math-text">TTHC có thông tin phí, lệ phí trong CSDL TTHC</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="benchmark-box">
+                        <div class="benchmark-header">
+                          <span class="benchmark-tag">🏆 CƠ CHẾ CHẤM ĐIỂM</span>
+                          <span class="benchmark-target">Đạt &ge; 80% &rarr; 10.00 điểm</span>
+                        </div>
+                        <p class="benchmark-formula">Nếu Tỷ lệ &lt; 80%: <code>Điểm đạt = (Tỷ lệ % &times; 10) / 80%</code></p>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL Quốc gia về TTHC</span>
+                      </div>
+                    </div>
+
+                    <!-- 3.6 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">3.6</span>
+                          <h4 class="formula-card-title">Tỷ lệ hồ sơ thanh toán trực tuyến</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ hồ sơ TT</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ thanh toán trực tuyến (Cổng DVCQG hoặc BNĐP)</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng hồ sơ có phát sinh phí, lệ phí (loại bỏ hồ sơ 0đ)</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">💳</span>
+                          <div class="rule-content">
+                            <strong>Trường kỹ thuật:</strong> <code>DuocThanhToanTrucTuyen = 1</code> (Thanh toán trên DVCQG) hoặc <code>2</code> (Qua Cổng thanh toán Bộ ngành/Địa phương).
+                          </div>
+                        </div>
+                        <div class="rule-item">
+                          <span class="rule-icon">⛔</span>
+                          <div class="rule-content">
+                            <strong>Loại trừ hồ sơ miễn phí:</strong> Trừ đi toàn bộ các hồ sơ có phí lệ phí = 0đ để không làm sai lệch tỷ lệ.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- NHÓM 4: SỐ HÓA HỒ SƠ (22 ĐIỂM) -->
+                <section class="formula-group-section" data-group="group4">
+                  <div class="formula-group-header">
+                    <div class="formula-group-title-wrap">
+                      <span class="formula-group-pill pill-purple">NHÓM CHỈ SỐ 4</span>
+                      <h3 class="formula-group-name">Số hóa hồ sơ & Tái sử dụng dữ liệu</h3>
+                    </div>
+                    <span class="formula-group-maxscore">Tối đa: <strong>22 điểm</strong></span>
+                  </div>
+
+                  <div class="formula-cards-grid">
+                    <!-- 4.1 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">4.1</span>
+                          <h4 class="formula-card-title">Tỷ lệ cấp kết quả giải quyết TTHC điện tử</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ cấp KQĐT</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ có link file kết quả giải quyết điện tử đính kèm</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng hồ sơ thuộc TTHC yêu cầu trả kết quả bằng văn bản giấy</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+
+                    <!-- 4.2 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">4.2</span>
+                          <h4 class="formula-card-title">Tỷ lệ hồ sơ thủ tục hành chính thực hiện số hóa hồ sơ</h4>
+                        </div>
+                        <span class="formula-benchmark-badge">Ngưỡng: &ge; 80% đạt 22đ</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ số hóa</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ có file đính kèm TP hồ sơ VÀ file kết quả xử lý</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ TTHC thuộc thẩm quyền giải quyết</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="benchmark-box">
+                        <div class="benchmark-header">
+                          <span class="benchmark-tag">🏆 CƠ CHẾ CHẤM ĐIỂM</span>
+                          <span class="benchmark-target">Đạt &ge; 80% &rarr; 22.00 điểm</span>
+                        </div>
+                        <p class="benchmark-formula">Nếu Tỷ lệ &lt; 80%: <code>Điểm đạt = (Tỷ lệ % &times; 22) / 80%</code></p>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">📁</span>
+                          <div class="rule-content">
+                            <strong>2 điều kiện số hóa đầy đủ:</strong> (1) Có file đính kèm trong thành phần hồ sơ; (2) Có file kết quả đính kèm trong tiến trình xử lý.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+
+                    <!-- 4.3 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">4.3</span>
+                          <h4 class="formula-card-title">Tỷ lệ khai thác, sử dụng lại thông tin, dữ liệu số hóa</h4>
+                        </div>
+                        <span class="formula-benchmark-badge">Ngưỡng: &ge; 80% đạt điểm tối đa</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ tái sử dụng</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ có ít nhất 1 thành phần tái sử dụng giấy tờ số hóa</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ TTHC thuộc thẩm quyền giải quyết</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="benchmark-box">
+                        <div class="benchmark-header">
+                          <span class="benchmark-tag">🏆 CƠ CHẾ CHẤM ĐIỂM</span>
+                          <span class="benchmark-target">Đạt &ge; 80% &rarr; Điểm tối đa</span>
+                        </div>
+                        <p class="benchmark-formula">Nếu Tỷ lệ &lt; 80%: <code>Điểm đạt = (Tỷ lệ % &times; Điểm tối đa) / 80%</code></p>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">🔄</span>
+                          <div class="rule-content">
+                            <strong>Trường kỹ thuật:</strong> Đồng bộ từ Bộ ngành lấy <code>HoSoCoThanhPhanSoHoa = 1</code>; Tạo từ Cổng lấy trường <code>DuocSoHoa = 1</code> trong <code>TaiLieuNop</code>.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+
+                    <!-- 4.4 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">4.4</span>
+                          <h4 class="formula-card-title">Tỷ lệ kết nối, chia sẻ dữ liệu phục vụ tái sử dụng</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ chia sẻ dữ liệu</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ có file lấy từ kho dữ liệu cá nhân (Cổng DVCQG)</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ TTHC thuộc thẩm quyền có ngày tiếp nhận</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">☁️</span>
+                          <div class="rule-content">
+                            <strong>Cờ kỹ thuật:</strong> Trong <code>TaiLieuNop</code> có trường <code>DuocLayTuKhoDMQG = 1</code>.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối (Dữ liệu đồng bộ)</span>
+                      </div>
+                    </div>
+
+                    <!-- 4.5 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">4.5</span>
+                          <h4 class="formula-card-title">Ứng dụng dữ liệu dân cư trong giải quyết TTHC (VNeID/Đề án 06)</h4>
+                        </div>
+                        <span class="formula-type-badge">Kết nối VNeID</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ dùng CSDL Dân cư</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Hồ sơ có tài khoản xác thực với VNeID hoặc CSDL Dân cư</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số hồ sơ TTHC có đối tượng là công dân</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">🆔</span>
+                          <div class="rule-content">
+                            <strong>Trường xác thực:</strong> Hồ sơ đồng bộ có <code>TaiKhoanDuocXacThucVoiVNeID = 1</code> hoặc <code>MaCSDL</code> kết nối CSDL Quốc gia về dân cư.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> CSDL QG & Hệ thống Điều phối</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- NHÓM 5: MỨC ĐỘ HÀI LÒNG (18 ĐIỂM) -->
+                <section class="formula-group-section" data-group="group5">
+                  <div class="formula-group-header">
+                    <div class="formula-group-title-wrap">
+                      <span class="formula-group-pill pill-rose">NHÓM CHỈ SỐ 5</span>
+                      <h3 class="formula-group-name">Mức độ hài lòng & Xử lý Phản ánh, kiến nghị</h3>
+                    </div>
+                    <span class="formula-group-maxscore">Tối đa: <strong>18 điểm</strong></span>
+                  </div>
+
+                  <div class="formula-cards-grid">
+                    <!-- 5.1 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">5.1</span>
+                          <h4 class="formula-card-title">Tỷ lệ phản ánh, kiến nghị theo phân loại</h4>
+                        </div>
+                        <span class="formula-type-badge">Phân loại PAKN</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ theo loại</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số PAKN được phân loại theo Quy định / Hành vi cán bộ</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số PAKN tiếp nhận trong kỳ theo đơn vị</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Cổng DVCQG, Hệ thống PAKN</span>
+                      </div>
+                    </div>
+
+                    <!-- 5.2 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">5.2</span>
+                          <h4 class="formula-card-title">Tiến độ xử lý phản ánh, kiến nghị</h4>
+                        </div>
+                        <span class="formula-type-badge">Đúng hạn PAKN</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ PAKN đúng hạn</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Số PAKN đã và đang xử lý đúng hạn trong kỳ</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số PAKN được tiếp nhận, xử lý trong kỳ</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item highlight-rule">
+                          <span class="rule-icon">⏱️</span>
+                          <div class="rule-content">
+                            <strong>Các mốc thời gian đúng hạn:</strong>
+                            <br/>&bull; Đang xử lý: Ngày hiện tại &minus; Ngày bắt đầu tiếp nhận &le; <strong>15 ngày làm việc</strong>.
+                            <br/>&bull; Từ chối tiếp nhận: &le; <strong>2 ngày làm việc</strong>.
+                            <br/>&bull; Yêu cầu bổ sung: &le; <strong>5 ngày làm việc</strong>.
+                            <br/>&bull; Công khai kết quả: &le; <strong>2 ngày làm việc</strong>.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Cổng DVCQG, Hệ thống PAKN</span>
+                      </div>
+                    </div>
+
+                    <!-- 5.3 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">5.3</span>
+                          <h4 class="formula-card-title">Tỷ lệ hài lòng trong xử lý phản ánh, kiến nghị</h4>
+                        </div>
+                        <span class="formula-type-badge">Tỷ lệ %</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq">
+                          <span class="math-target">Tỷ lệ hài lòng PAKN</span>
+                          <span class="math-equal">=</span>
+                          <div class="math-fraction">
+                            <div class="math-numerator">
+                              <span class="math-badge num-badge">Tử số</span>
+                              <span class="math-text">Tổng PAKN &minus; (Số Dislike + Số Quá hạn + Số Bị khiếu nại lại)</span>
+                            </div>
+                            <div class="math-fraction-line"></div>
+                            <div class="math-denominator">
+                              <span class="math-badge den-badge">Mẫu số</span>
+                              <span class="math-text">Tổng số phản ánh, kiến nghị tiếp nhận trong kỳ</span>
+                            </div>
+                          </div>
+                          <span class="math-multiply">× 100%</span>
+                        </div>
+                      </div>
+
+                      <div class="formula-rules-list">
+                        <div class="rule-item">
+                          <span class="rule-icon">👎</span>
+                          <div class="rule-content">
+                            <strong>Trừ điểm không hài lòng:</strong> Tính các PAKN có số đánh giá Dislike nhiều hơn Like trên Cổng DVCQG, PAKN giải quyết quá hạn, hoặc bị công dân kiến nghị lại nội dung cũ.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Cổng DVCQG, Hệ thống PAKN</span>
+                      </div>
+                    </div>
+
+                    <!-- 5.4 -->
+                    <div class="formula-card">
+                      <div class="formula-card-top">
+                        <div class="formula-card-title-row">
+                          <span class="formula-num-badge">5.4</span>
+                          <h4 class="formula-card-title">Tỷ lệ hài lòng trong tiếp nhận, giải quyết TTHC</h4>
+                        </div>
+                        <span class="formula-benchmark-badge">Ngưỡng: &ge; 90% đạt 18đ</span>
+                      </div>
+
+                      <div class="formula-math-box">
+                        <div class="formula-math-eq formula-math-subtract">
+                          <span class="math-target">Tỷ lệ hài lòng TTHC</span>
+                          <span class="math-equal">=</span>
+                          <span class="math-constant">100%</span>
+                          <span class="math-minus">&minus;</span>
+                          <div class="math-bracket-group">
+                            <span>(Tỷ lệ hồ sơ quá hạn + Tỷ lệ hồ sơ có PAKN / Đánh giá Dislike)</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="benchmark-box">
+                        <div class="benchmark-header">
+                          <span class="benchmark-tag">🏆 CƠ CHẾ CHẤM ĐIỂM</span>
+                          <span class="benchmark-target">Đạt &ge; 90% &rarr; 18.00 điểm</span>
+                        </div>
+                        <p class="benchmark-formula">Nếu Tỷ lệ &lt; 90%: <code>Điểm đạt = (Tỷ lệ % &times; 18) / 90%</code></p>
+                      </div>
+
+                      <div class="formula-card-meta">
+                        <span class="meta-source-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Hệ thống Điều phối & Hệ thống PAKN</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+
+              <!-- Empty state when search matches nothing -->
+              <div class="formula-empty-state" id="formula-empty-state" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="empty-icon">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <h3>Không tìm thấy tiêu chí phù hợp</h3>
+                <p>Không có công thức hoặc tiêu chí nào trùng khớp với từ khóa. Vui lòng thử từ khóa khác.</p>
+                <button class="btn btn-secondary" onclick="resetFormulaSearch()">Xem tất cả tiêu chí</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: TIỆN ÍCH HÀNH CHÍNH & VĂN PHÒNG -->
+      <div id="tab-content-tools" class="tab-pane" style="display: none;">
+        <div class="tools-container">
+          <!-- UNIFIED ENTERPRISE CARD (MỘT CARD DUY NHẤT) -->
+          <div class="tools-unified-card">
+            
+            <!-- Phần trên (Card Header) -->
+            <div class="tools-card-header">
+              <div class="tools-header-top">
+                <div class="tools-title-row">
+                  <h2 class="tools-clean-title">Tiện ích Xử lý Hồ sơ & Tài liệu</h2>
+                  <div class="tools-badge-offline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tools-badge-icon">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+                    <span>Xử lý Offline 100% (An toàn bảo mật)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Segmented Control Tabs (shadcn/ui style) -->
+              <div class="tools-segmented-tabs" role="tablist">
+                <button type="button" class="tool-subnav-btn active" data-tool="signature-remover" id="subnav-btn-sig">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tool-subnav-icon">
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
+                  <span>Tách nền Chữ ký / Con dấu</span>
+                </button>
+                <button type="button" class="tool-subnav-btn" data-tool="image-merger" id="subnav-btn-merger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tool-subnav-icon">
+                    <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    <path d="M12 8h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"></path>
+                  </svg>
+                  <span>Ghép ảnh (Chữ ký, Con dấu, Tên)</span>
+                </button>
+                <button type="button" class="tool-subnav-btn" data-tool="pdf-compressor" id="subnav-btn-pdf">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tool-subnav-icon">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <polyline points="9 15 12 12 15 15"></polyline>
+                    <line x1="12" y1="12" x2="12" y2="18"></line>
+                  </svg>
+                  <span>Giảm dung lượng PDF</span>
+                </button>
+                <button type="button" class="tool-subnav-btn" data-tool="img2pdf" id="subnav-btn-img2pdf">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tool-subnav-icon">
+                    <polyline points="16 16 12 12 8 16"></polyline>
+                    <line x1="12" y1="12" x2="12" y2="21"></line>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                  </svg>
+                  <span>Chuyển đổi ảnh sang PDF</span>
+                  <span class="tool-tab-badge">Mới</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Phần thân (Card Body: p-8 hoặc p-10) -->
+            <div class="tools-card-body">
+
+              <!-- TOOL 1: TÁCH NỀN CHỮ KÝ / CON DẤU -->
+              <div id="tool-pane-signature-remover" class="tool-active-pane">
+                <div class="sig-tool-card">
+                  <!-- Upload Area -->
+                  <div class="dropzone-wrapper" id="sig-upload-zone">
+                    <input type="file" id="sig-file-input" accept="image/png, image/jpeg, image/jpg, image/webp, image/bmp" style="display: none;" />
+                    <div class="dropzone-dashed-box">
+                      <div class="dropzone-icon-badge">
+                        <svg class="dropzone-lucide-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                          <path d="M12 12v9"></path>
+                          <path d="m16 16-4-4-4 4"></path>
+                        </svg>
+                      </div>
+                      <h3 class="dropzone-title">Kéo & thả file vào đây, hoặc bấm để chọn từ máy</h3>
+                      <p class="dropzone-subtitle">
+                        Hỗ trợ định dạng JPG, PNG, WEBP hoặc PDF (bấm <kbd class="kbd-badge">Ctrl+V</kbd> để dán trực tiếp từ bộ nhớ tạm)
+                      </p>
+                      <div class="dropzone-actions sig-upload-actions">
+                        <button type="button" class="btn btn-primary btn-dz-primary" id="btn-browse-sig">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                          <span>Chọn file tải lên</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Security Notice Box (ĐƯA RA NGOÀI KHUNG NÉT ĐỨT) -->
+                    <div class="dropzone-security-footer" onclick="event.stopPropagation()">
+                      <svg class="security-shield-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="m9 12 2 2 4-4"></path>
+                      </svg>
+                      <span>Dữ liệu được xử lý cục bộ 100% trong bộ nhớ trình duyệt. Tài liệu của bạn không bao giờ được tải lên máy chủ ngoài.</span>
+                    </div>
+                  </div>
+
+              <!-- Editor & Preview Workspace (Visible after image loaded) -->
+              <div class="sig-workspace" id="sig-workspace" style="display: none;">
+                <!-- Control Toolbar -->
+                <div class="sig-controls-panel">
+                  <div class="sig-control-group sig-slider-group">
+                    <div class="sig-slider-header">
+                      <label class="sig-control-label" for="sig-threshold-slider">
+                        <span>Độ nhạy tách nền:</span>
+                        <strong id="sig-threshold-val">50%</strong>
+                      </label>
+                      <span class="sig-hint-tag">Tăng nếu ảnh còn vệt mờ, giảm nếu nét bị đứt</span>
+                    </div>
+                    <input type="range" id="sig-threshold-slider" min="15" max="85" value="50" class="sig-slider" />
+                  </div>
+
+                  <div class="sig-control-group">
+                    <label class="sig-control-label">Màu mực chữ ký:</label>
+                    <div class="sig-color-options">
+                      <button type="button" class="sig-color-btn active" data-color="original" title="Giữ nguyên màu thực tế của nét mực chụp">
+                        <span class="color-dot dot-original"></span>
+                        <span>Màu gốc</span>
+                      </button>
+                      <button type="button" class="sig-color-btn" data-color="blue" title="Đổi sang mực xanh bút ký chuẩn (#003399)">
+                        <span class="color-dot dot-blue"></span>
+                        <span>Mực xanh ký</span>
+                      </button>
+                      <button type="button" class="sig-color-btn" data-color="black" title="Đổi sang mực đen đậm chuẩn văn bản">
+                        <span class="color-dot dot-black"></span>
+                        <span>Mực đen</span>
+                      </button>
+                      <button type="button" class="sig-color-btn" data-color="red" title="Đổi sang màu đỏ con dấu">
+                        <span class="color-dot dot-red"></span>
+                        <span>Mực đỏ</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="sig-control-group sig-toggle-group">
+                    <label class="sig-checkbox-label">
+                      <input type="checkbox" id="sig-autocrop-checkbox" checked />
+                      <span class="sig-checkbox-custom"></span>
+                      <span class="sig-checkbox-text">
+                        <strong>Tự động cắt khoảng trắng thừa (Auto-Crop)</strong>
+                        <small>Tự nhận diện nét ký và cắt bỏ viền trắng rộng xung quanh</small>
+                      </span>
+                    </label>
+                  </div>
+
+                  <div class="sig-control-actions">
+                    <div class="sig-live-status" id="sig-status-badge">
+                      <span class="pulse-dot green-dot"></span>
+                      <span id="sig-status-text">Tự động tách nền</span>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-sig-upload">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                      </svg>
+                      <span>Chọn ảnh khác</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Comparison Split View -->
+                <div class="sig-comparison-grid">
+                  <!-- Original Image Card -->
+                  <div class="sig-preview-card">
+                    <div class="sig-card-header">
+                      <div class="sig-card-title-group">
+                        <span class="sig-card-title">1. Ảnh chữ ký gốc</span>
+                        <span class="sig-meta-tag" id="sig-original-meta">-- x -- px</span>
+                      </div>
+                    </div>
+                    <div class="sig-canvas-container sig-original-wrap">
+                      <img id="sig-original-img" alt="Ảnh chữ ký gốc" />
+                    </div>
+                  </div>
+
+                  <!-- Processed Transparent Signature Card -->
+                  <div class="sig-preview-card sig-result-card">
+                    <div class="sig-card-header">
+                      <div class="sig-card-title-group">
+                        <span class="sig-card-title">2. Chữ ký đã tách nền trong suốt</span>
+                        <span class="sig-badge-cropped" id="sig-crop-badge">Đã cắt gọn viền trắng</span>
+                      </div>
+                      <span class="sig-meta-tag tag-success" id="sig-result-meta">-- x -- px</span>
+                    </div>
+
+                    <!-- Background Preview Modes (Checkerboard / White / Document) -->
+                    <div class="sig-bg-switch-bar">
+                      <span class="sig-bg-switch-label">Xem thử trên:</span>
+                      <div class="sig-bg-buttons">
+                        <button type="button" class="sig-bg-btn active" data-bg="checkerboard">Trong suốt (PNG)</button>
+                        <button type="button" class="sig-bg-btn" data-bg="white">Giấy trắng A4</button>
+                        <button type="button" class="sig-bg-btn" data-bg="document">Văn bản / Công văn</button>
+                      </div>
+                    </div>
+
+                    <div class="sig-canvas-container sig-checkerboard-bg" id="sig-result-container">
+                      <canvas id="sig-result-canvas"></canvas>
+                      <!-- Sample document background mock text for testing -->
+                      <div class="sig-doc-watermark" id="sig-doc-mock" style="display: none;">
+                        <p class="mock-line">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                        <p class="mock-line-sub">Độc lập - Tự do - Hạnh phúc</p>
+                        <div class="mock-sign-placeholder">NGƯỜI KÝ XÁC NHẬN</div>
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="sig-export-toolbar">
+                      <button type="button" class="btn btn-primary btn-lg" id="btn-download-sig">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="7 10 12 15 17 10"></polyline>
+                          <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Tải về ảnh PNG trong suốt</span>
+                      </button>
+
+                      <button type="button" class="btn btn-secondary btn-lg" id="btn-copy-sig">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span>Sao chép ảnh (Ctrl+C)</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOOL 2: GHÉP ẢNH CHỮ KÝ, CON DẤU & TÊN -->
+          <div id="tool-pane-image-merger" class="tool-active-pane" style="display: none;">
+            <div class="merger-tool-card">
+              <!-- Upload Area (when no images loaded yet) -->
+              <div class="dropzone-wrapper" id="merger-upload-zone">
+                <input type="file" id="merger-file-input" multiple accept="image/png, image/jpeg, image/jpg, image/webp, image/bmp" style="display: none;" />
+                <div class="dropzone-dashed-box">
+                  <div class="dropzone-icon-badge">
+                    <svg class="dropzone-lucide-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="2" width="13" height="13" rx="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      <path d="M12 8h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"></path>
+                    </svg>
+                  </div>
+                  <h3 class="dropzone-title">Kéo & thả file vào đây, hoặc bấm để chọn từ máy</h3>
+                  <p class="dropzone-subtitle">
+                    Hỗ trợ chọn cùng lúc nhiều ảnh JPG, PNG, WEBP (bấm <kbd class="kbd-badge">Ctrl+V</kbd> để dán trực tiếp từ bộ nhớ tạm)
+                  </p>
+                  <div class="dropzone-actions sig-upload-actions">
+                    <button type="button" class="btn btn-primary btn-dz-primary" id="btn-browse-merger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      <span>Chọn file tải lên</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Security Notice Box (ĐƯA RA NGOÀI KHUNG NÉT ĐỨT) -->
+                <div class="dropzone-security-footer" onclick="event.stopPropagation()">
+                  <svg class="security-shield-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                  <span>Dữ liệu được xử lý cục bộ 100% trong bộ nhớ trình duyệt. Tài liệu của bạn không bao giờ được tải lên máy chủ ngoài.</span>
+                </div>
+              </div>
+
+              <!-- Interactive Workspace (Visible after >= 1 image loaded) -->
+              <div class="merger-workspace" id="merger-workspace" style="display: none;">
+                <!-- Merger Toolbar -->
+                <div class="merger-toolbar">
+                  <div class="merger-toolbar-left">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-add-more-layer">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      <span>+ Thêm ảnh khác</span>
+                    </button>
+                    <input type="file" id="merger-add-file-input" multiple accept="image/*" style="display: none;" />
+
+                    <div class="merger-sep"></div>
+
+                    <!-- Selected Layer Controls -->
+                    <div class="merger-layer-controls" id="merger-selected-layer-controls">
+                      <span class="merger-control-label">Lớp: <strong id="merger-current-layer-name">--</strong></span>
+                      <div class="merger-mini-group">
+                        <label for="merger-scale-slider" class="merger-sub-label">Thu phóng:</label>
+                        <input type="range" id="merger-scale-slider" min="20" max="250" value="100" class="merger-mini-slider" />
+                        <span id="merger-scale-val" class="merger-val-badge">100%</span>
+                      </div>
+                      <div class="merger-mini-group">
+                        <label for="merger-opacity-slider" class="merger-sub-label">Độ mờ:</label>
+                        <input type="range" id="merger-opacity-slider" min="10" max="100" value="100" class="merger-mini-slider" />
+                        <span id="merger-opacity-val" class="merger-val-badge">100%</span>
+                      </div>
+                      <div class="merger-btn-group">
+                        <button type="button" class="btn btn-icon-only" id="btn-layer-up" title="Đưa lên trên (Ctrl + ])">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                        </button>
+                        <button type="button" class="btn btn-icon-only" id="btn-layer-down" title="Đưa xuống dưới (Ctrl + [)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        <button type="button" class="btn btn-icon-only" id="btn-layer-toggle-trans" title="Bật/Tắt tách nền lớp này">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </button>
+                        <button type="button" class="btn btn-icon-only btn-danger-icon" id="btn-layer-delete" title="Xóa lớp ảnh này">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="merger-toolbar-right">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-merger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                      <span>Làm mới tất cả</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Main Composer Layout (Canvas + Layers Sidebar) -->
+                <div class="merger-stage-grid">
+                  <!-- Interactive Composer Board -->
+                  <div class="merger-canvas-card">
+                    <div class="merger-canvas-header">
+                      <div class="merger-card-title-group">
+                        <span class="sig-card-title">Khung ghép ảnh trực quan (Kéo chuột để di chuyển)</span>
+                        <span class="sig-badge-cropped" id="merger-crop-badge">Tự động xén viền</span>
+                      </div>
+                      <div class="sig-bg-switch-bar">
+                        <span class="sig-bg-switch-label">Xem trên:</span>
+                        <div class="sig-bg-buttons">
+                          <button type="button" class="merger-bg-btn active" data-bg="checkerboard">Trong suốt (PNG)</button>
+                          <button type="button" class="merger-bg-btn" data-bg="white">Giấy trắng A4</button>
+                          <button type="button" class="merger-bg-btn" data-bg="document">Văn bản / Công văn</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Canvas Stage Container -->
+                    <div class="merger-canvas-viewport sig-checkerboard-bg" id="merger-canvas-container">
+                      <canvas id="merger-stage-canvas" width="850" height="480"></canvas>
+                      <!-- Mock document text background watermark -->
+                      <div class="sig-doc-watermark" id="merger-doc-mock" style="display: none;">
+                        <p class="mock-line">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                        <p class="mock-line-sub">Độc lập - Tự do - Hạnh phúc</p>
+                        <div class="mock-sign-placeholder">THỦ TRƯỞNG CƠ QUAN / ĐƠN VỊ<br><small>(Ký, đóng dấu, ghi rõ họ tên)</small></div>
+                      </div>
+                    </div>
+
+                    <div class="merger-canvas-footer-hints">
+                      <span>💡 <strong>Mẹo:</strong> Bấm và kéo bất kỳ hình ảnh nào trên khung để di chuyển vị trí. Kéo góc ảnh để phóng to/thu nhỏ.</span>
+                      <span id="merger-meta-info" class="sig-meta-tag tag-success">0 lớp ảnh</span>
+                    </div>
+                  </div>
+
+                  <!-- Layers Sidebar -->
+                  <div class="merger-sidebar">
+                    <div class="merger-sidebar-header">
+                      <h4>Danh sách các lớp ảnh (<span id="merger-layers-count">0</span>)</h4>
+                      <small>Kéo hoặc bấm chọn lớp để chỉnh</small>
+                    </div>
+
+                    <div class="merger-layers-list" id="merger-layers-list">
+                      <!-- Layer items inserted dynamically -->
+                    </div>
+
+                    <div class="merger-quick-settings">
+                      <label class="sig-checkbox-label">
+                        <input type="checkbox" id="merger-autocrop-checkbox" checked />
+                        <span class="sig-checkbox-custom"></span>
+                        <span class="sig-checkbox-text">
+                          <strong>Tự động cắt viền thừa (Auto-Crop)</strong>
+                          <small>Xuất file ôm sát các ảnh đã ghép</small>
+                        </span>
+                      </label>
+
+                      <label class="sig-checkbox-label">
+                        <input type="checkbox" id="merger-auto-remove-bg-checkbox" checked />
+                        <span class="sig-checkbox-custom"></span>
+                        <span class="sig-checkbox-text">
+                          <strong>Tự động tách nền khi thêm ảnh</strong>
+                          <small>Lọc nền giấy trắng thành trong suốt</small>
+                        </span>
+                      </label>
+                    </div>
+
+                    <!-- Export Actions -->
+                    <div class="merger-export-actions">
+                      <button type="button" class="btn btn-primary btn-lg" id="btn-download-merger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="7 10 12 15 17 10"></polyline>
+                          <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Tải về ảnh ghép (PNG trong suốt)</span>
+                      </button>
+
+                      <button type="button" class="btn btn-secondary btn-lg" id="btn-copy-merger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span>Sao chép ảnh (Ctrl+C)</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOOL 3: GIẢM DUNG LƯỢNG PDF (NÉN FILE SCAN HỒ SƠ) -->
+          <div id="tool-pane-pdf-compressor" class="tool-active-pane" style="display: none;">
+            <div class="pdf-tool-card">
+              <!-- Upload Area -->
+              <div class="dropzone-wrapper" id="pdf-upload-zone">
+                <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;" />
+                <div class="dropzone-dashed-box">
+                  <div class="dropzone-icon-badge">
+                    <svg class="dropzone-lucide-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <h3 class="dropzone-title">Kéo & thả file vào đây, hoặc bấm để chọn từ máy</h3>
+                  <p class="dropzone-subtitle">
+                    Hỗ trợ định dạng PDF (hồ sơ scan, công văn, tài liệu hành chính nhiều trang)
+                  </p>
+                  <div class="dropzone-actions sig-upload-actions">
+                    <button type="button" class="btn btn-primary btn-dz-primary" id="btn-browse-pdf">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <span>Chọn file tải lên</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Security Notice Box (ĐƯA RA NGOÀI KHUNG NÉT ĐỨT) -->
+                <div class="dropzone-security-footer" onclick="event.stopPropagation()">
+                  <svg class="security-shield-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                  <span>Dữ liệu được xử lý cục bộ 100% trong bộ nhớ trình duyệt. Tài liệu của bạn không bao giờ được tải lên máy chủ ngoài.</span>
+                </div>
+              </div>
+
+              <!-- Compressor Workspace (Visible when PDF file is loaded) -->
+              <div class="pdf-workspace" id="pdf-workspace" style="display: none;">
+                <!-- File Meta Bar -->
+                <div class="pdf-file-strip">
+                  <div class="pdf-file-info-group">
+                    <div class="pdf-badge-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                      </svg>
+                    </div>
+                    <div class="pdf-file-details">
+                      <span class="pdf-file-name" id="pdf-loaded-filename">tai-lieu-scan.pdf</span>
+                      <div class="pdf-file-meta-pills">
+                        <span class="pdf-meta-pill" id="pdf-loaded-pages">-- trang</span>
+                        <span class="pdf-meta-pill pdf-pill-size" id="pdf-loaded-orig-size">-- MB</span>
+                        <span class="pdf-meta-pill pdf-pill-offline">Offline 100%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-pdf">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm">
+                      <polyline points="1 4 1 10 7 10"></polyline>
+                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                    <span>Chọn file khác</span>
+                  </button>
+                </div>
+
+                <!-- Compression Config & Options -->
+                <div class="pdf-config-card" id="pdf-config-card">
+                  <div class="pdf-card-header">
+                    <h4 class="pdf-card-title">Chọn mức độ nén phù hợp</h4>
+                    <span class="pdf-card-desc">Tùy chọn cân bằng giữa kích thước file và độ sắc nét tài liệu</span>
+                  </div>
+
+                  <!-- 3 Preset Cards -->
+                  <div class="pdf-presets-grid">
+                    <div class="compress-preset-card" data-preset="max">
+                      <div class="preset-badge">Cổng DVC (&lt; 2-5MB)</div>
+                      <div class="preset-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="4 14 10 14 10 20"></polyline>
+                          <polyline points="20 10 14 10 14 4"></polyline>
+                          <line x1="14" y1="10" x2="21" y2="3"></line>
+                          <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
+                      </div>
+                      <h5 class="preset-title">Nén tối đa</h5>
+                      <p class="preset-desc">Giảm dung lượng xuống thấp nhất. Phù hợp nộp hồ sơ nhiều trang bị giới hạn dung lượng cổng DVC.</p>
+                      <div class="preset-stat">Giảm ~70% - 90%</div>
+                    </div>
+
+                    <div class="compress-preset-card active" data-preset="standard">
+                      <div class="preset-badge preset-badge-rec">Khuyên dùng</div>
+                      <div class="preset-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                      </div>
+                      <h5 class="preset-title">Nén tiêu chuẩn</h5>
+                      <p class="preset-desc">Cân đối hoàn hảo: Nét chữ rõ ràng, con dấu sắc nét và dung lượng giảm mạnh.</p>
+                      <div class="preset-stat">Giảm ~50% - 75%</div>
+                    </div>
+
+                    <div class="compress-preset-card" data-preset="light">
+                      <div class="preset-badge">Độ nét cao</div>
+                      <div class="preset-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                      </div>
+                      <h5 class="preset-title">Nén nhẹ</h5>
+                      <p class="preset-desc">Giữ độ nét cao nhất để in ấn, lưu trữ văn bản pháp lý hoặc văn bản có sơ đồ, bản vẽ chi tiết.</p>
+                      <div class="preset-stat">Giảm ~30% - 50%</div>
+                    </div>
+                  </div>
+
+                  <!-- Extra Options -->
+                  <div class="pdf-extra-options">
+                    <label class="sig-checkbox-label">
+                      <input type="checkbox" id="pdf-grayscale-checkbox" />
+                      <span class="sig-checkbox-custom"></span>
+                      <span class="sig-checkbox-text">
+                        <strong>Chuyển sang đen trắng (Grayscale)</strong>
+                        <small>Giúp giảm thêm 20-30% dung lượng cho văn bản chữ scan thông thường</small>
+                      </span>
+                    </label>
+                  </div>
+
+                  <!-- Start Action -->
+                  <div class="pdf-action-strip">
+                    <button type="button" class="btn btn-primary btn-lg" id="btn-start-compress">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                      </svg>
+                      <span>Bắt đầu nén PDF</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Progress State (Shown while compressing) -->
+                <div class="pdf-progress-card" id="pdf-progress-card" style="display: none;">
+                  <div class="pdf-progress-header">
+                    <div class="pdf-progress-spin-wrap">
+                      <div class="pdf-spinner"></div>
+                      <div>
+                        <h4 class="pdf-progress-title">Đang xử lý nén file PDF...</h4>
+                        <p class="pdf-progress-subtitle" id="pdf-progress-status-text">Đang chuẩn bị trang...</p>
+                      </div>
+                    </div>
+                    <span class="pdf-progress-percentage" id="pdf-progress-percent">0%</span>
+                  </div>
+                  <div class="pdf-progress-bar-track">
+                    <div class="pdf-progress-bar-fill" id="pdf-progress-bar-fill" style="width: 0%;"></div>
+                  </div>
+                  <small class="pdf-progress-hint">💡 Quá trình thực hiện hoàn toàn trên máy tính của bạn, tài liệu giữ nguyên số trang và bố cục.</small>
+                </div>
+
+                <!-- Result Card (Shown when completed) -->
+                <div class="pdf-result-card" id="pdf-result-card" style="display: none;">
+                  <div class="pdf-result-header">
+                    <div class="pdf-result-success-badge">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      <span>Đã nén thành công!</span>
+                    </div>
+                    <span class="pdf-result-time" id="pdf-result-time-text">Xử lý trong 1.5s</span>
+                  </div>
+
+                  <!-- Metrics Comparison Box -->
+                  <div class="pdf-compare-metrics">
+                    <div class="pdf-metric-box">
+                      <span class="pdf-metric-label">Dung lượng ban đầu</span>
+                      <span class="pdf-metric-val val-muted" id="pdf-stat-orig-size">18.5 MB</span>
+                    </div>
+
+                    <div class="pdf-metric-arrow">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </div>
+
+                    <div class="pdf-metric-box">
+                      <span class="pdf-metric-label">Dung lượng sau nén</span>
+                      <span class="pdf-metric-val val-success" id="pdf-stat-new-size">3.2 MB</span>
+                    </div>
+
+                    <div class="pdf-metric-saved-pill">
+                      <span class="saved-label">Tiết kiệm</span>
+                      <strong class="saved-val" id="pdf-stat-percent-saved">-82%</strong>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="pdf-result-actions">
+                    <button type="button" class="btn btn-primary btn-lg" id="btn-download-compressed-pdf">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      <span>Tải về file PDF đã nén</span>
+                    </button>
+
+                    <button type="button" class="btn btn-secondary btn-lg" id="btn-preview-compressed-pdf">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <span>Xem thử PDF</span>
+                    </button>
+
+                    <button type="button" class="btn btn-outline btn-lg" id="btn-recompress-pdf">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                      </svg>
+                      <span>Đổi mức nén khác</span>
+                    </button>
+                  </div>
+
+                  <!-- Page Preview Grid -->
+                  <div class="pdf-preview-section">
+                    <div class="pdf-preview-header">
+                      <h5>Xem trước các trang đã nén (<span id="pdf-preview-pages-count">0</span> trang)</h5>
+                      <small>Kiểm tra độ rõ nét của nét chữ và con dấu</small>
+                    </div>
+                    <div class="pdf-thumbnails-grid" id="pdf-thumbnails-grid">
+                      <!-- Rendered page canvases/images -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOOL 4: CHUYỂN ĐỔI ẢNH SANG PDF (GỘP NHIỀU ẢNH THÀNH 1 FILE PDF) -->
+          <div id="tool-pane-img2pdf" class="tool-active-pane" style="display: none;">
+            <div class="img2pdf-tool-card">
+              <!-- Upload Area (when no images loaded) -->
+              <div class="dropzone-wrapper" id="img2pdf-upload-zone">
+                <input type="file" id="img2pdf-file-input" multiple accept="image/png, image/jpeg, image/jpg, image/webp, image/bmp" style="display: none;" />
+                <div class="dropzone-dashed-box">
+                  <div class="dropzone-icon-badge">
+                    <svg class="dropzone-lucide-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                  <h3 class="dropzone-title">Kéo & thả file vào đây, hoặc bấm để chọn từ máy</h3>
+                  <p class="dropzone-subtitle">
+                    Hỗ trợ chọn cùng lúc nhiều ảnh JPG, PNG, WEBP (CCCD 2 mặt, sổ đỏ, chứng từ)
+                  </p>
+                  <div class="dropzone-actions sig-upload-actions">
+                    <button type="button" class="btn btn-primary btn-dz-primary" id="btn-browse-img2pdf">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <span>Chọn file tải lên</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Security Notice Box (ĐƯA RA NGOÀI KHUNG NÉT ĐỨT) -->
+                <div class="dropzone-security-footer" onclick="event.stopPropagation()">
+                  <svg class="security-shield-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                  <span>Dữ liệu được xử lý cục bộ 100% trong bộ nhớ trình duyệt. Tài liệu của bạn không bao giờ được tải lên máy chủ ngoài.</span>
+                </div>
+              </div>
+
+              <!-- Workspace (visible when images are loaded) -->
+              <div class="img2pdf-workspace" id="img2pdf-workspace" style="display: none;">
+                <!-- Hidden input for adding more images -->
+                <input type="file" id="img2pdf-add-file-input" multiple accept="image/png, image/jpeg, image/jpg, image/webp, image/bmp" style="display: none;" />
+
+                <!-- Top Control Strip -->
+                <div class="img2pdf-strip">
+                  <div class="img2pdf-strip-left">
+                    <span class="img2pdf-badge-count" id="img2pdf-count-badge">0 ảnh đã chọn</span>
+                    <span class="img2pdf-strip-hint">Dùng các nút trên mỗi ảnh để quay hướng hoặc đổi thứ tự trang trước khi xuất PDF</span>
+                  </div>
+                  <div class="img2pdf-strip-right">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-img2pdf-add-more">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      <span>Thêm ảnh khác</span>
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm btn-danger-text" id="btn-img2pdf-clear-all">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon-sm">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                      </svg>
+                      <span>Xóa tất cả</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Main Layout (Pages Grid + Options Sidebar) -->
+                <div class="img2pdf-grid-layout">
+                  <!-- Left: Interactive Pages Grid -->
+                  <div class="img2pdf-pages-col">
+                    <div class="img2pdf-pages-header">
+                      <h4>Thứ tự các trang trong file PDF</h4>
+                      <small>Trang sẽ được sắp xếp và đóng gói theo thứ tự từ trên xuống dưới</small>
+                    </div>
+
+                    <div class="img2pdf-cards-grid" id="img2pdf-cards-grid">
+                      <!-- Dynamically rendered page cards -->
+                    </div>
+                  </div>
+
+                  <!-- Right: Configuration & Export Sidebar -->
+                  <div class="img2pdf-sidebar">
+                    <div class="img2pdf-sidebar-header">
+                      <h4>Cài đặt file PDF xuất ra</h4>
+                      <small>Tùy chỉnh định dạng trang hồ sơ</small>
+                    </div>
+
+                    <div class="img2pdf-settings-group">
+                      <!-- Page Size -->
+                      <div class="img2pdf-field">
+                        <label class="img2pdf-label" for="img2pdf-page-size-select">Khổ giấy PDF:</label>
+                        <select id="img2pdf-page-size-select" class="img2pdf-select">
+                          <option value="a4" selected>Khổ A4 chuẩn (210 × 297 mm) - Khuyên dùng</option>
+                          <option value="letter">Khổ Letter (216 × 279 mm)</option>
+                          <option value="fit">Vừa khít kích thước ảnh gốc</option>
+                        </select>
+                      </div>
+
+                      <!-- Page Orientation -->
+                      <div class="img2pdf-field">
+                        <label class="img2pdf-label" for="img2pdf-orientation-select">Chiều trang giấy:</label>
+                        <select id="img2pdf-orientation-select" class="img2pdf-select">
+                          <option value="auto" selected>Tự động (Dọc/Ngang theo từng ảnh)</option>
+                          <option value="portrait">Cố định khổ Dọc (Portrait)</option>
+                          <option value="landscape">Cố định khổ Ngang (Landscape)</option>
+                        </select>
+                      </div>
+
+                      <!-- Margin -->
+                      <div class="img2pdf-field">
+                        <label class="img2pdf-label" for="img2pdf-margin-select">Lề trang giấy (Margin):</label>
+                        <select id="img2pdf-margin-select" class="img2pdf-select">
+                          <option value="none" selected>Không lề (Ảnh tràn trang 0mm)</option>
+                          <option value="small">Lề nhỏ (5mm) - Dễ nhìn</option>
+                          <option value="normal">Lề chuẩn văn bản (10mm)</option>
+                        </select>
+                      </div>
+
+                      <!-- Quality -->
+                      <div class="img2pdf-field">
+                        <label class="img2pdf-label" for="img2pdf-quality-select">Chất lượng & Dung lượng:</label>
+                        <select id="img2pdf-quality-select" class="img2pdf-select">
+                          <option value="standard" selected>Cân bằng nộp Cổng DVC (~80% chất lượng)</option>
+                          <option value="high">Chất lượng cao nét nhất (95% chất lượng)</option>
+                          <option value="compact">Nén nhẹ tiết kiệm dung lượng (65% chất lượng)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Convert Action -->
+                    <div class="img2pdf-export-box">
+                      <button type="button" class="btn btn-primary btn-lg btn-block" id="btn-convert-to-pdf">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <polyline points="16 13 12 17 8 13"></polyline>
+                          <line x1="12" y1="17" x2="12" y2="9"></line>
+                        </svg>
+                        <span>Chuyển đổi sang file PDF ngay</span>
+                      </button>
+                    </div>
+
+                    <!-- Progress Area (during convert) -->
+                    <div class="img2pdf-progress-card" id="img2pdf-progress-card" style="display: none;">
+                      <div class="pdf-spinner"></div>
+                      <div class="img2pdf-progress-text">
+                        <strong id="img2pdf-progress-title">Đang xử lý trang...</strong>
+                        <span id="img2pdf-progress-status">Vui lòng chờ giây lát</span>
+                      </div>
+                    </div>
+
+                    <!-- Result Box (after convert) -->
+                    <div class="img2pdf-result-card" id="img2pdf-result-card" style="display: none;">
+                      <div class="pdf-result-success-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Đã tạo file PDF thành công!</span>
+                      </div>
+
+                      <div class="img2pdf-result-meta">
+                        <span id="img2pdf-res-pages">-- trang</span> • <strong id="img2pdf-res-size">-- MB</strong>
+                      </div>
+
+                      <div class="img2pdf-result-btns">
+                        <button type="button" class="btn btn-primary btn-lg btn-block" id="btn-download-img2pdf">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                          </svg>
+                          <span>Tải về file PDF</span>
+                        </button>
+
+                        <button type="button" class="btn btn-secondary btn-block" id="btn-preview-img2pdf">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                          <span>Xem thử PDF</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- end .tools-card-body -->
+      </div> <!-- end .tools-unified-card -->
+    </div> <!-- end .tools-container -->
+  </div> <!-- end #tab-content-tools -->
+</div>
+</main>
 
     <!-- Modal for Detailed Metrics (Standard 5 Indicators) -->
     <div id="metric-modal" class="modal-backdrop" style="display: none;">
@@ -637,12 +2677,14 @@
     <!-- App Footer -->
     <footer class="app-footer">
       <div class="footer-inner">
-        <p>Hệ thống tự động đồng bộ từ <strong>Cổng Dịch vụ công Quốc gia (dichvucong.gov.vn)</strong> theo Quyết định số 766/QĐ-TTg ngày 23/06/2022 của Thủ tướng Chính phủ.</p>
-        <p class="footer-sub">Chạy tự động định kỳ vào 06:00:00 sáng mỗi ngày • Lưu trữ và phân tích theo ngày • Sẵn sàng triển khai trên Vercel.</p>
+        <p class="footer-title">HỆ THỐNG HỖ TRỢ DỊCH VỤ CÔNG</p>
       </div>
     </footer>
   </div>
 
+  <!-- PDF Processing Libraries (100% Local Offline) -->
+  <script src="libs/pdf.min.js"></script>
+  <script src="libs/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
   <!-- Vercel Web Analytics -->
   <script>

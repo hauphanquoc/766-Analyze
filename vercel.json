@@ -2,9 +2,16 @@
   "version": 2,
   "functions": {
     "api/*.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "data/**"
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 23 * * *"
+    }
+  ],
   "routes": [
     {
       "src": "/api/cron",
