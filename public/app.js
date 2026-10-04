@@ -881,8 +881,8 @@ function renderUnitsTable() {
           </span>
         </td>
         <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
-        <td style="text-align: center;">
-          <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 2px 8px;">
+        <td style="text-align: center; white-space: nowrap;">
+          <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
             ${escapeHtml(grade.label)}
           </span>
         </td>

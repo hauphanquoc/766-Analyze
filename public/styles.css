@@ -502,6 +502,8 @@ body::before {
 }
 
 .badge-grade {
+  display: inline-block;
+  white-space: nowrap;
   padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 12px;
@@ -509,6 +511,7 @@ body::before {
   color: #ffffff;
   background-color: var(--color-primary-light);
   letter-spacing: 0.02em;
+  text-align: center;
 }
 
 .score-display {
@@ -870,6 +873,12 @@ body::before {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-main);
+}
+
+.data-table td:last-child {
+  white-space: nowrap;
+  min-width: 105px;
+  text-align: center;
 }
 
 .data-table tbody tr:hover {
