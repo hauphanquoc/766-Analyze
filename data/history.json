@@ -1,5 +1,23 @@
 [
   {
+    "timestamp": "2026-10-04T23:00:09.249Z",
+    "type": "SYNC",
+    "date": "2026-10-05",
+    "durationMs": 6699,
+    "totalScore": 65.13,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 116
+  },
+  {
+    "timestamp": "2026-10-04T23:00:06.716Z",
+    "type": "LOCAL_CRON_6AM",
+    "date": "2026-10-05",
+    "totalScore": 65.13,
+    "classification": "Trung bình",
+    "success": true
+  },
+  {
     "timestamp": "2026-10-03T23:00:08.233Z",
     "type": "LOCAL_SYNC_ONLY",
     "date": "2026-10-04",

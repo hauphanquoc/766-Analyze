@@ -844,42 +844,12 @@ function renderUnitsTable() {
           ${u.departmentCode ? `<span class="unit-code-badge">(${escapeHtml(u.departmentCode)})</span>` : ''}
         </td>
         <td><span class="level-tag">${escapeHtml(u.levelLabel || 'Đơn vị')}</span></td>
-        <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', 'transparency')" title="Nhấn xem chi tiết 4 tiêu chí Công khai minh bạch">
-          <span class="score-clickable-inner">
-            <span>${(u.scores?.transparency ?? 0).toFixed(2)}</span>
-            <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
-        </td>
-        <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', 'progress')" title="Nhấn xem chi tiết hồ sơ Tiến độ giải quyết">
-          <span class="score-clickable-inner">
-            <span>${(u.scores?.progress ?? 0).toFixed(2)}</span>
-            <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
-        </td>
-        <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', 'onlineService')" title="Nhấn xem chi tiết Dịch vụ công trực tuyến">
-          <span class="score-clickable-inner">
-            <span>${(u.scores?.onlineService ?? 0).toFixed(2)}</span>
-            <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
-        </td>
-        <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', 'digitized')" title="Nhấn xem chi tiết 7 tiêu chí Số hóa hồ sơ">
-          <span class="score-clickable-inner">
-            <span>${(u.scores?.digitized ?? 0).toFixed(2)}</span>
-            <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
-        </td>
-        <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', 'payment')" title="Nhấn xem chi tiết giao dịch Thanh toán trực tuyến">
-          <span class="score-clickable-inner">
-            <span>${(u.scores?.payment ?? 0).toFixed(2)}</span>
-            <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
-        </td>
-        <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', 'satisfaction')" title="Nhấn xem chi tiết Mức độ hài lòng của người dân">
-          <span class="score-clickable-inner">
-            <span>${(u.scores?.satisfaction ?? 0).toFixed(2)}</span>
-            <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
-        </td>
+        <td style="text-align: right;">${(u.scores?.transparency ?? 0).toFixed(2)}</td>
+        <td style="text-align: right;">${(u.scores?.progress ?? 0).toFixed(2)}</td>
+        <td style="text-align: right;">${(u.scores?.onlineService ?? 0).toFixed(2)}</td>
+        <td style="text-align: right;">${(u.scores?.digitized ?? 0).toFixed(2)}</td>
+        <td style="text-align: right;">${(u.scores?.payment ?? 0).toFixed(2)}</td>
+        <td style="text-align: right;">${(u.scores?.satisfaction ?? 0).toFixed(2)}</td>
         <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
         <td style="text-align: center; white-space: nowrap;">
           <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
