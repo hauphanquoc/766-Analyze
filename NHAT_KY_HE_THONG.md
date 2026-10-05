@@ -74,6 +74,51 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 * **Xử lý:**
   - Tạo file **`run-local-web-silent.vbs`**: Chạy Web Server ngầm hoàn toàn dưới nền Windows (không hiện bất kỳ cửa sổ cmd nào) và tự động mở trình duyệt `http://localhost:3000`.
 
+### 7. Cập nhật nhận diện Cải cách hành chính & Nội dung khuyến cáo (05/10/2026)
+* **Logo & Favicon:** Thay đổi logo chính trên banner và favicon trình duyệt sang biểu trưng Cải cách hành chính (`Logo CCHC.png`).
+* **Menu điều hướng:** Cập nhật mục "Công thức tính 766" thành *"Công thức tính 766 (Đang hoàn thiện)"*.
+* **Khuyến cáo nguồn dữ liệu:**
+  - Chỉnh sửa câu mô tả: *"Hệ thống cung cấp công cụ tổng hợp và các tiện ích nhằm phục vụ công tác theo dõi, kiểm soát thủ tục hành chính."*
+  - Câu đối chiếu số liệu: *"Số liệu trên hệ thống mang tính chất theo dõi và tham khảo nội bộ. Cán bộ, cơ quan cần chủ động đối chiếu lại với số liệu thực tế trên Cổng DVCQG và các Hệ thống thông tin giải quyết TTHC."*
+  - Tách câu: *"Vui lòng không sử dụng làm nguồn báo cáo chính thống."* xuống hàng riêng nổi bật với biểu tượng cảnh báo màu vàng cam.
+* **Định dạng bảng:** Cố định nhãn xếp loại "Trung bình" và "Yếu kém" luôn nằm trên 1 dòng đơn (`white-space: nowrap`), không bị rớt dòng.
+
+### 8. Xây dựng Tab "Xếp hạng 766 các tỉnh" & Lịch quét tự động 06h00 (05/10/2026)
+* **Tính năng mới:** Bổ sung menu thứ 2 *"Xếp hạng 766 các tỉnh"* trên thanh điều hướng.
+* **Nguồn dữ liệu:** Tích hợp API lấy số liệu điểm tổng hợp và 6 chỉ số thành phần của toàn bộ các tỉnh thành từ Cổng DVCQG (theo file `766 Tong Hop - Tat ca tinh.txt`).
+* **Module xử lý:**
+  - `src/provinceCollector.js`: Tự động gửi request, chuẩn hóa dữ liệu và tính toán thứ hạng toàn quốc cho 34 tỉnh/thành phố trên cả nước.
+  - `api/provinces.js`: Cung cấp API phục vụ Web xem và tải số liệu.
+* **Giao diện bảng xếp hạng:**
+  - Highlight nổi bật hàng **UBND tỉnh Đắk Lắk** (màu xanh cyan `#38bdf8`) để dễ theo dõi vị trí cạnh tranh.
+  - Hiển thị đầy đủ: Điểm số, xếp hạng và tỷ lệ/tử số của 6 nhóm chỉ số và tổng điểm.
+  - Có ô tìm kiếm nhanh tỉnh/thành phố, nút Cập nhật dữ liệu và nút Xuất file Excel báo cáo xếp hạng.
+  - Badge đầu bảng: *"Xếp hạng cấp tỉnh"*.
+  - Đã bỏ 2 dòng comment ghi chú phía chân bảng theo yêu cầu.
+* **Lịch tự động:** Đã cấu hình thu thập tự động **hàng ngày vào lúc 06:00:00 sáng** (trong `dev-server.js`, `sync-to-cloud.js`, `api/cron.js`), thay vì chỉ quét vào thứ 6.
+
+### 9. Triển khai Hệ thống Đăng nhập & Phân quyền bảo vệ (05/10/2026)
+* **Mô hình bảo mật:** Ứng dụng chuẩn JWT (HMAC-SHA256) và mã hóa mật khẩu PBKDF2 (SHA-512) bằng thư viện `crypto` native của Node.js:
+  - Hoạt động siêu nhẹ (phản hồi ~30ms), tương thích hoàn hảo trên cả Vercel Serverless lẫn Local Server.
+  - Không tốn thêm chi phí hay phụ thuộc dịch vụ ngoài.
+* **Tài khoản khởi tạo sẵn:**
+  - **Quản trị viên (Admin):** Tài khoản `admin` / Mật khẩu `Admin@766` (Quyền: `admin`).
+  - **Cán bộ nghiệp vụ:** Tài khoản `canbo` / Mật khẩu `Canbo@766` (Quyền: `officer`).
+  - Dữ liệu tài khoản lưu đồng bộ trên Upstash Redis (`dvc:users`) và file `data/users.json`.
+* **Cơ chế phân quyền hiển thị (Clean View-Only khi chưa đăng nhập):**
+  - **Khi CHƯA đăng nhập:**
+    - Hệ thống ẩn hoàn toàn tính năng xem chi tiết như thể không tồn tại.
+    - 6 thẻ chỉ số tỉnh: Nút *"Chi tiết tiêu chí"* bị ẩn hoàn toàn (`display: none !important`).
+    - Bảng điểm 119 đơn vị: Toàn bộ con số hiển thị dạng **văn bản tĩnh (chỉ xem)**: không có con trỏ bàn tay pointer, không có hover sáng xanh, không có icon mũi tên, không có tooltip và không có sự kiện click (bấm vào không có phản ứng gì).
+    - Góc phải Header hiển thị nút **"Đăng nhập"**.
+  - **Khi ĐÃ đăng nhập:**
+    - Header hiển thị: Avatar + Tên người dùng + Badge chức danh (`Quản trị viên` / `Cán bộ`) và nút **"Thoát"** (Đăng xuất).
+    - 6 nút *"Chi tiết tiêu chí"* ở thẻ tỉnh tự động xuất hiện.
+    - Toàn bộ điểm số ở bảng đơn vị chuyển sang chế độ tương tác (clickable): rê chuột có hover, click vào mở popup xem chi tiết từng tiêu chí con (Công khai minh bạch, Tiến độ giải quyết hồ sơ, Thanh toán trực tuyến 3 chỉ tiêu con...).
+* **Hộp thoại đăng nhập (Modal Login):**
+  - Tinh chỉnh giao diện hiện đại, bảo mật, có nút bật/tắt hiển thị mật khẩu.
+  - Sửa lỗi lồng thẻ HTML, đưa modal ra ngoài container với `position: fixed; z-index: 99999; backdrop-filter: blur(6px)` để luôn hiển thị nổi bật giữa màn hình.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
@@ -89,10 +134,19 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 * Mặc định hệ thống đã tự chạy lúc 6h00 sáng mỗi ngày. Nếu trong ngày anh/chị muốn cập nhật số liệu mới nhất ngay:
   - Nhấp đúp chuột vào file: **`run-sync.bat`**
   - Hoặc mở PowerShell/CMD gõ: `npm run sync`
-  - Quá trình thu thập sẽ hoàn tất sau khoảng 5 - 7 giây.
+  - Quá trình thu thập (cả điểm Đắk Lắk và điểm 34 tỉnh) sẽ hoàn tất sau khoảng 5 - 7 giây.
 
-### 3. Tra cứu vị trí lưu trữ dữ liệu
-* **File số liệu từng ngày:** Nằm trong thư mục `data/snapshots/` (dạng `YYYY-MM-DD.json`).
+### 3. Đăng nhập và tra cứu chi tiết tiêu chí
+* Nhấn nút **"Đăng nhập"** ở góc trên bên phải màn hình.
+* Nhập tài khoản:
+  - `admin` / `Admin@766` (Quản trị viên)
+  - `canbo` / `Canbo@766` (Cán bộ nghiệp vụ)
+* Sau khi đăng nhập, nhấp vào bất kỳ con số điểm nào trên bảng để xem chi tiết hồ sơ/tiêu chí con.
+
+### 4. Tra cứu vị trí lưu trữ dữ liệu
+* **File số liệu từng ngày của tỉnh:** Nằm trong thư mục `data/snapshots/` (dạng `YYYY-MM-DD.json`).
+* **File số liệu xếp hạng 34 tỉnh:** Nằm trong file `data/provinces-latest.json` và `data/provinces/YYYY-MM-DD.json`.
+* **File tài khoản người dùng:** Nằm trong file `data/users.json`.
 * **Nhật ký các lần chạy:** Nằm trong file `data/sync.log`.
 
 ---
@@ -101,17 +155,25 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 
 | Tập tin | Chức năng chính |
 | :--- | :--- |
-| `dev-server.js` | Web Server nội bộ (Express) chạy ở port 3000 phục vụ xem dashboard cục bộ. |
-| `sync-to-cloud.js` | Script điều phối thu thập 6 chỉ số, phân tích điểm và lưu snapshot vào máy. |
+| `dev-server.js` | Web Server nội bộ (Express) chạy ở port 3000 phục vụ xem dashboard và API cục bộ. |
+| `sync-to-cloud.js` | Script điều phối thu thập 6 chỉ số tỉnh + xếp hạng các tỉnh, phân tích điểm và lưu snapshot vào máy. |
 | `run-sync.bat` | File thực thi tiến trình thu thập dữ liệu (được Task Scheduler gọi hàng ngày). |
 | `run-sync-silent.vbs` | File VBScript giúp Task Scheduler chạy `run-sync.bat` ngầm không giật màn hình. |
 | `run-local-web.bat` | File bật server web local và tự mở trình duyệt. |
 | `run-local-web-silent.vbs` | File bật server web local chạy ngầm hoàn toàn (không hiện cửa sổ cmd). |
-| `src/collector.js` | Module kết nối Cổng DVCQG, vượt tường lửa Anti-WAF và thu thập 6 nhóm chỉ số. |
+| `src/collector.js` | Module kết nối Cổng DVCQG, vượt tường lửa Anti-WAF và thu thập 6 nhóm chỉ số tỉnh. |
+| `src/provinceCollector.js` | Module thu thập và tính toán xếp hạng 766 của 34 tỉnh/thành phố trên cả nước. |
 | `src/analyzer.js` | Module tính toán điểm số tỉnh và xếp hạng 119 đơn vị trực thuộc. |
-| `src/storage.js` | Module quản lý đọc/ghi snapshot cục bộ (chế độ Local Only). |
+| `src/auth.js` | Module xác thực tài khoản, băm mật khẩu PBKDF2 và tạo/kiểm tra token JWT. |
+| `src/storage.js` | Module quản lý đọc/ghi snapshot, xếp hạng tỉnh và tài khoản (chế độ Local + Cloud Redis). |
 | `src/excelGenerator.js` | Module xuất báo cáo Excel 3 Sheet theo mẫu chuẩn. |
+| `api/auth.js` | API Serverless phục vụ đăng nhập (`/login`), kiểm tra phiên (`/me`), đăng xuất (`/logout`). |
+| `api/provinces.js` | API Serverless cung cấp dữ liệu bảng xếp hạng 766 các tỉnh. |
+| `api/data.js` | API Serverless cung cấp dữ liệu snapshot điểm 766 của tỉnh Đắk Lắk. |
 | `public/` | Mã nguồn giao diện Web Frontend (HTML, CSS, JS). |
-| `data/snapshots/` | Thư mục lưu snapshot dữ liệu lịch sử từng ngày (không đẩy lên mạng). |
-| `.env` | File cấu hình môi trường hệ thống. |
-| `vercel.json` | Cấu hình triển khai Vercel (đã khóa mọi truy cập công khai). |
+| `data/snapshots/` | Thư mục lưu snapshot dữ liệu lịch sử từng ngày của tỉnh Đắk Lắk. |
+| `data/provinces/` | Thư mục lưu lịch sử xếp hạng 766 các tỉnh theo ngày. |
+| `data/users.json` | File lưu danh sách tài khoản đã mã hóa mật khẩu. |
+| `.env` | File cấu hình biến môi trường kết nối Upstash Redis và mật khẩu. |
+| `vercel.json` | Cấu hình định tuyến và triển khai Serverless Functions trên Vercel. |
+
