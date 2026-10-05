@@ -2902,7 +2902,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
-              <input type="text" id="login-username" class="auth-input" placeholder="Nhập tài khoản (admin / canbo)" required autocomplete="username" />
+              <input type="text" id="login-username" class="auth-input" placeholder="Nhập tên đăng nhập" required autocomplete="username" />
             </div>
           </div>
 
@@ -2917,21 +2917,6 @@
               <button type="button" class="btn-toggle-password" id="btn-toggle-password" onclick="togglePasswordVisibility()" title="Hiện/ẩn mật khẩu">
                 <svg id="eye-icon-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 <svg id="eye-icon-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Gợi ý tài khoản nhanh -->
-          <div class="auth-accounts-hint">
-            <div class="hint-header">Tài khoản được cấp sẵn:</div>
-            <div class="hint-chips">
-              <button type="button" class="hint-chip" onclick="fillQuickLogin('admin', 'Admin@766')">
-                <span class="chip-role chip-role-admin">Admin</span>
-                <span class="chip-acc">admin / Admin@766</span>
-              </button>
-              <button type="button" class="hint-chip" onclick="fillQuickLogin('canbo', 'Canbo@766')">
-                <span class="chip-role chip-role-officer">Cán bộ</span>
-                <span class="chip-acc">canbo / Canbo@766</span>
               </button>
             </div>
           </div>
