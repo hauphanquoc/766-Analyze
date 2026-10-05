@@ -874,10 +874,7 @@ function renderUnitsTable() {
                 </span>
               </td>`;
           } else {
-            return `
-              <td style="text-align: right;" class="score-view-only" onclick="handleLockedScoreClick('${escapeHtml(u.departmentName)}')" title="Đăng nhập để xem chi tiết chỉ tiêu">
-                ${formatted}
-              </td>`;
+            return `<td style="text-align: right;">${formatted}</td>`;
           }
         };
 
@@ -953,10 +950,7 @@ function renderPagination(totalPages, activePage) {
  * Open Modal to show detailed sub-criteria for PROVINCE
  */
 window.openMetricModal = function (indKey) {
-  if (!isLoggedIn()) {
-    openLoginModal('Vui lòng đăng nhập để xem chi tiết các tiêu chí toàn tỉnh.');
-    return;
-  }
+  if (!isLoggedIn()) return;
 
   // If progress indicator, route to dedicated progress form
   if (indKey === 'progress') {
@@ -998,12 +992,7 @@ window.openMetricModal = function (indKey) {
  * Open Modal to show detailed sub-criteria for a SUBORDINATE UNIT
  */
 window.openUnitMetricModal = function (unitId, indKey) {
-  if (!isLoggedIn()) {
-    const unit = appState.currentData?.units?.find((u) => u.departmentId === unitId);
-    const unitName = unit ? unit.departmentName : 'đơn vị này';
-    openLoginModal(`Vui lòng đăng nhập để xem chi tiết các tiêu chí của ${unitName}.`);
-    return;
-  }
+  if (!isLoggedIn()) return;
 
   // If progress indicator, route to dedicated progress form
   if (indKey === 'progress') {
@@ -1050,10 +1039,7 @@ window.openUnitMetricModal = function (unitId, indKey) {
  * [FORM RIÊNG] Open Dedicated Form for Thanh toán trực tuyến (3 chỉ tiêu con)
  */
 window.openDedicatedPaymentModal = function (unitId, isProvince = false) {
-  if (!isLoggedIn()) {
-    openLoginModal('Vui lòng đăng nhập để xem chi tiết chỉ tiêu Thanh toán trực tuyến.');
-    return;
-  }
+  if (!isLoggedIn()) return;
   let unitName = '';
   let scoreVal = 0;
   let metrics = [];
@@ -1136,10 +1122,7 @@ window.closePaymentModal = function () {
  * [FORM RIÊNG] Open Dedicated Form for Tiến độ giải quyết (Chỉ số 2)
  */
 window.openDedicatedProgressModal = function (unitId, isProvince = false) {
-  if (!isLoggedIn()) {
-    openLoginModal('Vui lòng đăng nhập để xem chi tiết chỉ tiêu Tiến độ giải quyết.');
-    return;
-  }
+  if (!isLoggedIn()) return;
   let unitName = '';
   let indCode = '';
   let totalReceived = 0;
@@ -4048,6 +4031,7 @@ function updateAuthUI() {
   const user = appState.currentUser;
 
   if (user) {
+    document.body.classList.add('is-logged-in');
     // Show user profile, hide login button
     if (dom.btnLoginHeader) dom.btnLoginHeader.style.display = 'none';
     if (dom.userProfileHeader) {
@@ -4057,6 +4041,7 @@ function updateAuthUI() {
       if (dom.userAvatarInitial) dom.userAvatarInitial.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
     }
   } else {
+    document.body.classList.remove('is-logged-in');
     // Show login button, hide user profile
     if (dom.btnLoginHeader) dom.btnLoginHeader.style.display = 'inline-flex';
     if (dom.userProfileHeader) dom.userProfileHeader.style.display = 'none';
