@@ -4072,23 +4072,32 @@ function updateAuthUI() {
  * Open Login Modal
  */
 window.openLoginModal = function (contextNotice = '') {
-  if (!dom.loginModal) return;
+  const modal = dom.loginModal || document.getElementById('login-modal');
+  if (!modal) {
+    console.error('[Auth] #login-modal element not found!');
+    return;
+  }
+  dom.loginModal = modal;
 
-  if (dom.loginContextNotice) {
+  const notice = dom.loginContextNotice || document.getElementById('login-context-notice');
+  const noticeText = dom.loginContextText || document.getElementById('login-context-text');
+  if (notice) {
     if (contextNotice) {
-      if (dom.loginContextText) dom.loginContextText.textContent = contextNotice;
-      dom.loginContextNotice.style.display = 'flex';
+      if (noticeText) noticeText.textContent = contextNotice;
+      notice.style.display = 'flex';
     } else {
-      dom.loginContextNotice.style.display = 'none';
+      notice.style.display = 'none';
     }
   }
 
-  if (dom.loginErrorAlert) dom.loginErrorAlert.style.display = 'none';
-  dom.loginModal.style.display = 'flex';
+  const errAlert = dom.loginErrorAlert || document.getElementById('login-error-alert');
+  if (errAlert) errAlert.style.display = 'none';
+  modal.style.display = 'flex';
 
   setTimeout(() => {
-    if (dom.loginUsername && !dom.loginUsername.value) {
-      dom.loginUsername.focus();
+    const userInp = dom.loginUsername || document.getElementById('login-username');
+    if (userInp && !userInp.value) {
+      userInp.focus();
     }
   }, 100);
 };
@@ -4097,10 +4106,12 @@ window.openLoginModal = function (contextNotice = '') {
  * Close Login Modal
  */
 window.closeLoginModal = function () {
-  if (dom.loginModal) {
-    dom.loginModal.style.display = 'none';
+  const modal = dom.loginModal || document.getElementById('login-modal');
+  if (modal) {
+    modal.style.display = 'none';
   }
-  if (dom.loginErrorAlert) dom.loginErrorAlert.style.display = 'none';
+  const errAlert = dom.loginErrorAlert || document.getElementById('login-error-alert');
+  if (errAlert) errAlert.style.display = 'none';
 };
 
 /**

@@ -6186,9 +6186,18 @@ body::before {
 
 /* Modal Overlay & Card */
 .auth-modal-overlay {
-  backdrop-filter: blur(5px);
-  background: rgba(15, 23, 42, 0.6) !important;
-  z-index: 10000;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(6px) !important;
+  z-index: 99999 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 .auth-modal-card {
