@@ -5576,6 +5576,508 @@ body::before {
   }
 }
 
+/* ==========================================================================
+   TAB 2: XẾP HẠNG 766 CÁC TỈNH (BÁO CÁO LÃNH ĐẠO • XẾP HẠNG CÙNG CẤP)
+   ========================================================================== */
+.provinces-container {
+  padding: 24px 0 48px;
+  max-width: 80rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.provinces-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.prov-card-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
+}
+
+.prov-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.prov-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4338ca;
+  background: #e0e7ff;
+  border: 1px solid #c7d2fe;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.prov-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.prov-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prov-search-icon {
+  position: absolute;
+  left: 11px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.prov-search-input {
+  padding: 8px 12px 8px 34px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  width: 210px;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.prov-search-input:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  width: 250px;
+}
+
+.btn-prov-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-prov-excel {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  color: #ffffff;
+  border: 1px solid #3730a3;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.btn-prov-excel:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35);
+}
+
+.btn-prov-print {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-prov-print:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.btn-prov-refresh {
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+}
+
+.btn-prov-refresh:hover {
+  background: #e0f2fe;
+  border-color: #0284c7;
+}
+
+.prov-title-center {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.prov-main-title {
+  font-size: 23px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+  margin: 0 0 6px 0;
+  text-transform: uppercase;
+}
+
+.prov-sub-title {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.prov-timestamp {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Thẻ Vinh danh Đắk Lắk */
+.daklak-highlight-banner {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #7dd3fc;
+  border-left: 6px solid #0284c7;
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 18px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
+  flex-wrap: wrap;
+}
+
+.daklak-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.daklak-flag-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.daklak-banner-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0369a1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.daklak-banner-rank {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0c4a6e;
+}
+
+.daklak-banner-rank span#daklak-rank-num {
+  color: #0284c7;
+  font-size: 24px;
+}
+
+.daklak-rank-total {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0369a1;
+}
+
+.daklak-banner-score-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.daklak-kpi-item {
+  background: #ffffff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 6px 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 76px;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.06);
+}
+
+.daklak-kpi-item.total-item {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: #0284c7;
+}
+
+.daklak-kpi-item.total-item .daklak-kpi-lbl {
+  color: #e0f2fe;
+}
+
+.daklak-kpi-item.total-item .daklak-kpi-val {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 15.5px;
+}
+
+.daklak-kpi-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.daklak-kpi-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.daklak-kpi-val .rank-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0284c7;
+  background: #e0f2fe;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* Bảng xếp hạng các tỉnh */
+.prov-table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.prov-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.prov-data-table thead tr.th-row-groups th {
+  border: 1px solid #cbd5e1;
+  padding: 10px 8px;
+  font-weight: 700;
+  text-align: center;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.prov-data-table thead .th-stt {
+  width: 48px;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.prov-data-table thead .th-province-name {
+  min-width: 210px;
+  background: #f8fafc;
+  color: #1e293b;
+  text-align: left;
+  padding-left: 14px;
+}
+
+.prov-data-table thead .th-group-ckmb {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.prov-data-table thead .th-group-tdgq {
+  background: #ffedd5;
+  color: #9a3412;
+  border-color: #fed7aa;
+}
+
+.prov-data-table thead .th-group-clgq {
+  background: #ccfbf1;
+  color: #115e59;
+  border-color: #99f6e4;
+}
+
+.prov-data-table thead .th-group-mdsh {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.prov-data-table thead .th-group-mdhl {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #e9d5ff;
+}
+
+.prov-data-table thead .th-group-tttt {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fef08a;
+}
+
+.prov-data-table thead .th-total-score {
+  width: 95px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 12.5px;
+}
+
+.prov-data-table thead tr.th-row-sub th {
+  border: 1px solid #cbd5e1;
+  padding: 6px 4px;
+  font-size: 11px;
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  white-space: nowrap;
+}
+
+.prov-data-table thead tr.th-row-sub th.th-score {
+  width: 58px;
+}
+
+.prov-data-table thead tr.th-row-sub th.th-rank {
+  width: 44px;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.prov-data-table tbody td {
+  padding: 9px 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  color: #334155;
+}
+
+.prov-data-table tbody tr:hover:not(.prov-row-daklak) {
+  background-color: #f8fafc;
+}
+
+.prov-data-table tbody td.td-stt {
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.prov-data-table tbody td.td-name {
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  padding-left: 14px;
+}
+
+.prov-data-table tbody td.td-score {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 10px;
+}
+
+.prov-data-table tbody td.td-rank {
+  text-align: center;
+  font-weight: 600;
+  color: #475569;
+  background: rgba(248, 250, 252, 0.7);
+}
+
+.prov-data-table tbody td.td-total {
+  text-align: right;
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  padding-right: 12px;
+  background: #f8fafc;
+}
+
+/* Hàng ĐẮK LẮK nổi bật y hệt hình mẫu */
+.prov-row-daklak {
+  background-color: #38bdf8 !important;
+  color: #082f49 !important;
+}
+
+.prov-row-daklak td {
+  background-color: #38bdf8 !important;
+  color: #082f49 !important;
+  font-weight: 700 !important;
+  border-color: #0284c7 !important;
+}
+
+.prov-row-daklak td.td-name {
+  color: #082f49 !important;
+  font-weight: 800 !important;
+}
+
+.prov-row-daklak td.td-rank {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+.prov-row-daklak td.td-total {
+  background-color: #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+.prov-empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.prov-table-footer {
+  padding: 14px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.prov-footer-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.5;
+}
+
+/* Top 3 medal styling */
+.prov-stt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prov-stt-1 { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.prov-stt-2 { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.prov-stt-3 { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+
+.rotating {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+
 
 
 

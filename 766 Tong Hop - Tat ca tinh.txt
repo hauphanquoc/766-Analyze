@@ -1,0 +1,17 @@
+curl --url ^"https://dichvucong.gov.vn/api/v1/reporting/evaluation/service-results^" ^
+  -H ^"Accept: application/json;odata=verbose^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9,vi;q=0.8,en-GB;q=0.7,pl;q=0.6,vi-VN;q=0.5,pl-PL;q=0.4^" ^
+  -H ^"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzZXNzaW9uSWQiOiJ1c2VyczowMTlkMzc0ZC02ZTgxLTcyMGUtYWFiMC1kMGI1NGVkYjI0MGM6MDFhMTBhMGMtYWUyMS03NmJkLWFkZTYtMzY4NDhjMGRkNTQ2IiwidXNlcklkIjoiMDE5ZDM3NGQtNmU4MS03MjBlLWFhYjAtZDBiNTRlZGIyNDBjIiwiY2l0aXplbklkIjoiMDY2MDkxMDAwNzc5IiwiZnVsbE5hbWUiOiJQSEFOIFFV4buQQyBI4bqsVSIsInR5cGUiOiJDSVRJWkVOIiwiYWNjZXNzVG9rZW5FeHBpcmVzSW4iOjI4ODAwLCJyZWZyZXNoVG9rZW5FeHBpcmVzSW4iOjM2MDAwLCJleHAiOjE3OTExOTg3NjUsImlhdCI6MTc5MTE2OTk2NX0.9U4BMlE3jEvYPFVAYXIeluU5rbrqnc22m6Wgl9FrWZE^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Content-Type: application/json; charset=UTF-8^" ^
+  -b ^"db39e9c1ec7f99985ca2badb4a5bf0b7=19288b046027c1ae9844025cb6751a67; 0d40cfdcf49d735e3ea0e2f54c4fc961=745ca59854112168c177d70f9415b7da; 0931b20b2628fef50e3bf74cbd148894=d93b508b9a4a3d1fabef032769b6e148; 62c3e0439134e736ac9a277faa8e2f5d=d279d29ea3fd3bb7288b09398c76bb19; f0d2e58493c0d97f2ac4baac661c8800=1fbf08d592fd90c3f29018e833e02745; efd01d88942c6355a2e35183b24258eb=1eb106b3e0087c33a1083de106b1ec73; ttqg_dmz019526c1=014b634ae16c84a8e566654fec561ed0c6089047e1855fbca60bb6efa79134f744f48b575558598fda2e23faa3db1d0b78e7dbcd6fbfd3c38daa51397d0476f00b74a60d5bdfd6a58e679cfe5d257fd7802ead133f1009db0dab4decb5f3d349330661d03785974fa6189c5fc827e133227dff346aebf4f07099cbcbb84d53858a06226077da987138be64de1a8276a6af9e7c8e32^" ^
+  -H ^"Origin: https://dichvucong.gov.vn^" ^
+  -H ^"Referer: https://dichvucong.gov.vn/danh-gia-chat-luong-phuc-vu^" ^
+  -H ^"Sec-Fetch-Dest: empty^" ^
+  -H ^"Sec-Fetch-Mode: cors^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"User-Agent: Mozilla/5.0 ^(Windows NT 10.0; Win64; x64^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"154^\^", ^\^"Microsoft Edge^\^";v=^\^"154^\^", ^\^"Not A^(Brand^\^";v=^\^"99^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  --data-raw ^"^{^\^"timeType^\^":^\^"year^\^",^\^"year^\^":2026,^\^"departmentType^\^":^\^"ADMINISTRATIVE_UNIT^\^"^}^"

@@ -82,6 +82,7 @@ const dom = {
 document.addEventListener('DOMContentLoaded', () => {
   initNavigationTabs();
   initPortalsDirectory();
+  initProvincesTab();
   initFormulaDirectory();
   initToolsSubnavigation();
   initSignatureRemoverTool();
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Navigation tabs (Đường dẫn các cổng / Bộ chỉ số 766)
+ * Navigation tabs (Đường dẫn các cổng / Xếp hạng các tỉnh / Bộ chỉ số 766)
  */
 function initNavigationTabs() {
   const tabButtons = document.querySelectorAll('.nav-tab-btn[data-tab]');
@@ -114,6 +115,13 @@ function initNavigationTabs() {
         pane.classList.remove('active');
       }
     });
+
+    // Tự động tải dữ liệu các tỉnh khi mở tab Xếp hạng các tỉnh
+    if (targetTabId === 'tab-content-provinces') {
+      if (!provincesState.loaded) {
+        loadProvincesData();
+      }
+    }
 
     // Resize Chart.js when entering 766 tab so canvas dimensions are sharp
     if (targetTabId === 'tab-content-766') {
@@ -3725,4 +3733,197 @@ function initFormulaDirectory() {
     applyFilters();
   };
 }
+
+/* ==========================================================================
+   MODULE: XẾP HẠNG 766 CÁC TỈNH (BÁO CÁO LÃNH ĐẠO • XẾP HẠNG CÙNG CẤP)
+   ========================================================================== */
+const provincesState = {
+  loaded: false,
+  loading: false,
+  data: null,
+  filteredProvinces: []
+};
+
+async function loadProvincesData(force = false) {
+  if (provincesState.loading) return;
+  provincesState.loading = true;
+
+  const spinner = document.getElementById('prov-refresh-spinner');
+  if (spinner) spinner.classList.add('rotating');
+
+  try {
+    const url = force ? '/api/provinces?refresh=true' : '/api/provinces';
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.success && json.data) {
+      provincesState.data = json.data;
+      provincesState.loaded = true;
+      renderProvincesView(json.data);
+      if (force) {
+        showToast('Đã làm mới dữ liệu xếp hạng các tỉnh từ Cổng DVCQG!', 'success');
+      }
+    } else {
+      throw new Error(json.error || 'Không tải được dữ liệu xếp hạng các tỉnh');
+    }
+  } catch (err) {
+    console.error('[Provinces] Load error:', err);
+    showToast('Lỗi khi tải bảng xếp hạng các tỉnh: ' + err.message, 'error');
+  } finally {
+    provincesState.loading = false;
+    if (spinner) spinner.classList.remove('rotating');
+  }
+}
+
+function renderProvincesView(data) {
+  // 1. Cập nhật số lượng và thời gian cập nhật
+  const totalCountEl = document.getElementById('prov-total-count');
+  if (totalCountEl) totalCountEl.textContent = data.totalCount || 34;
+  
+  const updatedTimeEl = document.getElementById('prov-updated-time');
+  if (updatedTimeEl) updatedTimeEl.textContent = data.updatedAtVN || 'Đang cập nhật';
+
+  // 2. Cập nhật Thẻ vinh danh vị trí Đắk Lắk
+  const dl = data.dakLak;
+  if (dl) {
+    const rankEl = document.getElementById('daklak-rank-num');
+    if (rankEl) rankEl.textContent = dl.rank;
+
+    const totalProvEl = document.getElementById('daklak-total-prov');
+    if (totalProvEl) totalProvEl.textContent = data.totalCount;
+
+    const scoreTotalEl = document.getElementById('daklak-score-total');
+    if (scoreTotalEl) scoreTotalEl.textContent = (dl.totalScore || 0).toFixed(2);
+
+    const setKpi = (scoreId, rankId, score, rank) => {
+      const sEl = document.getElementById(scoreId);
+      if (sEl) sEl.innerHTML = `${(score || 0).toFixed(2)} <small class="rank-tag">#${rank || '-'}</small>`;
+    };
+
+    setKpi('daklak-score-ckmb', 'daklak-rank-ckmb', dl.scores?.CKMB, dl.rank_CKMB);
+    setKpi('daklak-score-tdgq', 'daklak-rank-tdgq', dl.scores?.TDGQ, dl.rank_TDGQ);
+    setKpi('daklak-score-clgq', 'daklak-rank-clgq', dl.scores?.CLGQ, dl.rank_CLGQ);
+    setKpi('daklak-score-mdsh', 'daklak-rank-mdsh', dl.scores?.MDSH, dl.rank_MDSH);
+    setKpi('daklak-score-mdhl', 'daklak-rank-mdhl', dl.scores?.MDHL, dl.rank_MDHL);
+    setKpi('daklak-score-tttt', 'daklak-rank-tttt', dl.scores?.TTTT, dl.rank_TTTT);
+  }
+
+  // 3. Render bảng
+  provincesState.filteredProvinces = data.provinces || [];
+  renderProvincesTable(provincesState.filteredProvinces);
+}
+
+function renderProvincesTable(list) {
+  const tbody = document.getElementById('provinces-table-body');
+  const emptyState = document.getElementById('provinces-empty-state');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+  if (!list || list.length === 0) {
+    if (emptyState) emptyState.style.display = 'block';
+    return;
+  }
+  if (emptyState) emptyState.style.display = 'none';
+
+  list.forEach(p => {
+    const tr = document.createElement('tr');
+    if (p.isDakLak) {
+      tr.className = 'prov-row-daklak';
+    }
+
+    let sttHtml = p.rank;
+    if (p.rank === 1) sttHtml = '<span class="prov-stt-badge prov-stt-1">1</span>';
+    else if (p.rank === 2) sttHtml = '<span class="prov-stt-badge prov-stt-2">2</span>';
+    else if (p.rank === 3) sttHtml = '<span class="prov-stt-badge prov-stt-3">3</span>';
+
+    tr.innerHTML = `
+      <td class="td-stt">${sttHtml}</td>
+      <td class="td-name">${escapeHtml(p.departmentName)}</td>
+      <td class="td-score">${(p.scores?.CKMB ?? 0).toFixed(2)}</td>
+      <td class="td-rank">${p.rank_CKMB || '-'}</td>
+      <td class="td-score">${(p.scores?.TDGQ ?? 0).toFixed(2)}</td>
+      <td class="td-rank">${p.rank_TDGQ || '-'}</td>
+      <td class="td-score">${(p.scores?.CLGQ ?? 0).toFixed(2)}</td>
+      <td class="td-rank">${p.rank_CLGQ || '-'}</td>
+      <td class="td-score">${(p.scores?.MDSH ?? 0).toFixed(2)}</td>
+      <td class="td-rank">${p.rank_MDSH || '-'}</td>
+      <td class="td-score">${(p.scores?.MDHL ?? 0).toFixed(2)}</td>
+      <td class="td-rank">${p.rank_MDHL || '-'}</td>
+      <td class="td-score">${(p.scores?.TTTT ?? 0).toFixed(2)}</td>
+      <td class="td-rank">${p.rank_TTTT || '-'}</td>
+      <td class="td-total">${(p.totalScore ?? 0).toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function initProvincesTab() {
+  const searchInput = document.getElementById('prov-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!provincesState.data || !provincesState.data.provinces) return;
+
+      if (!q) {
+        provincesState.filteredProvinces = provincesState.data.provinces;
+      } else {
+        provincesState.filteredProvinces = provincesState.data.provinces.filter(p =>
+          (p.departmentName || '').toLowerCase().includes(q) ||
+          (p.departmentCode || '').toLowerCase().includes(q)
+        );
+      }
+      renderProvincesTable(provincesState.filteredProvinces);
+    });
+  }
+
+  window.refreshProvincesData = function() {
+    loadProvincesData(true);
+  };
+
+  window.exportProvincesToExcel = function() {
+    if (!provincesState.data || !provincesState.data.provinces) {
+      showToast('Chưa có dữ liệu để xuất Excel', 'warning');
+      return;
+    }
+    exportProvincesTableExcel(provincesState.data);
+  };
+}
+
+function exportProvincesTableExcel(data) {
+  const table = document.getElementById('provinces-table');
+  if (!table) return;
+
+  const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 11pt; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #999; padding: 6px 10px; }
+        th { background-color: #d9e1f2; font-weight: bold; text-align: center; }
+        .daklak { background-color: #38bdf8; font-weight: bold; }
+        .num { text-align: right; }
+        .center { text-align: center; }
+      </style>
+    </head>
+    <body>
+      <h2 style="text-align: center; color: #1e3a8a;">BÁO CÁO XẾP HẠNG ĐÁNH GIÁ CHẤT LƯỢNG PHỤC VỤ NĂM 2026 (BỘ CHỈ SỐ 766)</h2>
+      <p style="text-align: center; font-style: italic; color: #555;">Nguồn: Cổng Dịch vụ công Quốc gia (dichvucong.gov.vn) - ${data.updatedAtVN || ''}</p>
+      ${table.outerHTML}
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Xep_hang_766_Cac_Tinh_${data.date || '2026'}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Đã tải xuống file Excel bảng xếp hạng các tỉnh!', 'success');
+}
+
 

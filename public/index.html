@@ -66,6 +66,19 @@
             </button>
           </li>
           <li class="nav-tab-item">
+            <button class="nav-tab-btn" id="tab-btn-provinces" data-tab="tab-content-provinces">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+                <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+              </svg>
+              <span>Xếp hạng 766 các tỉnh</span>
+            </button>
+          </li>
+          <li class="nav-tab-item">
             <button class="nav-tab-btn" id="tab-btn-766" data-tab="tab-content-766">
               <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 3v18h18"></path>
@@ -174,7 +187,146 @@
         </div>
       </div>
 
-      <!-- TAB 2: BỘ CHỈ SỐ 766 -->
+      <!-- TAB 2: XẾP HẠNG 766 CÁC TỈNH (BÁO CÁO LÃNH ĐẠO • XẾP HẠNG CÙNG CẤP) -->
+      <div id="tab-content-provinces" class="tab-pane" style="display: none;">
+        <div class="provinces-container">
+          <!-- CARD CHÍNH: XẾP HẠNG ĐÁNH GIÁ CHẤT LƯỢNG PHỤC VỤ -->
+          <div class="provinces-card">
+            
+            <!-- Header chuẩn theo mẫu Báo cáo lãnh đạo • Xếp hạng cùng cấp -->
+            <div class="prov-card-header">
+              <div class="prov-header-top">
+                <div class="prov-header-left">
+                  <div class="prov-breadcrumb">
+                    <span class="prov-badge">Báo cáo lãnh đạo • Xếp hạng cùng cấp</span>
+                  </div>
+                </div>
+                <div class="prov-header-actions">
+                  <div class="prov-search-wrap">
+                    <svg class="prov-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="prov-search-input" placeholder="Tìm tỉnh / thành phố..." class="prov-search-input">
+                  </div>
+                  <button id="btn-export-provinces-excel" class="btn btn-prov-action btn-prov-excel" title="Xuất bảng xếp hạng ra file Excel" onclick="exportProvincesToExcel()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Tải Excel</span>
+                  </button>
+                  <button id="btn-print-provinces" class="btn btn-prov-action btn-prov-print" onclick="window.print()" title="In hoặc lưu dạng PDF">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>In / PDF</span>
+                  </button>
+                  <button id="btn-refresh-provinces" class="btn btn-prov-action btn-prov-refresh" onclick="refreshProvincesData()" title="Lấy dữ liệu mới nhất từ Cổng DVCQG">
+                    <svg id="prov-refresh-spinner" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    <span>Làm mới</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tiêu đề lớn trung tâm -->
+              <div class="prov-title-center">
+                <h2 class="prov-main-title">XẾP HẠNG ĐÁNH GIÁ CHẤT LƯỢNG PHỤC VỤ</h2>
+                <p class="prov-sub-title">Năm 2026 - <span id="prov-total-count">34</span> tỉnh, thành phố • Tất cả thủ tục hành chính</p>
+                <p class="prov-timestamp">Cập nhật: <span id="prov-updated-time">Đang tải...</span></p>
+              </div>
+
+              <!-- Thẻ điểm nhấn vị trí Đắk Lắk -->
+              <div class="daklak-highlight-banner" id="daklak-highlight-banner">
+                <div class="daklak-banner-left">
+                  <div class="daklak-flag-icon">⭐</div>
+                  <div>
+                    <div class="daklak-banner-label">VỊ TRÍ TỈNH ĐẮK LẮK TRÊN TOÀN QUỐC</div>
+                    <div class="daklak-banner-rank">Hạng <span id="daklak-rank-num">--</span> <span class="daklak-rank-total">/ <span id="daklak-total-prov">34</span> tỉnh, thành phố</span></div>
+                  </div>
+                </div>
+                <div class="daklak-banner-score-group">
+                  <div class="daklak-kpi-item total-item">
+                    <span class="daklak-kpi-lbl">Tổng điểm</span>
+                    <span class="daklak-kpi-val total-val" id="daklak-score-total">--</span>
+                  </div>
+                  <div class="daklak-kpi-item">
+                    <span class="daklak-kpi-lbl">Công khai (18đ)</span>
+                    <span class="daklak-kpi-val" id="daklak-score-ckmb">-- <small class="rank-tag" id="daklak-rank-ckmb">#--</small></span>
+                  </div>
+                  <div class="daklak-kpi-item">
+                    <span class="daklak-kpi-lbl">Tiến độ (20đ)</span>
+                    <span class="daklak-kpi-val" id="daklak-score-tdgq">-- <small class="rank-tag" id="daklak-rank-tdgq">#--</small></span>
+                  </div>
+                  <div class="daklak-kpi-item">
+                    <span class="daklak-kpi-lbl">DVC TT (12đ)</span>
+                    <span class="daklak-kpi-val" id="daklak-score-clgq">-- <small class="rank-tag" id="daklak-rank-clgq">#--</small></span>
+                  </div>
+                  <div class="daklak-kpi-item">
+                    <span class="daklak-kpi-lbl">Số hóa (22đ)</span>
+                    <span class="daklak-kpi-val" id="daklak-score-mdsh">-- <small class="rank-tag" id="daklak-rank-mdsh">#--</small></span>
+                  </div>
+                  <div class="daklak-kpi-item">
+                    <span class="daklak-kpi-lbl">Hài lòng (18đ)</span>
+                    <span class="daklak-kpi-val" id="daklak-score-mdhl">-- <small class="rank-tag" id="daklak-rank-mdhl">#--</small></span>
+                  </div>
+                  <div class="daklak-kpi-item">
+                    <span class="daklak-kpi-lbl">Thanh toán (10đ)</span>
+                    <span class="daklak-kpi-val" id="daklak-score-tttt">-- <small class="rank-tag" id="daklak-rank-tttt">#--</small></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bảng xếp hạng các tỉnh (chuẩn theo hình tham khảo) -->
+            <div class="prov-table-responsive">
+              <table class="prov-data-table" id="provinces-table">
+                <thead>
+                  <tr class="th-row-groups">
+                    <th rowspan="2" class="th-stt">STT</th>
+                    <th rowspan="2" class="th-province-name">TỈNH/THÀNH PHỐ</th>
+                    <th colspan="2" class="th-group th-group-ckmb">CÔNG KHAI, MINH BẠCH</th>
+                    <th colspan="2" class="th-group th-group-tdgq">TIẾN ĐỘ GIẢI QUYẾT</th>
+                    <th colspan="2" class="th-group th-group-clgq">DỊCH VỤ CÔNG TRỰC TUYẾN</th>
+                    <th colspan="2" class="th-group th-group-mdsh">SỐ HÓA HỒ SƠ</th>
+                    <th colspan="2" class="th-group th-group-mdhl">MỨC ĐỘ HÀI LÒNG</th>
+                    <th colspan="2" class="th-group th-group-tttt">THANH TOÁN TRỰC TUYẾN</th>
+                    <th rowspan="2" class="th-total-score">TỔNG ĐIỂM</th>
+                  </tr>
+                  <tr class="th-row-sub">
+                    <th class="th-sub th-score" title="Tối đa 18 điểm">Điểm</th>
+                    <th class="th-sub th-rank">Hạng</th>
+                    <th class="th-sub th-score" title="Tối đa 20 điểm">Điểm</th>
+                    <th class="th-sub th-rank">Hạng</th>
+                    <th class="th-sub th-score" title="Tối đa 12 điểm">Điểm</th>
+                    <th class="th-sub th-rank">Hạng</th>
+                    <th class="th-sub th-score" title="Tối đa 22 điểm">Điểm</th>
+                    <th class="th-sub th-rank">Hạng</th>
+                    <th class="th-sub th-score" title="Tối đa 18 điểm">Điểm</th>
+                    <th class="th-sub th-rank">Hạng</th>
+                    <th class="th-sub th-score" title="Tối đa 10 điểm">Điểm</th>
+                    <th class="th-sub th-rank">Hạng</th>
+                  </tr>
+                </thead>
+                <tbody id="provinces-table-body">
+                  <!-- Generated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty / No results state -->
+            <div id="provinces-empty-state" class="prov-empty-state" style="display: none;">
+              <p>Không tìm thấy tỉnh/thành phố nào phù hợp với từ khóa tìm kiếm.</p>
+            </div>
+
+            <!-- Footer ghi chú -->
+            <div class="prov-table-footer">
+              <div class="prov-footer-note">
+                <span>* Dữ liệu được trích xuất từ <strong>Cổng Dịch vụ công Quốc gia</strong> (dichvucong.gov.vn) định kỳ sáng thứ 6 hàng tuần.</span>
+                <span>* Hàng màu xanh nổi bật đại diện cho <strong>UBND tỉnh Đắk Lắk</strong>.</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: BỘ CHỈ SỐ 766 -->
       <div id="tab-content-766" class="tab-pane" style="display: none;">
         <!-- 766 Control Toolbar: Thông báo bản lưu trữ, Ngày dữ liệu, Tải Excel -->
         <div class="toolbar-766">

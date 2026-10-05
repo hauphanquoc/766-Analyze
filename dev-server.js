@@ -20,11 +20,13 @@ const cronHandler = require('./api/cron');
 const crawlHandler = require('./api/crawl');
 const dataHandler = require('./api/data');
 const exportHandler = require('./api/export');
+const provincesHandler = require('./api/provinces');
 
 app.all('/api/cron', (req, res) => cronHandler(req, res));
 app.all('/api/crawl', (req, res) => crawlHandler(req, res));
 app.all('/api/data', (req, res) => dataHandler(req, res));
 app.all('/api/export', (req, res) => exportHandler(req, res));
+app.all('/api/provinces', (req, res) => provincesHandler(req, res));
 
 // Fallback to index.html for SPA
 app.use((req, res) => {
@@ -48,6 +50,16 @@ cron.schedule('0 6 * * *', async () => {
       success: true
     });
     console.log('[Local Cron] Task finished successfully for date:', analyzed.date);
+
+    // Nhiệm vụ mỗi sáng thứ 6: Thu thập bảng xếp hạng 766 các tỉnh
+    const dayOfWeek = new Date().getDay();
+    if (dayOfWeek === 5) {
+      console.log('[Local Cron] [Sáng thứ 6] Đang thu thập bảng xếp hạng 766 các tỉnh...');
+      const { fetchProvinceRankings } = require('./src/provinceCollector');
+      const provData = await fetchProvinceRankings();
+      await storage.saveProvinceRankings(provData);
+      console.log('[Local Cron] [Sáng thứ 6] Cập nhật xếp hạng các tỉnh thành công!');
+    }
   } catch (err) {
     console.error('[Local Cron] Task failed:', err);
   }

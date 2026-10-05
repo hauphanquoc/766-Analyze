@@ -63,12 +63,15 @@ const memoryCache = {
 const DATA_DIR = path.resolve(__dirname, '..', 'data');
 const SNAPSHOTS_DIR = path.join(DATA_DIR, 'snapshots');
 const REPORTS_DIR = path.join(DATA_DIR, 'reports');
+const PROVINCES_DIR = path.join(DATA_DIR, 'provinces');
 const HISTORY_FILE = path.join(DATA_DIR, 'history.json');
+const PROVINCES_FILE = path.join(DATA_DIR, 'provinces-latest.json');
 
 function ensureDirectories() {
   try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
     if (!fs.existsSync(SNAPSHOTS_DIR)) fs.mkdirSync(SNAPSHOTS_DIR, { recursive: true });
+    if (!fs.existsSync(PROVINCES_DIR)) fs.mkdirSync(PROVINCES_DIR, { recursive: true });
     if (!fs.existsSync(REPORTS_DIR)) fs.mkdirSync(REPORTS_DIR, { recursive: true });
   } catch (err) {
     // Ephemeral or read-only filesystem (Vercel)
@@ -320,6 +323,66 @@ async function getHistory() {
   return memoryCache.history;
 }
 
+/**
+ * Save province rankings data (both Redis and local disk)
+ */
+async function saveProvinceRankings(data) {
+  memoryCache.provinces = data;
+  if (redisClient) {
+    try {
+      await redisClient.set('dvc:provinces:latest', JSON.stringify(data));
+      if (data.date) {
+        await redisClient.set(`dvc:provinces:${data.date}`, JSON.stringify(data));
+      }
+    } catch (err) {
+      console.error('[Storage] Redis saveProvinceRankings error:', err.message);
+    }
+  }
+
+  try {
+    ensureDirectories();
+    fs.writeFileSync(PROVINCES_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    if (data.date) {
+      const pPath = path.join(PROVINCES_DIR, `${data.date}.json`);
+      fs.writeFileSync(pPath, JSON.stringify(data, null, 2), 'utf-8');
+    }
+  } catch (err) {
+    // Ephemeral on Vercel
+  }
+
+  return true;
+}
+
+/**
+ * Get province rankings data
+ */
+async function getProvinceRankings() {
+  if (memoryCache.provinces) return memoryCache.provinces;
+
+  if (redisClient) {
+    try {
+      const data = await redisClient.get('dvc:provinces:latest');
+      if (data) {
+        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+        memoryCache.provinces = parsed;
+        return parsed;
+      }
+    } catch (err) {
+      console.error('[Storage] Redis getProvinceRankings error:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(PROVINCES_FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(PROVINCES_FILE, 'utf-8'));
+      memoryCache.provinces = parsed;
+      return parsed;
+    }
+  } catch (err) {}
+
+  return null;
+}
+
 module.exports = {
   saveSnapshot,
   getSnapshot,
@@ -328,6 +391,9 @@ module.exports = {
   listDates,
   recordLog,
   getHistory,
+  saveProvinceRankings,
+  getProvinceRankings,
   DATA_DIR,
-  REPORTS_DIR
+  REPORTS_DIR,
+  PROVINCES_DIR
 };

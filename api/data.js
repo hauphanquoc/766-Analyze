@@ -24,6 +24,17 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ success: true, history });
     }
 
+    if (action === 'provinces') {
+      const forceRefresh = req.query?.refresh === 'true';
+      let provincesData = !forceRefresh ? await storage.getProvinceRankings() : null;
+      if (!provincesData) {
+        const { fetchProvinceRankings } = require('../src/provinceCollector');
+        provincesData = await fetchProvinceRankings();
+        await storage.saveProvinceRankings(provincesData);
+      }
+      return res.status(200).json({ success: true, data: provincesData });
+    }
+
     // Specific date requested
     if (date) {
       const snapshot = await storage.getSnapshot(date);
