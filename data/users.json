@@ -1,0 +1,16 @@
+[
+  {
+    "username": "admin",
+    "name": "Quản trị viên (Đắk Lắk)",
+    "role": "admin",
+    "passwordHash": "dvc766_salt_admin_daklak:6b752c009789cddadec4ad0c958647f75b4316edb1d3ddf142abe7f745ce509022c9a52e989d3596410ff5903388cd5556494a2c0be628369970b6e2cb1f1181",
+    "createdAt": "2026-10-05T09:05:09.534Z"
+  },
+  {
+    "username": "canbo",
+    "name": "Cán bộ nghiệp vụ",
+    "role": "officer",
+    "passwordHash": "dvc766_salt_canbo_daklak:ca23c445d6670095fb35e8ef1781b4bd603dcc5e776b7b52ae6d9fa2cdf005b8ee72c67942ca5c6b814f087e35a9e41f957c18bb9531392641963e239af1bad8",
+    "createdAt": "2026-10-05T09:05:09.535Z"
+  }
+]

@@ -38,6 +38,14 @@
       "dest": "/api/provinces.js"
     },
     {
+      "src": "/api/auth",
+      "dest": "/api/auth.js"
+    },
+    {
+      "src": "/api/auth/(.*)",
+      "dest": "/api/auth.js?action=$1"
+    },
+    {
       "handle": "filesystem"
     },
     {

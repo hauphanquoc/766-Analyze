@@ -4,6 +4,7 @@
 
 // Application State
 let appState = {
+  currentUser: null,
   currentData: null,
   availableDates: [],
   selectedDate: null,
@@ -75,7 +76,22 @@ const dom = {
   progmodalOverdueRatio: document.getElementById('progmodal-overdue-ratio'),
   progmodalOverdueBar: document.getElementById('progmodal-overdue-bar'),
   welcomeModal: document.getElementById('welcome-modal'),
-  toastContainer: document.getElementById('toast-container')
+  toastContainer: document.getElementById('toast-container'),
+  btnLoginHeader: document.getElementById('btn-open-login'),
+  userProfileHeader: document.getElementById('user-profile-header'),
+  userAvatarInitial: document.getElementById('user-avatar-initial'),
+  userDisplayName: document.getElementById('user-display-name'),
+  userRoleBadge: document.getElementById('user-role-badge'),
+  loginModal: document.getElementById('login-modal'),
+  loginForm: document.getElementById('login-form'),
+  loginUsername: document.getElementById('login-username'),
+  loginPassword: document.getElementById('login-password'),
+  loginErrorAlert: document.getElementById('login-error-alert'),
+  loginContextNotice: document.getElementById('login-context-notice'),
+  loginContextText: document.getElementById('login-context-text'),
+  loginSubmitBtn: document.getElementById('btn-login-submit'),
+  loginSubmitText: document.getElementById('login-submit-text'),
+  loginSubmitSpinner: document.getElementById('login-submit-spinner')
 };
 
 // Initialize on DOM load
@@ -91,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initImageToPdfTool();
   initEventListeners();
   initWelcomeNotice();
+  initAuth();
   loadInitialData();
 });
 
@@ -845,29 +862,48 @@ function renderUnitsTable() {
       const rankHtml = `<span class="${rankClass}">${u.rank}</span>`;
       const grade = u.classification || { label: '-', color: '#64748b' };
 
-      tr.innerHTML = `
-        <td style="text-align: center;">${rankHtml}</td>
-        <td>
-          <span class="unit-name-cell">${escapeHtml(u.departmentName)}</span>
-          ${u.departmentCode ? `<span class="unit-code-badge">(${escapeHtml(u.departmentCode)})</span>` : ''}
-        </td>
-        <td><span class="level-tag">${escapeHtml(u.levelLabel || 'Đơn vị')}</span></td>
-        <td style="text-align: right;">${(u.scores?.transparency ?? 0).toFixed(2)}</td>
-        <td style="text-align: right;">${(u.scores?.progress ?? 0).toFixed(2)}</td>
-        <td style="text-align: right;">${(u.scores?.onlineService ?? 0).toFixed(2)}</td>
-        <td style="text-align: right;">${(u.scores?.digitized ?? 0).toFixed(2)}</td>
-        <td style="text-align: right;">${(u.scores?.payment ?? 0).toFixed(2)}</td>
-        <td style="text-align: right;">${(u.scores?.satisfaction ?? 0).toFixed(2)}</td>
-        <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
-        <td style="text-align: center; white-space: nowrap;">
-          <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
-            ${escapeHtml(grade.label)}
-          </span>
-        </td>
-      `;
-      dom.unitsTableBody.appendChild(tr);
-    });
-  }
+        const loggedIn = Boolean(appState.currentUser);
+        const scoreCell = (val, indKey, title) => {
+          const formatted = (val ?? 0).toFixed(2);
+          if (loggedIn) {
+            return `
+              <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', '${indKey}')" title="${title}">
+                <span class="score-clickable-inner">
+                  <span>${formatted}</span>
+                  <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+              </td>`;
+          } else {
+            return `
+              <td style="text-align: right;" class="score-view-only" onclick="handleLockedScoreClick('${escapeHtml(u.departmentName)}')" title="Đăng nhập để xem chi tiết chỉ tiêu">
+                ${formatted}
+              </td>`;
+          }
+        };
+
+        tr.innerHTML = `
+          <td style="text-align: center;">${rankHtml}</td>
+          <td>
+            <span class="unit-name-cell">${escapeHtml(u.departmentName)}</span>
+            ${u.departmentCode ? `<span class="unit-code-badge">(${escapeHtml(u.departmentCode)})</span>` : ''}
+          </td>
+          <td><span class="level-tag">${escapeHtml(u.levelLabel || 'Đơn vị')}</span></td>
+          ${scoreCell(u.scores?.transparency, 'transparency', 'Nhấn xem chi tiết 4 tiêu chí Công khai minh bạch')}
+          ${scoreCell(u.scores?.progress, 'progress', 'Nhấn xem chi tiết hồ sơ Tiến độ giải quyết')}
+          ${scoreCell(u.scores?.onlineService, 'onlineService', 'Nhấn xem chi tiết Dịch vụ công trực tuyến')}
+          ${scoreCell(u.scores?.digitized, 'digitized', 'Nhấn xem chi tiết 7 tiêu chí Số hóa hồ sơ')}
+          ${scoreCell(u.scores?.payment, 'payment', 'Nhấn xem chi tiết giao dịch Thanh toán trực tuyến')}
+          ${scoreCell(u.scores?.satisfaction, 'satisfaction', 'Nhấn xem chi tiết Mức độ hài lòng của người dân')}
+          <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
+          <td style="text-align: center; white-space: nowrap;">
+            <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
+              ${escapeHtml(grade.label)}
+            </span>
+          </td>
+        `;
+        dom.unitsTableBody.appendChild(tr);
+      });
+    }
 
   // 5. Update counts & pagination
   dom.showingCount.textContent = pageItems.length;
@@ -917,6 +953,11 @@ function renderPagination(totalPages, activePage) {
  * Open Modal to show detailed sub-criteria for PROVINCE
  */
 window.openMetricModal = function (indKey) {
+  if (!isLoggedIn()) {
+    openLoginModal('Vui lòng đăng nhập để xem chi tiết các tiêu chí toàn tỉnh.');
+    return;
+  }
+
   // If progress indicator, route to dedicated progress form
   if (indKey === 'progress') {
     openDedicatedProgressModal(null, true);
@@ -957,6 +998,13 @@ window.openMetricModal = function (indKey) {
  * Open Modal to show detailed sub-criteria for a SUBORDINATE UNIT
  */
 window.openUnitMetricModal = function (unitId, indKey) {
+  if (!isLoggedIn()) {
+    const unit = appState.currentData?.units?.find((u) => u.departmentId === unitId);
+    const unitName = unit ? unit.departmentName : 'đơn vị này';
+    openLoginModal(`Vui lòng đăng nhập để xem chi tiết các tiêu chí của ${unitName}.`);
+    return;
+  }
+
   // If progress indicator, route to dedicated progress form
   if (indKey === 'progress') {
     openDedicatedProgressModal(unitId, false);
@@ -1002,6 +1050,10 @@ window.openUnitMetricModal = function (unitId, indKey) {
  * [FORM RIÊNG] Open Dedicated Form for Thanh toán trực tuyến (3 chỉ tiêu con)
  */
 window.openDedicatedPaymentModal = function (unitId, isProvince = false) {
+  if (!isLoggedIn()) {
+    openLoginModal('Vui lòng đăng nhập để xem chi tiết chỉ tiêu Thanh toán trực tuyến.');
+    return;
+  }
   let unitName = '';
   let scoreVal = 0;
   let metrics = [];
@@ -1084,6 +1136,10 @@ window.closePaymentModal = function () {
  * [FORM RIÊNG] Open Dedicated Form for Tiến độ giải quyết (Chỉ số 2)
  */
 window.openDedicatedProgressModal = function (unitId, isProvince = false) {
+  if (!isLoggedIn()) {
+    openLoginModal('Vui lòng đăng nhập để xem chi tiết chỉ tiêu Tiến độ giải quyết.');
+    return;
+  }
   let unitName = '';
   let indCode = '';
   let totalReceived = 0;
@@ -3925,5 +3981,243 @@ function exportProvincesTableExcel(data) {
   URL.revokeObjectURL(url);
   showToast('Đã tải xuống file Excel bảng xếp hạng các tỉnh!', 'success');
 }
+
+/* ==========================================================================
+   AUTHENTICATION LOGIC & MODAL HANDLING
+   ========================================================================== */
+
+/**
+ * Initialize Authentication
+ */
+function initAuth() {
+  checkAuthStatus();
+
+  // Close login modal when clicking outside
+  if (dom.loginModal) {
+    dom.loginModal.addEventListener('click', (e) => {
+      if (e.target === dom.loginModal) {
+        closeLoginModal();
+      }
+    });
+  }
+}
+
+/**
+ * Check if user is currently logged in
+ */
+function isLoggedIn() {
+  return Boolean(appState.currentUser);
+}
+window.isLoggedIn = isLoggedIn;
+
+/**
+ * Check existing authentication token from localStorage
+ */
+async function checkAuthStatus() {
+  const token = localStorage.getItem('dvc766_token');
+  if (!token) {
+    appState.currentUser = null;
+    updateAuthUI();
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    if (data.success && data.authenticated && data.user) {
+      appState.currentUser = data.user;
+    } else {
+      localStorage.removeItem('dvc766_token');
+      appState.currentUser = null;
+    }
+  } catch (err) {
+    console.warn('[Auth] Check session error:', err);
+  }
+
+  updateAuthUI();
+}
+
+/**
+ * Update UI according to login state
+ */
+function updateAuthUI() {
+  const user = appState.currentUser;
+
+  if (user) {
+    // Show user profile, hide login button
+    if (dom.btnLoginHeader) dom.btnLoginHeader.style.display = 'none';
+    if (dom.userProfileHeader) {
+      dom.userProfileHeader.style.display = 'inline-flex';
+      if (dom.userDisplayName) dom.userDisplayName.textContent = user.name || user.username;
+      if (dom.userRoleBadge) dom.userRoleBadge.textContent = user.role === 'admin' ? 'Quản trị viên' : 'Cán bộ';
+      if (dom.userAvatarInitial) dom.userAvatarInitial.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
+    }
+  } else {
+    // Show login button, hide user profile
+    if (dom.btnLoginHeader) dom.btnLoginHeader.style.display = 'inline-flex';
+    if (dom.userProfileHeader) dom.userProfileHeader.style.display = 'none';
+  }
+
+  // Re-render table if units exist, to toggle clickability of score cells
+  if (appState.currentData && dom.unitsTableBody) {
+    renderUnitsTable();
+  }
+}
+
+/**
+ * Open Login Modal
+ */
+window.openLoginModal = function (contextNotice = '') {
+  if (!dom.loginModal) return;
+
+  if (dom.loginContextNotice) {
+    if (contextNotice) {
+      if (dom.loginContextText) dom.loginContextText.textContent = contextNotice;
+      dom.loginContextNotice.style.display = 'flex';
+    } else {
+      dom.loginContextNotice.style.display = 'none';
+    }
+  }
+
+  if (dom.loginErrorAlert) dom.loginErrorAlert.style.display = 'none';
+  dom.loginModal.style.display = 'flex';
+
+  setTimeout(() => {
+    if (dom.loginUsername && !dom.loginUsername.value) {
+      dom.loginUsername.focus();
+    }
+  }, 100);
+};
+
+/**
+ * Close Login Modal
+ */
+window.closeLoginModal = function () {
+  if (dom.loginModal) {
+    dom.loginModal.style.display = 'none';
+  }
+  if (dom.loginErrorAlert) dom.loginErrorAlert.style.display = 'none';
+};
+
+/**
+ * Toggle password visibility
+ */
+window.togglePasswordVisibility = function () {
+  const passInput = dom.loginPassword;
+  const eyeShow = document.getElementById('eye-icon-show');
+  const eyeHide = document.getElementById('eye-icon-hide');
+  if (!passInput) return;
+
+  if (passInput.type === 'password') {
+    passInput.type = 'text';
+    if (eyeShow) eyeShow.style.display = 'none';
+    if (eyeHide) eyeHide.style.display = 'block';
+  } else {
+    passInput.type = 'password';
+    if (eyeShow) eyeShow.style.display = 'block';
+    if (eyeHide) eyeHide.style.display = 'none';
+  }
+};
+
+/**
+ * Quick fill credentials from hint chip
+ */
+window.fillQuickLogin = function (username, password) {
+  if (dom.loginUsername) dom.loginUsername.value = username;
+  if (dom.loginPassword) dom.loginPassword.value = password;
+  if (dom.loginErrorAlert) dom.loginErrorAlert.style.display = 'none';
+  if (dom.loginSubmitBtn) dom.loginSubmitBtn.focus();
+};
+
+/**
+ * Handle Login Form Submit
+ */
+window.handleLoginFormSubmit = async function (e) {
+  e.preventDefault();
+
+  const username = dom.loginUsername?.value?.trim();
+  const password = dom.loginPassword?.value;
+
+  if (!username || !password) {
+    showLoginError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.');
+    return;
+  }
+
+  // Set loading state
+  setLoginLoading(true);
+  if (dom.loginErrorAlert) dom.loginErrorAlert.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      showLoginError(data.error || 'Tên đăng nhập hoặc mật khẩu không chính xác.');
+      setLoginLoading(false);
+      return;
+    }
+
+    // Success
+    localStorage.setItem('dvc766_token', data.token);
+    appState.currentUser = data.user;
+    closeLoginModal();
+    updateAuthUI();
+    showToast(`Xin chào ${data.user.name || data.user.username}! Đăng nhập thành công.`, 'success');
+
+    // Reset password field
+    if (dom.loginPassword) dom.loginPassword.value = '';
+  } catch (err) {
+    console.error('[Auth] Login error:', err);
+    showLoginError('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
+  } finally {
+    setLoginLoading(false);
+  }
+};
+
+function showLoginError(msg) {
+  if (dom.loginErrorAlert) {
+    dom.loginErrorAlert.textContent = msg;
+    dom.loginErrorAlert.style.display = 'block';
+  }
+}
+
+function setLoginLoading(isLoading) {
+  if (dom.loginSubmitBtn) dom.loginSubmitBtn.disabled = isLoading;
+  if (dom.loginSubmitText) dom.loginSubmitText.style.display = isLoading ? 'none' : 'inline';
+  if (dom.loginSubmitSpinner) dom.loginSubmitSpinner.style.display = isLoading ? 'inline-block' : 'none';
+}
+
+/**
+ * Logout User
+ */
+window.logoutUser = async function () {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch (e) {}
+
+  localStorage.removeItem('dvc766_token');
+  appState.currentUser = null;
+  updateAuthUI();
+  showToast('Đã đăng xuất khỏi hệ thống.', 'info');
+};
+
+/**
+ * Handle click on locked score cell
+ */
+window.handleLockedScoreClick = function (unitName) {
+  openLoginModal(`Vui lòng đăng nhập để xem chi tiết các chỉ tiêu của đơn vị: ${unitName}.`);
+};
+
 
 

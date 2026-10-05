@@ -66,6 +66,7 @@ const REPORTS_DIR = path.join(DATA_DIR, 'reports');
 const PROVINCES_DIR = path.join(DATA_DIR, 'provinces');
 const HISTORY_FILE = path.join(DATA_DIR, 'history.json');
 const PROVINCES_FILE = path.join(DATA_DIR, 'provinces-latest.json');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
 
 function ensureDirectories() {
   try {
@@ -383,6 +384,62 @@ async function getProvinceRankings() {
   return null;
 }
 
+/**
+ * Save users list (for authentication)
+ */
+async function saveUsers(users) {
+  memoryCache.users = users;
+  if (redisClient) {
+    try {
+      await redisClient.set('dvc:users', JSON.stringify(users));
+    } catch (err) {
+      console.error('[Storage] Redis saveUsers error:', err.message);
+    }
+  }
+
+  try {
+    ensureDirectories();
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  } catch (err) {}
+  return true;
+}
+
+/**
+ * Get users list (for authentication)
+ */
+async function getUsers() {
+  if (memoryCache.users && Array.isArray(memoryCache.users) && memoryCache.users.length > 0) {
+    return memoryCache.users;
+  }
+
+  if (redisClient) {
+    try {
+      const data = await redisClient.get('dvc:users');
+      if (data) {
+        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          memoryCache.users = parsed;
+          return parsed;
+        }
+      }
+    } catch (err) {
+      console.error('[Storage] Redis getUsers error:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8'));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        memoryCache.users = parsed;
+        return parsed;
+      }
+    }
+  } catch (err) {}
+
+  return null;
+}
+
 module.exports = {
   saveSnapshot,
   getSnapshot,
@@ -393,6 +450,8 @@ module.exports = {
   getHistory,
   saveProvinceRankings,
   getProvinceRankings,
+  saveUsers,
+  getUsers,
   DATA_DIR,
   REPORTS_DIR,
   PROVINCES_DIR

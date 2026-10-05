@@ -21,12 +21,15 @@ const crawlHandler = require('./api/crawl');
 const dataHandler = require('./api/data');
 const exportHandler = require('./api/export');
 const provincesHandler = require('./api/provinces');
+const authHandler = require('./api/auth');
 
 app.all('/api/cron', (req, res) => cronHandler(req, res));
 app.all('/api/crawl', (req, res) => crawlHandler(req, res));
 app.all('/api/data', (req, res) => dataHandler(req, res));
 app.all('/api/export', (req, res) => exportHandler(req, res));
 app.all('/api/provinces', (req, res) => provincesHandler(req, res));
+app.all('/api/auth', (req, res) => authHandler(req, res));
+app.all('/api/auth/:action', (req, res) => authHandler(req, res));
 
 // Fallback to index.html for SPA
 app.use((req, res) => {
