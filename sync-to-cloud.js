@@ -101,21 +101,15 @@ async function sync() {
     console.log(`  File lưu:     data/snapshots/${analyzed.date}.json `);
     console.log('====================================================');
 
-    // Nhiệm vụ mỗi sáng thứ 6: Thu thập & xếp hạng 766 của 34 tỉnh/thành phố
-    const dayOfWeek = new Date().getDay(); // 5 = Thứ 6
-    const forceProvinceSync = process.argv.includes('--provinces');
-    const existingProvinces = await storage.getProvinceRankings();
-
-    if (dayOfWeek === 5 || !existingProvinces || forceProvinceSync) {
-      console.log('\n[XẾP HẠNG CÁC TỈNH] Đang thu thập bảng điểm 766 toàn bộ các tỉnh thành...');
-      try {
-        const { fetchProvinceRankings } = require('./src/provinceCollector');
-        const provData = await fetchProvinceRankings();
-        await storage.saveProvinceRankings(provData);
-        console.log(`[XẾP HẠNG CÁC TỈNH] Thành công: Cập nhật ${provData.totalCount} tỉnh (Đắk Lắk xếp #${provData.dakLak?.rank || '?'})`);
-      } catch (errProv) {
-        console.warn('[XẾP HẠNG CÁC TỈNH] Chưa thể cập nhật dữ liệu các tỉnh:', errProv.message);
-      }
+    // Nhiệm vụ mỗi sáng 6h: Thu thập & xếp hạng 766 của các tỉnh/thành phố
+    console.log('\n[XẾP HẠNG CÁC TỈNH] Đang thu thập bảng điểm 766 toàn bộ các tỉnh thành...');
+    try {
+      const { fetchProvinceRankings } = require('./src/provinceCollector');
+      const provData = await fetchProvinceRankings();
+      await storage.saveProvinceRankings(provData);
+      console.log(`[XẾP HẠNG CÁC TỈNH] Thành công: Cập nhật ${provData.totalCount} tỉnh (Đắk Lắk xếp #${provData.dakLak?.rank || '?'})`);
+    } catch (errProv) {
+      console.warn('[XẾP HẠNG CÁC TỈNH] Chưa thể cập nhật dữ liệu các tỉnh:', errProv.message);
     }
   } catch (err) {
     console.error('\n[LỖI THU THẬP/LƯU TRỮ]:', err.message);

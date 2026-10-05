@@ -33,17 +33,13 @@ module.exports = async function handler(req, res) {
 
     await storage.recordLog(logEntry);
 
-    // Nhiệm vụ mỗi sáng thứ 6: Thu thập bảng xếp hạng 766 các tỉnh
-    const dayOfWeek = new Date().getDay();
-    const existingProvinces = await storage.getProvinceRankings();
-    if (dayOfWeek === 5 || !existingProvinces) {
-      try {
-        const { fetchProvinceRankings } = require('../src/provinceCollector');
-        const provData = await fetchProvinceRankings();
-        await storage.saveProvinceRankings(provData);
-      } catch (errProv) {
-        console.error('[Cron] Error collecting provinces:', errProv);
-      }
+    // Nhiệm vụ mỗi sáng 6h: Thu thập bảng xếp hạng 766 các tỉnh
+    try {
+      const { fetchProvinceRankings } = require('../src/provinceCollector');
+      const provData = await fetchProvinceRankings();
+      await storage.saveProvinceRankings(provData);
+    } catch (errProv) {
+      console.error('[Cron] Error collecting provinces:', errProv);
     }
 
     return res.status(200).json({

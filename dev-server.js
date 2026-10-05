@@ -51,14 +51,15 @@ cron.schedule('0 6 * * *', async () => {
     });
     console.log('[Local Cron] Task finished successfully for date:', analyzed.date);
 
-    // Nhiệm vụ mỗi sáng thứ 6: Thu thập bảng xếp hạng 766 các tỉnh
-    const dayOfWeek = new Date().getDay();
-    if (dayOfWeek === 5) {
-      console.log('[Local Cron] [Sáng thứ 6] Đang thu thập bảng xếp hạng 766 các tỉnh...');
+    // Nhiệm vụ mỗi sáng 6h: Thu thập bảng xếp hạng 766 các tỉnh
+    console.log('[Local Cron] Đang thu thập bảng xếp hạng 766 các tỉnh...');
+    try {
       const { fetchProvinceRankings } = require('./src/provinceCollector');
       const provData = await fetchProvinceRankings();
       await storage.saveProvinceRankings(provData);
-      console.log('[Local Cron] [Sáng thứ 6] Cập nhật xếp hạng các tỉnh thành công!');
+      console.log('[Local Cron] Cập nhật xếp hạng các tỉnh thành công!');
+    } catch (errProv) {
+      console.error('[Local Cron] Lỗi cập nhật xếp hạng các tỉnh:', errProv);
     }
   } catch (err) {
     console.error('[Local Cron] Task failed:', err);
