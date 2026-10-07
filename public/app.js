@@ -11,8 +11,8 @@ let appState = {
   radarChart: null,
   trendChart: null,
   table: {
+    group: 'PROVINCE', // 'PROVINCE' hoặc 'COMMUNE'
     searchTerm: '',
-    levelFilter: 'ALL',
     sortBy: 'score_desc',
     currentPage: 1,
     pageSize: 15
@@ -42,8 +42,14 @@ const dom = {
   totalRatioVal: document.getElementById('total-ratio-val'),
   dataUpdatedTime: document.getElementById('data-updated-time'),
   unitsCountVal: document.getElementById('units-count-val'),
+  unitsBreakdownSub: document.getElementById('units-breakdown-sub'),
+  unitsTableTitle: document.getElementById('units-table-title'),
+  unitsTableDesc: document.getElementById('units-table-desc'),
+  badgeCountProvince: document.getElementById('badge-count-province'),
+  badgeCountCommune: document.getElementById('badge-count-commune'),
+  btnGroupProvince: document.getElementById('btn-group-province'),
+  btnGroupCommune: document.getElementById('btn-group-commune'),
   unitSearchInput: document.getElementById('unit-search-input'),
-  levelFilterSelect: document.getElementById('level-filter-select'),
   sortSelect: document.getElementById('sort-select'),
   unitsTableBody: document.getElementById('units-table-body'),
   showingCount: document.getElementById('showing-count'),
@@ -492,14 +498,21 @@ function initEventListeners() {
 
   dom.btnExportExcel.addEventListener('click', handleExportExcel);
 
-  dom.unitSearchInput.addEventListener('input', (e) => {
-    appState.table.searchTerm = e.target.value.trim().toLowerCase();
-    appState.table.currentPage = 1;
-    renderUnitsTable();
+  // Unit Group Tabs (Cấp Tỉnh & Cấp Xã)
+  const groupBtns = document.querySelectorAll('.unit-group-tab-btn');
+  groupBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.getAttribute('data-group');
+      if (group === appState.table.group) return;
+      appState.table.group = group;
+      appState.table.currentPage = 1;
+      groupBtns.forEach(b => b.classList.toggle('active', b === btn));
+      renderUnitsTable();
+    });
   });
 
-  dom.levelFilterSelect.addEventListener('change', (e) => {
-    appState.table.levelFilter = e.target.value;
+  dom.unitSearchInput.addEventListener('input', (e) => {
+    appState.table.searchTerm = e.target.value.trim().toLowerCase();
     appState.table.currentPage = 1;
     renderUnitsTable();
   });
@@ -634,7 +647,23 @@ function renderOverview(data) {
   // Meta
   const timeStr = data.timestamp ? new Date(data.timestamp).toLocaleString('vi-VN') : data.date;
   dom.dataUpdatedTime.textContent = timeStr;
-  dom.unitsCountVal.textContent = data.unitsSummary?.totalUnits || (data.units ? data.units.length : 119);
+  const totalUnits = data.unitsSummary?.totalUnits || (data.units ? data.units.length : 116);
+  dom.unitsCountVal.textContent = totalUnits;
+
+  // Breakdown Cấp Tỉnh và Cấp Xã
+  const isProvCheck = u => {
+    const lvl = (u.departmentLevel || '').toUpperCase();
+    const type = (u.departmentType || '').toUpperCase();
+    return lvl === 'PROVINCE' || type.includes('PROVINCIAL') || type.includes('MINISTRY') || type === 'DEPARTMENT';
+  };
+  const provCount = data.unitsSummary?.provinceUnitsCount || (data.units ? data.units.filter(isProvCheck).length : 14);
+  const commCount = data.unitsSummary?.communeUnitsCount || (data.units ? data.units.filter(u => !isProvCheck(u)).length : 102);
+
+  if (dom.unitsBreakdownSub) {
+    dom.unitsBreakdownSub.textContent = `(${provCount} Cấp Tỉnh • ${commCount} Cấp Xã)`;
+  }
+  if (dom.badgeCountProvince) dom.badgeCountProvince.textContent = provCount;
+  if (dom.badgeCountCommune) dom.badgeCountCommune.textContent = commCount;
 }
 
 /**
@@ -797,38 +826,93 @@ function renderTrendChart(data) {
 }
 
 /**
- * Filter, sort, and render Subordinate Units Table
+ * Helper to determine if unit belongs to Province level
+ */
+function isProvinceLevel(u) {
+  const lvl = (u.departmentLevel || '').toUpperCase();
+  const type = (u.departmentType || '').toUpperCase();
+  return lvl === 'PROVINCE' || type.includes('PROVINCIAL') || type.includes('MINISTRY') || type === 'DEPARTMENT';
+}
+
+/**
+ * Enrich units with group and group-specific ranking
+ */
+function enrichUnitsWithGroups(units) {
+  const provs = [];
+  const comms = [];
+
+  units.forEach(u => {
+    if (isProvinceLevel(u)) {
+      u.group = 'PROVINCE';
+      u.groupLabel = 'Cấp Tỉnh';
+      provs.push(u);
+    } else {
+      u.group = 'COMMUNE';
+      u.groupLabel = 'Cấp Xã';
+      comms.push(u);
+    }
+  });
+
+  // Calculate separate ranks within each group
+  provs.sort((a, b) => b.totalScore - a.totalScore);
+  provs.forEach((u, idx) => {
+    u.rankInGroup = idx + 1;
+  });
+
+  comms.sort((a, b) => b.totalScore - a.totalScore);
+  comms.forEach((u, idx) => {
+    u.rankInGroup = idx + 1;
+  });
+
+  return { provs, comms };
+}
+
+/**
+ * Filter, sort, and render Subordinate Units Table by Group (Cấp Tỉnh & Cấp Xã)
  */
 function renderUnitsTable() {
-  const units = appState.currentData?.units || [];
-  const { searchTerm, levelFilter, sortBy, currentPage, pageSize } = appState.table;
+  const allUnits = appState.currentData?.units || [];
+  const { provs, comms } = enrichUnitsWithGroups(allUnits);
 
-  // 1. Filter
-  let filtered = units.filter((u) => {
-    // Level filter
-    if (levelFilter !== 'ALL') {
-      const type = (u.departmentType || '').toUpperCase();
-      const lvl = (u.departmentLevel || '').toUpperCase();
-      if (levelFilter === 'DEPARTMENT') {
-        if (!type.includes('DEPARTMENT') && !type.includes('MINISTRY') && lvl !== 'PROVINCE') return false;
-      } else if (levelFilter === 'DISTRICT') {
-        if (!type.includes('DISTRICT') && lvl !== 'DISTRICT') return false;
-      } else if (levelFilter === 'COMMUNE') {
-        if (!type.includes('COMMUNE') && lvl !== 'COMMUNE') return false;
-      }
+  // Update badge counts
+  if (dom.badgeCountProvince) dom.badgeCountProvince.textContent = provs.length;
+  if (dom.badgeCountCommune) dom.badgeCountCommune.textContent = comms.length;
+
+  const currentGroup = appState.table.group || 'PROVINCE';
+
+  // Update table title, description and search placeholder
+  if (dom.unitsTableTitle && dom.unitsTableDesc) {
+    if (currentGroup === 'PROVINCE') {
+      dom.unitsTableTitle.textContent = 'Bảng Xếp hạng Đơn vị Cấp Tỉnh';
+      dom.unitsTableDesc.textContent = `Khối ${provs.length} Sở, Ban, Ngành trực thuộc UBND tỉnh Đắk Lắk`;
+    } else {
+      dom.unitsTableTitle.textContent = 'Bảng Xếp hạng Đơn vị Cấp Xã';
+      dom.unitsTableDesc.textContent = `Khối ${comms.length} UBND xã, phường, thị trấn trên địa bàn tỉnh Đắk Lắk`;
     }
+  }
 
-    // Search filter
+  if (dom.unitSearchInput) {
+    dom.unitSearchInput.placeholder = currentGroup === 'PROVINCE'
+      ? 'Tìm tên hoặc mã Sở, Ban, Ngành...'
+      : 'Tìm tên hoặc mã xã, phường, thị trấn...';
+  }
+
+  // 1. Select group units
+  let targetUnits = currentGroup === 'PROVINCE' ? provs : comms;
+
+  const { searchTerm, sortBy, currentPage, pageSize } = appState.table;
+
+  // 2. Filter by search
+  let filtered = targetUnits.filter((u) => {
     if (searchTerm) {
       const name = (u.departmentName || '').toLowerCase();
       const code = (u.departmentCode || '').toLowerCase();
       return name.includes(searchTerm) || code.includes(searchTerm);
     }
-
     return true;
   });
 
-  // 2. Sort
+  // 3. Sort
   filtered.sort((a, b) => {
     if (sortBy === 'score_desc') return b.totalScore - a.totalScore;
     if (sortBy === 'score_asc') return a.totalScore - b.totalScore;
@@ -836,7 +920,7 @@ function renderUnitsTable() {
     return 0;
   });
 
-  // 3. Paginate
+  // 4. Paginate
   const totalItems = filtered.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const validPage = Math.min(currentPage, totalPages);
@@ -845,64 +929,65 @@ function renderUnitsTable() {
   const startIndex = (validPage - 1) * pageSize;
   const pageItems = filtered.slice(startIndex, startIndex + pageSize);
 
-  // 4. Render Rows
+  // 5. Render Rows
   dom.unitsTableBody.innerHTML = '';
   if (pageItems.length === 0) {
-    dom.unitsTableBody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 30px; color: #64748b;">Không tìm thấy đơn vị phù hợp với bộ lọc.</td></tr>`;
+    dom.unitsTableBody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 30px; color: #64748b;">Không tìm thấy đơn vị nào phù hợp với từ khóa tìm kiếm.</td></tr>`;
   } else {
     pageItems.forEach((u) => {
       const tr = document.createElement('tr');
 
-      // Rank Badge
+      // Rank Badge: Use rankInGroup (thứ hạng riêng của nhóm)
+      const rankNum = u.rankInGroup || u.rank;
       let rankClass = 'rank-badge rank-other';
-      if (u.rank === 1) rankClass = 'rank-badge rank-1';
-      else if (u.rank === 2) rankClass = 'rank-badge rank-2';
-      else if (u.rank === 3) rankClass = 'rank-badge rank-3';
+      if (rankNum === 1) rankClass = 'rank-badge rank-1';
+      else if (rankNum === 2) rankClass = 'rank-badge rank-2';
+      else if (rankNum === 3) rankClass = 'rank-badge rank-3';
 
-      const rankHtml = `<span class="${rankClass}">${u.rank}</span>`;
+      const rankHtml = `<span class="${rankClass}">${rankNum}</span>`;
       const grade = u.classification || { label: '-', color: '#64748b' };
 
-        const loggedIn = Boolean(appState.currentUser);
-        const scoreCell = (val, indKey, title) => {
-          const formatted = (val ?? 0).toFixed(2);
-          if (loggedIn) {
-            return `
-              <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', '${indKey}')" title="${title}">
-                <span class="score-clickable-inner">
-                  <span>${formatted}</span>
-                  <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </span>
-              </td>`;
-          } else {
-            return `<td style="text-align: right;">${formatted}</td>`;
-          }
-        };
+      const loggedIn = Boolean(appState.currentUser);
+      const scoreCell = (val, indKey, title) => {
+        const formatted = (val ?? 0).toFixed(2);
+        if (loggedIn) {
+          return `
+            <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', '${indKey}')" title="${title}">
+              <span class="score-clickable-inner">
+                <span>${formatted}</span>
+                <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </span>
+            </td>`;
+        } else {
+          return `<td style="text-align: right;">${formatted}</td>`;
+        }
+      };
 
-        tr.innerHTML = `
-          <td style="text-align: center;">${rankHtml}</td>
-          <td>
-            <span class="unit-name-cell">${escapeHtml(u.departmentName)}</span>
-            ${u.departmentCode ? `<span class="unit-code-badge">(${escapeHtml(u.departmentCode)})</span>` : ''}
-          </td>
-          <td><span class="level-tag">${escapeHtml(u.levelLabel || 'Đơn vị')}</span></td>
-          ${scoreCell(u.scores?.transparency, 'transparency', 'Nhấn xem chi tiết 4 tiêu chí Công khai minh bạch')}
-          ${scoreCell(u.scores?.progress, 'progress', 'Nhấn xem chi tiết hồ sơ Tiến độ giải quyết')}
-          ${scoreCell(u.scores?.onlineService, 'onlineService', 'Nhấn xem chi tiết Dịch vụ công trực tuyến')}
-          ${scoreCell(u.scores?.digitized, 'digitized', 'Nhấn xem chi tiết 7 tiêu chí Số hóa hồ sơ')}
-          ${scoreCell(u.scores?.payment, 'payment', 'Nhấn xem chi tiết giao dịch Thanh toán trực tuyến')}
-          ${scoreCell(u.scores?.satisfaction, 'satisfaction', 'Nhấn xem chi tiết Mức độ hài lòng của người dân')}
-          <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
-          <td style="text-align: center; white-space: nowrap;">
-            <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
-              ${escapeHtml(grade.label)}
-            </span>
-          </td>
-        `;
-        dom.unitsTableBody.appendChild(tr);
-      });
-    }
+      tr.innerHTML = `
+        <td style="text-align: center;">${rankHtml}</td>
+        <td>
+          <span class="unit-name-cell">${escapeHtml(u.departmentName)}</span>
+          ${u.departmentCode ? `<span class="unit-code-badge">(${escapeHtml(u.departmentCode)})</span>` : ''}
+        </td>
+        <td><span class="level-tag">${escapeHtml(u.levelLabel || (isProvinceLevel(u) ? 'Cấp Tỉnh' : 'Cấp Xã'))}</span></td>
+        ${scoreCell(u.scores?.transparency, 'transparency', 'Nhấn xem chi tiết 4 tiêu chí Công khai minh bạch')}
+        ${scoreCell(u.scores?.progress, 'progress', 'Nhấn xem chi tiết hồ sơ Tiến độ giải quyết')}
+        ${scoreCell(u.scores?.onlineService, 'onlineService', 'Nhấn xem chi tiết Dịch vụ công trực tuyến')}
+        ${scoreCell(u.scores?.digitized, 'digitized', 'Nhấn xem chi tiết 7 tiêu chí Số hóa hồ sơ')}
+        ${scoreCell(u.scores?.payment, 'payment', 'Nhấn xem chi tiết giao dịch Thanh toán trực tuyến')}
+        ${scoreCell(u.scores?.satisfaction, 'satisfaction', 'Nhấn xem chi tiết Mức độ hài lòng của người dân')}
+        <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
+        <td style="text-align: center; white-space: nowrap;">
+          <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
+            ${escapeHtml(grade.label)}
+          </span>
+        </td>
+      `;
+      dom.unitsTableBody.appendChild(tr);
+    });
+  }
 
-  // 5. Update counts & pagination
+  // 6. Update counts & pagination
   dom.showingCount.textContent = pageItems.length;
   dom.totalFilteredCount.textContent = totalItems;
   renderPagination(totalPages, validPage);

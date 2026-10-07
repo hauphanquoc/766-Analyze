@@ -204,96 +204,161 @@ async function generateWorkbook(data) {
   ];
 
   // ==========================================
-  // SHEET 3: XẾP HẠNG ĐƠN VỊ TRỰC THUỘC (119 ĐƠN VỊ)
+  // HELPER: BUILD UNITS RANKING WORKSHEET
   // ==========================================
-  const wsUnits = workbook.addWorksheet('3. Xếp hạng 119 Đơn vị');
-  wsUnits.views = [{ showGridLines: true }];
+  function isProvinceLevel(u) {
+    const lvl = (u.departmentLevel || '').toUpperCase();
+    const type = (u.departmentType || '').toUpperCase();
+    return lvl === 'PROVINCE' || type.includes('PROVINCIAL') || type.includes('MINISTRY') || type === 'DEPARTMENT';
+  }
 
-  wsUnits.mergeCells('A1:L1');
-  wsUnits.getCell('A1').value = 'BẢNG XẾP HẠNG CHẤT LƯỢNG PHỤC VỤ CÁC ĐƠN VỊ TRỰC THUỘC TỈNH ĐẮK LẮK';
-  wsUnits.getCell('A1').font = { name: 'Arial', size: 13, bold: true, color: { argb: 'FF1E3A8A' } };
-  wsUnits.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center' };
-  wsUnits.getRow(1).height = 28;
+  function buildUnitsWorksheet(wsName, sheetTitle, subTitle, unitList) {
+    const ws = workbook.addWorksheet(wsName);
+    ws.views = [{ showGridLines: true }];
 
-  const headers3 = [
-    'Hạng',
-    'Tên Đơn vị, Cơ quan',
-    'Cấp Đơn vị',
-    'Mã Đơn vị',
-    'Công khai (18đ)',
-    'Tiến độ (20đ)',
-    'DVC TT (12đ)',
-    'Số hóa (22đ)',
-    'Thanh toán (10đ)',
-    'Hài lòng (18đ)',
-    'TỔNG ĐIỂM (100đ)',
-    'Xếp loại'
-  ];
+    ws.mergeCells('A1:L1');
+    ws.getCell('A1').value = sheetTitle;
+    ws.getCell('A1').font = { name: 'Arial', size: 13, bold: true, color: { argb: 'FF1E3A8A' } };
+    ws.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center' };
+    ws.getRow(1).height = 28;
 
-  const rowUnitHeaders = wsUnits.getRow(3);
-  rowUnitHeaders.height = 25;
-  headers3.forEach((h, i) => {
-    const cell = rowUnitHeaders.getCell(i + 1);
-    cell.value = h;
-    cell.fill = subHeaderFill;
-    cell.font = headerFont;
-    cell.alignment = { vertical: 'middle', horizontal: 'center' };
-    cell.border = thinBorder;
-  });
+    ws.mergeCells('A2:L2');
+    ws.getCell('A2').value = subTitle;
+    ws.getCell('A2').font = { name: 'Arial', size: 10, italic: true, color: { argb: 'FF475569' } };
+    ws.getCell('A2').alignment = { vertical: 'middle', horizontal: 'center' };
+    ws.getRow(2).height = 20;
 
-  let unitRowIdx = 4;
-  (data.units || []).forEach((u) => {
-    const r = wsUnits.getRow(unitRowIdx);
-    r.height = 20;
+    const headers = [
+      'Hạng',
+      'Tên Đơn vị, Cơ quan',
+      'Cấp Đơn vị',
+      'Mã Đơn vị',
+      'Công khai (18đ)',
+      'Tiến độ (20đ)',
+      'DVC TT (12đ)',
+      'Số hóa (22đ)',
+      'Thanh toán (10đ)',
+      'Hài lòng (18đ)',
+      'TỔNG ĐIỂM (100đ)',
+      'Xếp loại'
+    ];
 
-    r.getCell(1).value = u.rank;
-    r.getCell(1).alignment = { horizontal: 'center' };
-    r.getCell(2).value = u.departmentName;
-    r.getCell(3).value = u.levelLabel;
-    r.getCell(4).value = u.departmentCode || '-';
-    r.getCell(4).alignment = { horizontal: 'center' };
+    const rowUnitHeaders = ws.getRow(4);
+    rowUnitHeaders.height = 25;
+    headers.forEach((h, i) => {
+      const cell = rowUnitHeaders.getCell(i + 1);
+      cell.value = h;
+      cell.fill = subHeaderFill;
+      cell.font = headerFont;
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      cell.border = thinBorder;
+    });
 
-    r.getCell(5).value = u.scores?.transparency ?? 0;
-    r.getCell(5).numFmt = '0.00';
-    r.getCell(6).value = u.scores?.progress ?? 0;
-    r.getCell(6).numFmt = '0.00';
-    r.getCell(7).value = u.scores?.onlineService ?? 0;
-    r.getCell(7).numFmt = '0.00';
-    r.getCell(8).value = u.scores?.digitized ?? 0;
-    r.getCell(8).numFmt = '0.00';
-    r.getCell(9).value = u.scores?.payment ?? 0;
-    r.getCell(9).numFmt = '0.00';
-    r.getCell(10).value = u.scores?.satisfaction ?? 0;
-    r.getCell(10).numFmt = '0.00';
+    let unitRowIdx = 5;
+    unitList.forEach((u, idx) => {
+      const r = ws.getRow(unitRowIdx);
+      r.height = 20;
 
-    r.getCell(11).value = u.totalScore;
-    r.getCell(11).numFmt = '0.00';
-    r.getCell(11).font = { bold: true };
-    r.getCell(11).alignment = { horizontal: 'right' };
+      r.getCell(1).value = idx + 1;
+      r.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+      if (idx < 3) {
+        r.getCell(1).font = { bold: true };
+      }
 
-    r.getCell(12).value = u.classification?.label || '-';
-    r.getCell(12).alignment = { horizontal: 'center' };
+      r.getCell(2).value = u.departmentName;
+      r.getCell(2).alignment = { horizontal: 'left', vertical: 'middle' };
 
-    for (let c = 1; c <= 12; c++) {
-      r.getCell(c).border = thinBorder;
-    }
-    unitRowIdx++;
-  });
+      r.getCell(3).value = u.levelLabel || (isProvinceLevel(u) ? 'Cấp Tỉnh' : 'Cấp Xã');
+      r.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
 
-  wsUnits.columns = [
-    { width: 8 },
-    { width: 40 },
-    { width: 22 },
-    { width: 14 },
-    { width: 16 },
-    { width: 16 },
-    { width: 16 },
-    { width: 16 },
-    { width: 16 },
-    { width: 16 },
-    { width: 18 },
-    { width: 16 }
-  ];
+      r.getCell(4).value = u.departmentCode || '-';
+      r.getCell(4).alignment = { horizontal: 'center', vertical: 'middle' };
+
+      r.getCell(5).value = u.scores?.transparency ?? 0;
+      r.getCell(5).numFmt = '0.00';
+      r.getCell(5).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(6).value = u.scores?.progress ?? 0;
+      r.getCell(6).numFmt = '0.00';
+      r.getCell(6).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(7).value = u.scores?.onlineService ?? 0;
+      r.getCell(7).numFmt = '0.00';
+      r.getCell(7).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(8).value = u.scores?.digitized ?? 0;
+      r.getCell(8).numFmt = '0.00';
+      r.getCell(8).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(9).value = u.scores?.payment ?? 0;
+      r.getCell(9).numFmt = '0.00';
+      r.getCell(9).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(10).value = u.scores?.satisfaction ?? 0;
+      r.getCell(10).numFmt = '0.00';
+      r.getCell(10).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(11).value = u.totalScore;
+      r.getCell(11).numFmt = '0.00';
+      r.getCell(11).font = { bold: true };
+      r.getCell(11).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      r.getCell(12).value = u.classification?.label || '-';
+      r.getCell(12).alignment = { horizontal: 'center', vertical: 'middle' };
+
+      for (let c = 1; c <= 12; c++) {
+        r.getCell(c).border = thinBorder;
+      }
+      unitRowIdx++;
+    });
+
+    ws.columns = [
+      { width: 8 },
+      { width: 42 },
+      { width: 22 },
+      { width: 14 },
+      { width: 16 },
+      { width: 16 },
+      { width: 16 },
+      { width: 16 },
+      { width: 16 },
+      { width: 16 },
+      { width: 18 },
+      { width: 16 }
+    ];
+  }
+
+  // Tách 2 nhóm: Cấp Tỉnh và Cấp Xã
+  const allUnits = data.units || [];
+  const provinceUnits = allUnits
+    .filter(isProvinceLevel)
+    .sort((a, b) => b.totalScore - a.totalScore);
+  const communeUnits = allUnits
+    .filter((u) => !isProvinceLevel(u))
+    .sort((a, b) => b.totalScore - a.totalScore);
+
+  const reportDate = data.date || '';
+  const depName = data.department?.name || 'UBND tỉnh Đắk Lắk';
+
+  // ==========================================
+  // SHEET 3: XẾP HẠNG ĐƠN VỊ CẤP TỈNH (SỞ, BAN, NGÀNH)
+  // ==========================================
+  buildUnitsWorksheet(
+    '3. Xếp hạng Cấp Tỉnh',
+    'BẢNG XẾP HẠNG CHẤT LƯỢNG PHỤC VỤ CÁC ĐƠN VỊ CẤP TỈNH (SỞ, BAN, NGÀNH)',
+    `Đơn vị: ${depName} - Ngày báo cáo: ${reportDate} - Quy mô: ${provinceUnits.length} đơn vị cấp tỉnh`,
+    provinceUnits
+  );
+
+  // ==========================================
+  // SHEET 4: XẾP HẠNG ĐƠN VỊ CẤP XÃ (UBND XÃ, PHƯỜNG, THỊ TRẤN)
+  // ==========================================
+  buildUnitsWorksheet(
+    '4. Xếp hạng Cấp Xã',
+    'BẢNG XẾP HẠNG CHẤT LƯỢNG PHỤC VỤ CÁC ĐƠN VỊ CẤP XÃ (UBND XÃ, PHƯỜNG, THỊ TRẤN)',
+    `Đơn vị: ${depName} - Ngày báo cáo: ${reportDate} - Quy mô: ${communeUnits.length} đơn vị cấp xã`,
+    communeUnits
+  );
 
   return workbook;
 }

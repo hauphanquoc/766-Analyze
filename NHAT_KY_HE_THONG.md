@@ -119,6 +119,23 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Tinh chỉnh giao diện hiện đại, bảo mật, có nút bật/tắt hiển thị mật khẩu.
   - Sửa lỗi lồng thẻ HTML, đưa modal ra ngoài container với `position: fixed; z-index: 99999; backdrop-filter: blur(6px)` để luôn hiển thị nổi bật giữa màn hình.
 
+### 10. Phân tách Bảng Xếp hạng & Báo cáo Excel thành 2 nhóm Cấp Tỉnh và Cấp Xã (07/10/2026)
+* **Vấn đề trước đây:** Bảng xếp hạng và báo cáo Excel đang gộp chung toàn bộ 116 đơn vị trực thuộc (cả Sở/Ban/Ngành cấp tỉnh lẫn UBND cấp xã/phường), khiến việc so sánh bị lẫn lộn giữa hai cấp hành chính có đặc thù quy mô và thẩm quyền khác nhau.
+* **Xử lý trên Giao diện Web (Menu Bộ chỉ số 766):**
+  - **Segmented Control Tabs phân nhóm:** Thiết kế bộ chuyển đổi tab trực quan ngay trên đầu bảng với huy hiệu đếm số lượng:
+    - **🏛️ Cấp Tỉnh (14 đơn vị):** Hiển thị khối các Sở, Ban, Ngành trực thuộc UBND tỉnh Đắk Lắk.
+    - **🏡 Cấp Xã (102 đơn vị):** Hiển thị khối UBND các xã, phường, thị trấn trên địa bàn tỉnh.
+  - **Xếp hạng độc lập theo nhóm:**
+    - Khối Cấp Tỉnh được đánh số thứ hạng độc lập từ **Hạng 1 đến Hạng 14** (Hạng 1: Sở Văn hóa, TT&DL; Hạng 2: Sở Xây dựng; Hạng 3: Sở Công Thương...).
+    - Khối Cấp Xã được đánh số thứ hạng độc lập từ **Hạng 1 đến Hạng 102** (Hạng 1: UBND xã Ea Súp; Hạng 2: UBND xã Xuân Lãnh; Hạng 3: UBND xã Xuân Cảnh...).
+  - **Tìm kiếm & Phân trang tối ưu:** Ô tìm kiếm tự động lọc theo nhóm đang chọn; khối Cấp Tỉnh hiển thị gọn gàng trên 1 trang; khối Cấp Xã phân trang 15 đơn vị/trang kèm điều hướng mượt mà.
+  - **Banner thống kê:** Thẻ tổng hợp đầu trang hiển thị rõ ràng: `Đơn vị trực thuộc: 116 (14 Cấp Tỉnh • 102 Cấp Xã)`.
+* **Xử lý trên Báo cáo Excel (`src/excelGenerator.js`):**
+  - Tách Sheet 3 cũ thành **2 Sheet độc lập**:
+    - **Sheet 3 (`3. Xếp hạng Cấp Tỉnh`):** Bảng xếp hạng và chi tiết điểm số của 14 Sở, Ban, Ngành cấp tỉnh với thứ hạng từ 1 đến 14.
+    - **Sheet 4 (`4. Xếp hạng Cấp Xã`):** Bảng xếp hạng và chi tiết điểm số của 102 xã, phường, thị trấn với thứ hạng từ 1 đến 102.
+  - Toàn bộ file Excel xuất ra đầy đủ 4 Sheet chuẩn mực, chuyên nghiệp, giữ nguyên định dạng thẩm mỹ và các công thức phân tích.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

@@ -362,15 +362,39 @@ function analyzeData(collectionResult, previousSnapshot = null) {
     return unit;
   });
 
+  // Helper to determine group
+  function isProvinceLevel(unit) {
+    const lvl = (unit.departmentLevel || '').toUpperCase();
+    const type = (unit.departmentType || '').toUpperCase();
+    return lvl === 'PROVINCE' || type.includes('PROVINCIAL') || type.includes('MINISTRY') || type === 'DEPARTMENT';
+  }
+
   // Sort descending by total score
   units.sort((a, b) => b.totalScore - a.totalScore);
   units.forEach((u, idx) => {
     u.rank = idx + 1;
+    u.group = isProvinceLevel(u) ? 'PROVINCE' : 'COMMUNE';
+    u.groupLabel = u.group === 'PROVINCE' ? 'Cấp Tỉnh' : 'Cấp Xã';
+  });
+
+  // Calculate rank within each group
+  const provinceUnits = units.filter((u) => u.group === 'PROVINCE');
+  provinceUnits.forEach((u, idx) => {
+    u.rankInGroup = idx + 1;
+  });
+
+  const communeUnits = units.filter((u) => u.group === 'COMMUNE');
+  communeUnits.forEach((u, idx) => {
+    u.rankInGroup = idx + 1;
   });
 
   // Top and Bottom performing units
   const topUnits = units.slice(0, 5);
   const bottomUnits = units.slice(-5).reverse();
+  const topProvinceUnits = provinceUnits.slice(0, 5);
+  const bottomProvinceUnits = provinceUnits.slice(-5).reverse();
+  const topCommuneUnits = communeUnits.slice(0, 5);
+  const bottomCommuneUnits = communeUnits.slice(-5).reverse();
 
   // Date strings (YYYY-MM-DD) formatted in Vietnam timezone (Asia/Ho_Chi_Minh / UTC+7)
   let dateStr;
@@ -408,14 +432,27 @@ function analyzeData(collectionResult, previousSnapshot = null) {
     indicators: indicatorSummaries,
     unitsSummary: {
       totalUnits: units.length,
+      provinceUnitsCount: provinceUnits.length,
+      communeUnitsCount: communeUnits.length,
       topUnits,
-      bottomUnits
+      bottomUnits,
+      topProvinceUnits,
+      bottomProvinceUnits,
+      topCommuneUnits,
+      bottomCommuneUnits
     },
     units
   };
 }
 
+function isProvinceLevel(unit) {
+  const lvl = (unit.departmentLevel || '').toUpperCase();
+  const type = (unit.departmentType || '').toUpperCase();
+  return lvl === 'PROVINCE' || type.includes('PROVINCIAL') || type.includes('MINISTRY') || type === 'DEPARTMENT';
+}
+
 module.exports = {
   analyzeData,
-  getClassification
+  getClassification,
+  isProvinceLevel
 };

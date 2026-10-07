@@ -422,7 +422,7 @@
               </span>
               <span class="meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="meta-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                Đơn vị trực thuộc: <strong id="units-count-val">119</strong>
+                Đơn vị trực thuộc: <strong id="units-count-val">--</strong><span id="units-breakdown-sub" style="font-size: 11px; opacity: 0.85; margin-left: 5px; font-weight: 500;"></span>
               </span>
             </div>
           </div>
@@ -615,8 +615,27 @@
           <div class="card table-card">
             <div class="table-header-bar">
               <div class="table-title-block">
-                <h2 class="card-title">Bảng Xếp hạng & Đánh giá 119 Đơn vị Trực thuộc</h2>
-                <p class="card-desc">Toàn bộ Sở, Ban, Ngành và UBND cấp huyện, xã thuộc tỉnh Đắk Lắk</p>
+                <h2 class="card-title" id="units-table-title">Bảng Xếp hạng Đơn vị Cấp Tỉnh</h2>
+                <p class="card-desc" id="units-table-desc">Các Sở, Ban, Ngành trực thuộc UBND tỉnh Đắk Lắk</p>
+              </div>
+
+              <!-- Segmented Group Tabs: Cấp Tỉnh & Cấp Xã -->
+              <div class="unit-group-segmented-tabs" role="tablist">
+                <button type="button" class="unit-group-tab-btn active" data-group="PROVINCE" id="btn-group-province" title="Bảng xếp hạng khối Sở, Ban, Ngành cấp tỉnh">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"/>
+                  </svg>
+                  <span>Cấp Tỉnh</span>
+                  <span class="unit-count-chip" id="badge-count-province">--</span>
+                </button>
+                <button type="button" class="unit-group-tab-btn" data-group="COMMUNE" id="btn-group-commune" title="Bảng xếp hạng khối UBND cấp xã, phường, thị trấn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                  <span>Cấp Xã</span>
+                  <span class="unit-count-chip" id="badge-count-commune">--</span>
+                </button>
               </div>
 
               <!-- Table Filters -->
@@ -625,13 +644,6 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   <input type="text" id="unit-search-input" placeholder="Tìm tên hoặc mã đơn vị..." class="search-field">
                 </div>
-
-                <select id="level-filter-select" class="custom-select filter-select">
-                  <option value="ALL">Tất cả cấp đơn vị (119)</option>
-                  <option value="DEPARTMENT">Sở / Ban / Ngành</option>
-                  <option value="DISTRICT">UBND Huyện / Thị xã / TP</option>
-                  <option value="COMMUNE">Cấp Xã / Phường / Khác</option>
-                </select>
 
                 <select id="sort-select" class="custom-select filter-select">
                   <option value="score_desc">Tổng điểm: Cao đến thấp</option>
