@@ -144,6 +144,15 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Tích hợp từ khóa tìm kiếm phong phú (`mail`, `cong cu`, `cong vu`, `thu dien tu`, `daklak`) trên ô tìm kiếm nhanh.
   - Cập nhật tự động bộ đếm số lượng lên 33 hệ thống trực tuyến.
 
+### 12. Bổ sung Hệ thống Báo cáo tỉnh và Hệ thống Đất đai (VBDLIS) Đắk Lắk (08/10/2026)
+* **Yêu cầu:** Bổ sung thêm 2 hệ thống vào phần Tỉnh Đắk Lắk trong danh bạ các cổng:
+  1. **Hệ thống thông tin báo cáo tỉnh Đắk Lắk:** `https://baocao.daklak.gov.vn/`
+  2. **Hệ thống thông tin đất đai (VBDLIS):** `https://dla.mplis.gov.vn/dc`
+* **Xử lý:**
+  - Thêm thẻ `HỆ THỐNG THÔNG TIN BÁO CÁO TỈNH ĐẮK LẮK` với biểu tượng tài liệu & biểu đồ thống kê chuyên nghiệp; từ khóa tìm kiếm (`bao cao`, `lrps`, `chi dao dieu hanh`).
+  - Thêm thẻ `HỆ THỐNG THÔNG TIN ĐẤT ĐAI (VBDLIS)` với biểu tượng thửa đất quy hoạch địa chính và ghim tọa độ trắc địa; từ khóa tìm kiếm (`dat dai`, `vbdlis`, `mplis`, `dia chinh`).
+  - Cập nhật tự động bộ đếm tổng số hệ thống lên **35 hệ thống trực tuyến**.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
