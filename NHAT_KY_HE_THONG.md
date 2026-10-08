@@ -153,11 +153,12 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Thêm thẻ `HỆ THỐNG THÔNG TIN ĐẤT ĐAI (VBDLIS)` với biểu tượng thửa đất quy hoạch địa chính và ghim tọa độ trắc địa; từ khóa tìm kiếm (`dat dai`, `vbdlis`, `mplis`, `dia chinh`).
   - Cập nhật tự động bộ đếm tổng số hệ thống lên **35 hệ thống trực tuyến**.
 
-### 13. Chuẩn hóa công thức chấm điểm tiêu chí 3.1 và 3.5 (08/10/2026)
-* **Yêu cầu:** Trong menu *Công thức tính 766*, chỉ tiêu 3.1 và 3.5 không ghi cụ thể 12 điểm và 10 điểm (vì nhóm còn nhiều tiêu chí khác), chuẩn hóa thành "Đạt điểm tối đa".
+### 13. Chuẩn hóa công thức chấm điểm tiêu chí 3.1, 3.5 và 4.2 (08/10/2026)
+* **Yêu cầu:** Trong menu *Công thức tính 766*, các chỉ tiêu 3.1, 3.5 và 4.2 không ghi điểm cố định (12đ, 10đ, 22đ) vì nhóm còn nhiều tiêu chí thành phần khác, chuẩn hóa thành "Đạt điểm tối đa".
 * **Xử lý trong `public/index.html`:**
   - **Tiêu chí 3.1** (*Tỷ lệ TTHC cung cấp DVCTT*): Sửa badge ngưỡng thành `Ngưỡng: ≥ 80% đạt điểm tối đa`, cơ chế chấm điểm: `Đạt ≥ 80% → Điểm tối đa`, công thức: `Điểm đạt = (Tỷ lệ % × Điểm tối đa) / 80%`.
   - **Tiêu chí 3.5** (*Tỷ lệ TTHC tích hợp TT trực tuyến*): Sửa badge ngưỡng thành `Ngưỡng: ≥ 80% đạt điểm tối đa`, cơ chế chấm điểm: `Đạt ≥ 80% → Điểm tối đa`, công thức: `Điểm đạt = (Tỷ lệ % × Điểm tối đa) / 80%`.
+  - **Tiêu chí 4.2** (*Tỷ lệ hồ sơ TTHC thực hiện số hóa hồ sơ*): Sửa badge ngưỡng thành `Ngưỡng: ≥ 80% đạt điểm tối đa`, cơ chế chấm điểm: `Đạt ≥ 80% → Điểm tối đa`, công thức: `Điểm đạt = (Tỷ lệ % × Điểm tối đa) / 80%`.
 
 ---
 
