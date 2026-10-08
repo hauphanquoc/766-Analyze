@@ -160,6 +160,13 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Tiêu chí 3.5** (*Tỷ lệ TTHC tích hợp TT trực tuyến*): Sửa badge ngưỡng thành `Ngưỡng: ≥ 80% đạt điểm tối đa`, cơ chế chấm điểm: `Đạt ≥ 80% → Điểm tối đa`, công thức: `Điểm đạt = (Tỷ lệ % × Điểm tối đa) / 80%`.
   - **Tiêu chí 4.2** (*Tỷ lệ hồ sơ TTHC thực hiện số hóa hồ sơ*): Sửa badge ngưỡng thành `Ngưỡng: ≥ 80% đạt điểm tối đa`, cơ chế chấm điểm: `Đạt ≥ 80% → Điểm tối đa`, công thức: `Điểm đạt = (Tỷ lệ % × Điểm tối đa) / 80%`.
 
+### 14. Điều chỉnh công thức và cơ chế chấm điểm tiêu chí 5.4 (08/10/2026)
+* **Yêu cầu:** Trong menu *Công thức tính 766* thuộc Mục 5 (Chỉ tiêu đánh giá hài lòng), tiêu chí 5.4 (*Tỷ lệ hài lòng trong tiếp nhận, giải quyết TTHC*) tối đa là 6 điểm thay vì 18 điểm (do nhóm 5 tổng cộng 18đ phân bổ cho 5.1: 5đ, 5.2: 5đ, 5.3: 2đ, 5.4: 6đ). Sửa lại thông báo và cơ chế chấm điểm.
+* **Xử lý trong `public/index.html`:**
+  - Sửa badge ngưỡng thành: `Ngưỡng: ≥ 90% đạt 6đ` (thay vì 18đ).
+  - Sửa cơ chế chấm điểm thành: `Đạt ≥ 90% → 6.00 điểm` (thay vì 18.00 điểm).
+  - Sửa công thức tính điểm thành: `Điểm đạt = (Tỷ lệ % × 6) / 90%` (thay vì nhân 18).
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
