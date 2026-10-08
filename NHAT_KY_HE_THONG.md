@@ -136,6 +136,14 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     - **Sheet 4 (`4. Xếp hạng Cấp Xã`):** Bảng xếp hạng và chi tiết điểm số của 102 xã, phường, thị trấn với thứ hạng từ 1 đến 102.
   - Toàn bộ file Excel xuất ra đầy đủ 4 Sheet chuẩn mực, chuyên nghiệp, giữ nguyên định dạng thẩm mỹ và các công thức phân tích.
 
+### 11. Bổ sung "Hệ thống mail công cụ" vào danh bạ các cổng Đắk Lắk (08/10/2026)
+* **Yêu cầu:** Bổ sung thêm cổng **"Hệ thống mail công cụ"** (liên kết `https://mail.daklak.gov.vn/`) vào phần Tỉnh Đắk Lắk trong danh bạ các cổng.
+* **Xử lý:**
+  - Thêm thẻ `HỆ THỐNG MAIL CÔNG CỤ` vào danh sách `PORTAL_SECTIONS` nhóm Đắk Lắk trong `public/app.js`.
+  - Thiết kế biểu tượng phong bì thư điện tử sắc nét, hiện đại chuẩn phong cách Gov-tech.
+  - Tích hợp từ khóa tìm kiếm phong phú (`mail`, `cong cu`, `cong vu`, `thu dien tu`, `daklak`) trên ô tìm kiếm nhanh.
+  - Cập nhật tự động bộ đếm số lượng lên 33 hệ thống trực tuyến.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

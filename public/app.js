@@ -191,6 +191,12 @@ const PORTAL_SECTIONS = [
         "name": "QUẢN LÝ CÁN BỘ CCVC",
         "url": "https://daklak.vnerp.vn/",
         "icon": "<svg viewBox=\"0 0 48 48\" width=\"44\" height=\"44\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n    <!-- Thẻ cán bộ công chức -->\n    <rect x=\"10\" y=\"8\" width=\"28\" height=\"34\" rx=\"5\" fill=\"#FFFFFF\" stroke=\"#0284C7\" stroke-width=\"2\"/>\n    <rect x=\"10\" y=\"8\" width=\"28\" height=\"10\" rx=\"4\" fill=\"#0284C7\"/>\n    <circle cx=\"24\" cy=\"6\" r=\"2\" fill=\"#64748B\"/>\n    <!-- Avatar cán bộ -->\n    <circle cx=\"24\" cy=\"24\" r=\"5\" fill=\"#38BDF8\"/>\n    <path d=\"M17 35C17 31 20 29.5 24 29.5C28 29.5 31 31 31 35\" fill=\"#0284C7\"/>\n    <rect x=\"15\" y=\"38\" width=\"18\" height=\"2\" rx=\"1\" fill=\"#BAE6FD\"/>\n  </svg>"
+      },
+      {
+        "name": "HỆ THỐNG MAIL CÔNG CỤ",
+        "url": "https://mail.daklak.gov.vn/",
+        "keywords": "mail cong cu, mail cong vu, thu dien tu, mail daklak, daklak mail",
+        "icon": "<svg viewBox=\"0 0 48 48\" width=\"44\" height=\"44\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect x=\"6\" y=\"8\" width=\"36\" height=\"32\" rx=\"8\" fill=\"#F0F9FF\" stroke=\"#0284C7\" stroke-width=\"2\"/>\n    <!-- Phong bì thư công vụ -->\n    <rect x=\"10\" y=\"14\" width=\"28\" height=\"20\" rx=\"3.5\" fill=\"#0284C7\"/>\n    <!-- Nắp và nếp gấp phong bì -->\n    <path d=\"M10 16L24 26L38 16\" stroke=\"#FFFFFF\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n    <path d=\"M10 32L19 23M38 32L29 23\" stroke=\"#38BDF8\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n    <!-- Huy hiệu xác thực an toàn -->\n    <circle cx=\"34\" cy=\"13\" r=\"5\" fill=\"#10B981\" stroke=\"#FFFFFF\" stroke-width=\"1.5\"/>\n    <path d=\"M32 13L33.5 14.5L36 12\" stroke=\"#FFFFFF\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  </svg>"
       }
     ]
   },
@@ -398,7 +404,8 @@ function initPortalsDirectory() {
         if (!term) return true;
         return (
           item.name.toLowerCase().includes(term) ||
-          item.url.toLowerCase().includes(term)
+          item.url.toLowerCase().includes(term) ||
+          (item.keywords && item.keywords.toLowerCase().includes(term))
         );
       });
 
