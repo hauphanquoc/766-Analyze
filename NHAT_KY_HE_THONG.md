@@ -167,6 +167,24 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Sửa cơ chế chấm điểm thành: `Đạt ≥ 90% → 6.00 điểm` (thay vì 18.00 điểm).
   - Sửa công thức tính điểm thành: `Điểm đạt = (Tỷ lệ % × 6) / 90%` (thay vì nhân 18).
 
+### 15. Quy chuẩn cấu trúc và giải mã Số hồ sơ TTHC (09/10/2026)
+* **Cấu trúc số hồ sơ:** `{Mã định danh đơn vị}-{yymmdd}-{Số thứ tự trong ngày}` (Ví dụ: `H15.50.05.13-261008-0975`).
+* **Quy tắc phân loại Cổng tỉnh & Cổng bộ:**
+  - **4 chữ số:** Hồ sơ phát sinh từ **Cổng tỉnh** (VD: `0975`).
+  - **6 - 7 chữ số:** Hồ sơ liên thông từ **Cổng bộ** (VD: `09xxxx`, `18xxxx`, ...).
+* **Bảng mã 2 số đầu của Cổng bộ:**
+  - `09xxxx`: Bộ Nội vụ
+  - `18xxxx`: Bộ Y Tế
+  - `03xxxx`: Bộ Giáo dục và Đào tạo
+  - `10xxxx`: Bộ Nông nghiệp và Môi trường
+  - `17xxxx` hoặc `02xxxx`: Bộ Xây dựng
+  - `06xxxx`: Bộ Khoa học và Công nghệ
+  - `15xxxx`: Bộ Tư Pháp
+  - `16xxxx`: Bộ Văn hóa, Thể thao và Du lịch
+* **Hiện thực:**
+  - Lưu trữ quy tắc vĩnh viễn tại `.agents/rules/dossier-code-rules.md`.
+  - Xây dựng module phân tích `src/dossierParser.js` (`parseDossierCode`) sẵn sàng phục vụ bóc tách tự động.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
@@ -215,6 +233,7 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 | `src/auth.js` | Module xác thực tài khoản, băm mật khẩu PBKDF2 và tạo/kiểm tra token JWT. |
 | `src/storage.js` | Module quản lý đọc/ghi snapshot, xếp hạng tỉnh và tài khoản (chế độ Local + Cloud Redis). |
 | `src/excelGenerator.js` | Module xuất báo cáo Excel 3 Sheet theo mẫu chuẩn. |
+| `src/dossierParser.js` | Module phân tích và giải mã cấu trúc Số hồ sơ TTHC (phân biệt Cổng tỉnh / Cổng bộ và các Bộ). |
 | `api/auth.js` | API Serverless phục vụ đăng nhập (`/login`), kiểm tra phiên (`/me`), đăng xuất (`/logout`). |
 | `api/provinces.js` | API Serverless cung cấp dữ liệu bảng xếp hạng 766 các tỉnh. |
 | `api/data.js` | API Serverless cung cấp dữ liệu snapshot điểm 766 của tỉnh Đắk Lắk. |
