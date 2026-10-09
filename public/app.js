@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEventListeners();
   initWelcomeNotice();
   initAuth();
+  initDossierSplitModule();
   loadInitialData();
 });
 
@@ -4133,6 +4134,7 @@ async function checkAuthStatus() {
  */
 function updateAuthUI() {
   const user = appState.currentUser;
+  const isAdmin = Boolean(user && user.role === 'admin');
 
   if (user) {
     document.body.classList.add('is-logged-in');
@@ -4141,7 +4143,7 @@ function updateAuthUI() {
     if (dom.userProfileHeader) {
       dom.userProfileHeader.style.display = 'inline-flex';
       if (dom.userDisplayName) dom.userDisplayName.textContent = user.name || user.username;
-      if (dom.userRoleBadge) dom.userRoleBadge.textContent = user.role === 'admin' ? 'Quản trị viên' : 'Cán bộ';
+      if (dom.userRoleBadge) dom.userRoleBadge.textContent = isAdmin ? 'Quản trị viên' : 'Cán bộ';
       if (dom.userAvatarInitial) dom.userAvatarInitial.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
     }
   } else {
@@ -4149,6 +4151,30 @@ function updateAuthUI() {
     // Show login button, hide user profile
     if (dom.btnLoginHeader) dom.btnLoginHeader.style.display = 'inline-flex';
     if (dom.userProfileHeader) dom.userProfileHeader.style.display = 'none';
+  }
+
+  // Quản lý hiển thị Menu Bóc tách hồ sơ (CHỈ DÀNH RIÊNG QUẢN TRỊ VIÊN)
+  const navSplitItem = document.getElementById('nav-item-dossier-split');
+  const splitAuthLock = document.getElementById('split-auth-lock-card');
+  const splitWorkspace = document.getElementById('split-workspace-wrap');
+
+  if (navSplitItem) {
+    navSplitItem.style.display = isAdmin ? 'inline-block' : 'none';
+  }
+  if (splitAuthLock) {
+    splitAuthLock.style.display = isAdmin ? 'none' : 'block';
+  }
+  if (splitWorkspace) {
+    splitWorkspace.style.display = isAdmin ? 'block' : 'none';
+  }
+
+  // Nếu người dùng không phải Admin nhưng đang ở trên tab Bóc tách hồ sơ thì chuyển về tab Cổng thông tin
+  if (!isAdmin) {
+    const splitTabPane = document.getElementById('tab-content-dossier-split');
+    if (splitTabPane && splitTabPane.classList.contains('active')) {
+      const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
+      if (defaultTabBtn) defaultTabBtn.click();
+    }
   }
 
   // Re-render table if units exist, to toggle clickability of score cells
@@ -4318,6 +4344,918 @@ window.logoutUser = async function () {
 window.handleLockedScoreClick = function (unitName) {
   openLoginModal(`Vui lòng đăng nhập để xem chi tiết các chỉ tiêu của đơn vị: ${unitName}.`);
 };
+
+/* ==========================================================================
+   MODULE BÓC TÁCH HỒ SƠ TTHC THEO CỔNG TỈNH VÀ CÁC BỘ (CHỈ DÀNH CHO ADMIN)
+   ========================================================================== */
+
+function initDossierSplitModule() {
+  const fileInput = document.getElementById('split-file-input');
+  const dropzone = document.getElementById('split-dropzone');
+  const dropzoneInner = document.getElementById('split-dropzone-inner');
+  const fileSelectedBox = document.getElementById('split-file-selected-box');
+  const btnBrowse = document.getElementById('btn-browse-split-file');
+  const btnReselect = document.getElementById('btn-reselect-split-file');
+  const configRow = document.getElementById('split-config-row');
+  const sheetSelect = document.getElementById('split-sheet-select');
+  const headerRowSelect = document.getElementById('split-header-row-select');
+  const codeColSelect = document.getElementById('split-code-col-select');
+  const btnProcess = document.getElementById('btn-process-split');
+  const loadingBox = document.getElementById('split-loading-box');
+  const loadingStatus = document.getElementById('split-loading-status');
+  const resultSection = document.getElementById('split-result-section');
+  const btnDownload = document.getElementById('btn-download-split-excel');
+
+  if (!fileInput || !dropzone) return;
+
+  // State nội bộ của module bóc tách
+  let splitModuleState = {
+    file: null,
+    fileName: '',
+    workbook: null,
+    selectedWorksheet: null,
+    detectedHeaderRow: 1,
+    detectedCodeColIndex: 1,
+    headers: [],
+    headerValues: [],
+    totalDossiers: 0,
+    provinceCount: 0,
+    ministryCount: 0,
+    groups: {}
+  };
+
+  // Bảng tra cứu quy chuẩn Cổng Bộ theo 2 số đầu của dãy số thứ tự 6-7 số
+  const MINISTRY_RULES = {
+    '09': { name: 'Bộ Nội vụ', sheet: 'Bộ Nội vụ', color: '#1d4ed8', tag: 'BỘ NỘI VỤ' },
+    '18': { name: 'Bộ Y Tế', sheet: 'Bộ Y Tế', color: '#059669', tag: 'BỘ Y TẾ' },
+    '03': { name: 'Bộ Giáo dục và Đào tạo', sheet: 'Bộ GD&ĐT', color: '#d97706', tag: 'BỘ GD&ĐT' },
+    '10': { name: 'Bộ Nông nghiệp và Môi trường', sheet: 'Bộ NN&MT', color: '#16a34a', tag: 'BỘ NN&MT' },
+    '17': { name: 'Bộ Xây dựng', sheet: 'Bộ Xây dựng', color: '#ea580c', tag: 'BỘ XÂY DỰNG' },
+    '02': { name: 'Bộ Công Thương', sheet: 'Bộ Công Thương', color: '#dc2626', tag: 'BỘ CÔNG THƯƠNG' },
+    '06': { name: 'Bộ Khoa học và Công nghệ', sheet: 'Bộ KH&CN', color: '#0891b2', tag: 'BỘ KH&CN' },
+    '15': { name: 'Bộ Tư Pháp', sheet: 'Bộ Tư Pháp', color: '#9333ea', tag: 'BỘ TƯ PHÁP' },
+    '16': { name: 'Bộ Văn hóa, thể thao và du lịch', sheet: 'Bộ VHTTDL', color: '#db2777', tag: 'BỘ VHTTDL' }
+  };
+
+  function cellToString(val) {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'string') return val.trim();
+    if (typeof val === 'number') return String(val);
+    if (val instanceof Date) {
+      const d = String(val.getDate()).padStart(2, '0');
+      const m = String(val.getMonth() + 1).padStart(2, '0');
+      const y = val.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+    if (typeof val === 'object') {
+      if (val.result !== undefined && val.result !== null) return String(val.result).trim();
+      if (val.text !== undefined && val.text !== null) return String(val.text).trim();
+      if (Array.isArray(val.richText)) {
+        return val.richText.map(t => t.text || '').join('').trim();
+      }
+    }
+    return String(val).trim();
+  }
+
+  function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  // Click mở chọn file
+  if (btnBrowse) {
+    btnBrowse.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+  }
+  if (dropzone) {
+    dropzone.addEventListener('click', () => {
+      if (!splitModuleState.file) fileInput.click();
+    });
+  }
+  if (btnReselect) {
+    btnReselect.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.value = '';
+      fileInput.click();
+    });
+  }
+
+  // Kéo & thả file Excel
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.remove('dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files && files.length > 0) {
+      handleFileSelected(files[0]);
+    }
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files.length > 0) {
+      handleFileSelected(fileInput.files[0]);
+    }
+  });
+
+  async function handleFileSelected(file) {
+    const validExts = ['.xlsx', '.xls'];
+    const lowerName = file.name.toLowerCase();
+    const isValid = validExts.some(ext => lowerName.endsWith(ext));
+    if (!isValid) {
+      showToast('Vui lòng chọn file Excel có định dạng .xlsx hoặc .xls', 'error');
+      return;
+    }
+
+    if (!window.ExcelJS) {
+      showToast('Thư viện xử lý Excel chưa sẵn sàng. Vui lòng tải lại trang.', 'error');
+      return;
+    }
+
+    splitModuleState.file = file;
+    splitModuleState.fileName = file.name;
+
+    if (resultSection) resultSection.style.display = 'none';
+    if (loadingBox) {
+      loadingBox.style.display = 'block';
+      if (loadingStatus) loadingStatus.textContent = `Đang phân tích cấu trúc file: ${file.name}...`;
+    }
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const workbook = new window.ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer);
+      splitModuleState.workbook = workbook;
+
+      if (sheetSelect) {
+        sheetSelect.innerHTML = '';
+        workbook.worksheets.forEach((ws, idx) => {
+          const opt = document.createElement('option');
+          opt.value = String(idx);
+          opt.textContent = `${ws.name} (${ws.rowCount} dòng)`;
+          sheetSelect.appendChild(opt);
+        });
+      }
+
+      const firstSheet = workbook.worksheets[0];
+      splitModuleState.selectedWorksheet = firstSheet;
+
+      analyzeSheetStructure(firstSheet);
+
+      document.getElementById('split-file-name').textContent = file.name;
+      document.getElementById('split-file-size').textContent = formatBytes(file.size);
+      document.getElementById('split-file-sheets').textContent = `${workbook.worksheets.length} Sheet`;
+      document.getElementById('split-file-rows').textContent = `${firstSheet.rowCount} dòng`;
+
+      if (dropzoneInner) dropzoneInner.style.display = 'none';
+      if (fileSelectedBox) fileSelectedBox.style.display = 'flex';
+      if (configRow) configRow.style.display = 'flex';
+      if (loadingBox) loadingBox.style.display = 'none';
+
+      showToast(`Đã nạp file "${file.name}" thành công!`, 'success');
+    } catch (err) {
+      console.error('[DossierSplit] Lỗi đọc file:', err);
+      if (loadingBox) loadingBox.style.display = 'none';
+      showToast(`Không thể đọc file: ${err.message || 'Lỗi định dạng'}`, 'error');
+    }
+  }
+
+  if (sheetSelect) {
+    sheetSelect.addEventListener('change', () => {
+      const sheetIdx = parseInt(sheetSelect.value, 10) || 0;
+      const ws = splitModuleState.workbook.worksheets[sheetIdx];
+      if (ws) {
+        splitModuleState.selectedWorksheet = ws;
+        document.getElementById('split-file-rows').textContent = `${ws.rowCount} dòng`;
+        analyzeSheetStructure(ws);
+      }
+    });
+  }
+
+  function analyzeSheetStructure(worksheet) {
+    if (!worksheet) return;
+
+    let bestHeaderRow = 1;
+    let bestCodeCol = 1;
+    let highestHeaderScore = -1;
+
+    const keywords = ['mã hồ sơ', 'số hồ sơ', 'mã số hồ sơ', 'mã đb', 'mã đồng bộ', 'số biên nhận', 'mã tiếp nhận', 'ma ho so', 'so ho so', 'sohoso', 'dossier'];
+
+    const maxScanRow = Math.min(worksheet.rowCount, 15);
+    for (let r = 1; r <= maxScanRow; r++) {
+      const row = worksheet.getRow(r);
+      let rowScore = 0;
+      let nonBlankCols = 0;
+
+      row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+        nonBlankCols++;
+        const str = cellToString(cell.value).toLowerCase();
+        for (const kw of keywords) {
+          if (str.includes(kw)) {
+            rowScore += 10;
+            bestCodeCol = colNumber;
+            break;
+          }
+        }
+      });
+
+      if (rowScore > highestHeaderScore && nonBlankCols >= 2) {
+        highestHeaderScore = rowScore;
+        bestHeaderRow = r;
+      }
+    }
+
+    if (highestHeaderScore <= 0) {
+      for (let r = 2; r <= Math.min(worksheet.rowCount, 30); r++) {
+        const row = worksheet.getRow(r);
+        row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+          const val = cellToString(cell.value);
+          if (/-\d{6}-\d+/.test(val)) {
+            bestCodeCol = colNumber;
+            bestHeaderRow = 1;
+          }
+        });
+      }
+    }
+
+    splitModuleState.detectedHeaderRow = bestHeaderRow;
+    splitModuleState.detectedCodeColIndex = bestCodeCol;
+
+    if (headerRowSelect) {
+      headerRowSelect.innerHTML = '';
+      for (let r = 1; r <= Math.min(worksheet.rowCount, 10); r++) {
+        const opt = document.createElement('option');
+        opt.value = String(r);
+        opt.textContent = `Dòng ${r} ${r === bestHeaderRow ? '(Khuyên dùng)' : ''}`;
+        if (r === bestHeaderRow) opt.selected = true;
+        headerRowSelect.appendChild(opt);
+      }
+    }
+
+    populateCodeColSelect(worksheet, bestHeaderRow, bestCodeCol);
+  }
+
+  function populateCodeColSelect(worksheet, headerRowIndex, selectedColIndex) {
+    if (!codeColSelect || !worksheet) return;
+    codeColSelect.innerHTML = '';
+
+    const headerRow = worksheet.getRow(headerRowIndex);
+    const colCount = Math.max(headerRow.cellCount, worksheet.columnCount || 10);
+    const headers = [];
+
+    for (let c = 1; c <= colCount; c++) {
+      const cell = headerRow.getCell(c);
+      let colName = cellToString(cell.value);
+      if (!colName) colName = `Cột ${c}`;
+      headers[c] = colName;
+
+      const opt = document.createElement('option');
+      opt.value = String(c);
+      opt.textContent = `Cột ${c}: ${colName} ${c === selectedColIndex ? '★ (Khớp mã)' : ''}`;
+      if (c === selectedColIndex) opt.selected = true;
+      codeColSelect.appendChild(opt);
+    }
+
+    splitModuleState.headers = headers;
+  }
+
+  if (headerRowSelect) {
+    headerRowSelect.addEventListener('change', () => {
+      const r = parseInt(headerRowSelect.value, 10) || 1;
+      splitModuleState.detectedHeaderRow = r;
+      populateCodeColSelect(splitModuleState.selectedWorksheet, r, splitModuleState.detectedCodeColIndex);
+    });
+  }
+
+  if (btnProcess) {
+    btnProcess.addEventListener('click', () => {
+      startDossierSplitting();
+    });
+  }
+
+  function classifyCode(codeStr) {
+    if (!codeStr || typeof codeStr !== 'string') {
+      return {
+        key: 'UNKNOWN',
+        name: 'Chưa xác định',
+        sheet: 'Chưa xác định',
+        tag: 'CHƯA XÁC ĐỊNH',
+        color: '#64748b',
+        seq: '',
+        isProvince: false
+      };
+    }
+
+    const clean = codeStr.trim();
+    const parts = clean.split('-');
+
+    if (parts.length >= 3) {
+      const seq = parts[parts.length - 1].trim();
+      // 4 chữ số: Cổng Tỉnh
+      if (/^\d{4}$/.test(seq)) {
+        return {
+          key: 'PROVINCE',
+          name: 'Cổng Tỉnh',
+          sheet: 'Cổng Tỉnh',
+          tag: 'CỔNG TỈNH',
+          color: '#059669',
+          seq,
+          isProvince: true
+        };
+      }
+      // 6 hoặc 7 chữ số: Cổng Bộ
+      if (/^\d{6,7}$/.test(seq)) {
+        const prefix = seq.slice(0, 2);
+        const ministry = MINISTRY_RULES[prefix];
+        if (ministry) {
+          return {
+            key: `MINISTRY_${prefix}`,
+            name: ministry.name,
+            sheet: ministry.sheet,
+            tag: ministry.tag,
+            color: ministry.color,
+            prefix,
+            seq,
+            isProvince: false
+          };
+        }
+        return {
+          key: `MINISTRY_${prefix}`,
+          name: `Bộ khác (Mã ${prefix})`,
+          sheet: `Bộ khác ${prefix}`,
+          tag: `BỘ KHÁC (${prefix})`,
+          color: '#475569',
+          prefix,
+          seq,
+          isProvince: false
+        };
+      }
+    }
+
+    // Fallback: Tìm pattern -yymmdd-xxxx
+    const match = clean.match(/-\d{6}-(\d{4,7})/);
+    if (match) {
+      const seq = match[1];
+      if (seq.length === 4) {
+        return {
+          key: 'PROVINCE',
+          name: 'Cổng Tỉnh',
+          sheet: 'Cổng Tỉnh',
+          tag: 'CỔNG TỈNH',
+          color: '#059669',
+          seq,
+          isProvince: true
+        };
+      } else {
+        const prefix = seq.slice(0, 2);
+        const ministry = MINISTRY_RULES[prefix];
+        if (ministry) {
+          return {
+            key: `MINISTRY_${prefix}`,
+            name: ministry.name,
+            sheet: ministry.sheet,
+            tag: ministry.tag,
+            color: ministry.color,
+            prefix,
+            seq,
+            isProvince: false
+          };
+        }
+        return {
+          key: `MINISTRY_${prefix}`,
+          name: `Bộ khác (Mã ${prefix})`,
+          sheet: `Bộ khác ${prefix}`,
+          tag: `BỘ KHÁC (${prefix})`,
+          color: '#475569',
+          prefix,
+          seq,
+          isProvince: false
+        };
+      }
+    }
+
+    return {
+      key: 'UNKNOWN',
+      name: 'Chưa xác định',
+      sheet: 'Chưa xác định',
+      tag: 'CHƯA XÁC ĐỊNH',
+      color: '#64748b',
+      seq: '',
+      isProvince: false
+    };
+  }
+
+  function startDossierSplitting() {
+    const ws = splitModuleState.selectedWorksheet;
+    if (!ws) {
+      showToast('Chưa có dữ liệu sheet để bóc tách!', 'error');
+      return;
+    }
+
+    const headerRowIdx = parseInt(headerRowSelect?.value, 10) || splitModuleState.detectedHeaderRow || 1;
+    const codeColIdx = parseInt(codeColSelect?.value, 10) || splitModuleState.detectedCodeColIndex || 1;
+
+    if (loadingBox) {
+      loadingBox.style.display = 'block';
+      if (loadingStatus) loadingStatus.textContent = 'Đang bóc tách từng dòng hồ sơ theo Cổng Tỉnh và các Bộ...';
+    }
+    if (resultSection) resultSection.style.display = 'none';
+
+    setTimeout(() => {
+      try {
+        const headerRow = ws.getRow(headerRowIdx);
+        const maxCol = Math.max(headerRow.cellCount, ws.columnCount || 1);
+
+        const headerValues = [];
+        for (let c = 1; c <= maxCol; c++) {
+          headerValues.push(cellToString(headerRow.getCell(c).value) || `Cột ${c}`);
+        }
+
+        const groups = {};
+        let totalDossiers = 0;
+        let provinceCount = 0;
+        let ministryCount = 0;
+
+        for (let r = headerRowIdx + 1; r <= ws.rowCount; r++) {
+          const row = ws.getRow(r);
+          let hasContent = false;
+          const rowValues = [];
+          for (let c = 1; c <= maxCol; c++) {
+            const cellVal = row.getCell(c).value;
+            const strVal = cellToString(cellVal);
+            if (strVal) hasContent = true;
+            rowValues.push(strVal);
+          }
+
+          if (!hasContent) continue;
+
+          totalDossiers++;
+          const codeVal = cellToString(row.getCell(codeColIdx).value);
+          const classification = classifyCode(codeVal);
+
+          if (classification.isProvince) {
+            provinceCount++;
+          } else if (classification.key.startsWith('MINISTRY_')) {
+            ministryCount++;
+          }
+
+          if (!groups[classification.key]) {
+            groups[classification.key] = {
+              key: classification.key,
+              name: classification.name,
+              sheetName: classification.sheet,
+              tag: classification.tag,
+              color: classification.color,
+              isProvince: classification.isProvince,
+              prefix: classification.prefix || '',
+              rows: []
+            };
+          }
+
+          groups[classification.key].rows.push({
+            rowNumber: r,
+            code: codeVal,
+            values: rowValues
+          });
+        }
+
+        splitModuleState.groups = groups;
+        splitModuleState.headerValues = headerValues;
+        splitModuleState.totalDossiers = totalDossiers;
+        splitModuleState.provinceCount = provinceCount;
+        splitModuleState.ministryCount = ministryCount;
+
+        renderSplitResults(groups, totalDossiers, provinceCount, ministryCount, headerValues);
+
+        if (loadingBox) loadingBox.style.display = 'none';
+        if (resultSection) {
+          resultSection.style.display = 'block';
+          resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        showToast(`Đã bóc tách thành công ${totalDossiers.toLocaleString()} hồ sơ vào ${Object.keys(groups).length} nhóm!`, 'success');
+      } catch (err) {
+        console.error('[DossierSplit] Lỗi bóc tách hồ sơ:', err);
+        if (loadingBox) loadingBox.style.display = 'none';
+        showToast(`Lỗi khi bóc tách hồ sơ: ${err.message}`, 'error');
+      }
+    }, 60);
+  }
+
+  function renderSplitResults(groups, total, provinceCount, ministryCount, headers) {
+    document.getElementById('split-summary-title').textContent = `Đã phân loại thành công ${total.toLocaleString()} hồ sơ`;
+    document.getElementById('split-stat-total').textContent = total.toLocaleString();
+    document.getElementById('split-stat-province').textContent = provinceCount.toLocaleString();
+    document.getElementById('split-stat-ministry').textContent = ministryCount.toLocaleString();
+
+    const groupKeys = Object.keys(groups);
+    const totalSheets = 1 + groupKeys.length;
+    document.getElementById('split-stat-sheets').textContent = `${totalSheets} Sheet`;
+
+    const gridEl = document.getElementById('split-groups-grid');
+    if (gridEl) {
+      gridEl.innerHTML = '';
+      const sortedKeys = [...groupKeys].sort((a, b) => {
+        if (a === 'PROVINCE') return -1;
+        if (b === 'PROVINCE') return 1;
+        return groups[b].rows.length - groups[a].rows.length;
+      });
+
+      sortedKeys.forEach(k => {
+        const g = groups[k];
+        const count = g.rows.length;
+        const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+
+        const card = document.createElement('div');
+        card.className = 'split-group-card';
+        card.innerHTML = `
+          <div class="split-group-info">
+            <span class="split-group-tag" style="background: ${g.color}15; color: ${g.color}; border: 1px solid ${g.color}35;">
+              ${g.tag || g.sheetName}
+            </span>
+            <h5 class="split-group-name" title="${g.name}">${g.name}</h5>
+            <small style="color: #64748b; font-size: 11px;">Sheet: <strong>${g.sheetName}</strong></small>
+          </div>
+          <div class="split-group-stats">
+            <div class="split-group-count" style="color: ${g.color};">${count.toLocaleString()}</div>
+            <div class="split-group-pct">${pct}% tổng số</div>
+          </div>
+        `;
+        gridEl.appendChild(card);
+      });
+    }
+
+    const tabsEl = document.getElementById('split-preview-tabs');
+    if (tabsEl) {
+      tabsEl.innerHTML = '';
+      const sortedKeys = [...groupKeys].sort((a, b) => {
+        if (a === 'PROVINCE') return -1;
+        if (b === 'PROVINCE') return 1;
+        return groups[b].rows.length - groups[a].rows.length;
+      });
+
+      sortedKeys.forEach((k, idx) => {
+        const g = groups[k];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `split-preview-tab-btn ${idx === 0 ? 'active' : ''}`;
+        btn.textContent = `${g.sheetName} (${g.rows.length})`;
+        btn.addEventListener('click', () => {
+          tabsEl.querySelectorAll('.split-preview-tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderPreviewTable(g, headers);
+        });
+        tabsEl.appendChild(btn);
+      });
+
+      if (sortedKeys.length > 0) {
+        renderPreviewTable(groups[sortedKeys[0]], headers);
+      }
+    }
+  }
+
+  function renderPreviewTable(group, headers) {
+    const thead = document.getElementById('split-preview-thead');
+    const tbody = document.getElementById('split-preview-tbody');
+    if (!thead || !tbody) return;
+
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+
+    const trHead = document.createElement('tr');
+    const thStt = document.createElement('th');
+    thStt.textContent = 'STT';
+    thStt.style.width = '50px';
+    thStt.style.textAlign = 'center';
+    trHead.appendChild(thStt);
+
+    headers.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+
+    const previewRows = group.rows.slice(0, 20);
+    previewRows.forEach((r, idx) => {
+      const tr = document.createElement('tr');
+      const tdStt = document.createElement('td');
+      tdStt.textContent = String(idx + 1);
+      tdStt.style.textAlign = 'center';
+      tdStt.style.color = '#64748b';
+      tr.appendChild(tdStt);
+
+      r.values.forEach(val => {
+        const td = document.createElement('td');
+        td.textContent = val;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    if (group.rows.length > 20) {
+      const trMore = document.createElement('tr');
+      const tdMore = document.createElement('td');
+      tdMore.colSpan = headers.length + 1;
+      tdMore.style.textAlign = 'center';
+      tdMore.style.padding = '12px';
+      tdMore.style.color = '#64748b';
+      tdMore.style.fontStyle = 'italic';
+      tdMore.textContent = `... và còn ${(group.rows.length - 20).toLocaleString()} hồ sơ nữa trong Sheet "${group.sheetName}" khi tải về.`;
+      trMore.appendChild(tdMore);
+      tbody.appendChild(trMore);
+    }
+  }
+
+  if (btnDownload) {
+    btnDownload.addEventListener('click', async () => {
+      await generateAndDownloadSplitExcel();
+    });
+  }
+
+  async function generateAndDownloadSplitExcel() {
+    const groups = splitModuleState.groups;
+    const headers = splitModuleState.headerValues;
+    const total = splitModuleState.totalDossiers;
+
+    if (!groups || Object.keys(groups).length === 0) {
+      showToast('Chưa có dữ liệu đã bóc tách để xuất file!', 'error');
+      return;
+    }
+
+    btnDownload.disabled = true;
+    const originalBtnText = btnDownload.innerHTML;
+    btnDownload.innerHTML = `
+      <div class="split-spinner" style="width: 18px; height: 18px; border-width: 2px; margin: 0 8px 0 0; display: inline-block; vertical-align: middle;"></div>
+      <span>Đang tạo file Excel đa sheet...</span>
+    `;
+
+    try {
+      const outWb = new window.ExcelJS.Workbook();
+      outWb.creator = 'Hệ thống Hỗ trợ DVC Tỉnh Đắk Lắk (Mã H15)';
+      outWb.created = new Date();
+
+      // ==========================================
+      // SHEET 1: TỔNG HỢP THỐNG KÊ
+      // ==========================================
+      const wsSummary = outWb.addWorksheet('Tổng hợp thống kê', {
+        views: [{ showGridLines: true }]
+      });
+
+      wsSummary.mergeCells('A1:G1');
+      const titleCell = wsSummary.getCell('A1');
+      titleCell.value = 'BÁO CÁO PHÂN LOẠI HỒ SƠ TTHC THEO CỔNG TỈNH VÀ CÁC BỘ';
+      titleCell.font = { name: 'Times New Roman', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      titleCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1E3A8A' }
+      };
+      wsSummary.getRow(1).height = 36;
+
+      const nowStr = new Date().toLocaleString('vi-VN');
+      wsSummary.mergeCells('A2:G2');
+      const subCell = wsSummary.getCell('A2');
+      subCell.value = `File gốc: ${splitModuleState.fileName} | Thời điểm trích xuất: ${nowStr} | Tổng số: ${total.toLocaleString()} hồ sơ`;
+      subCell.font = { name: 'Times New Roman', size: 10, italic: true };
+      subCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      wsSummary.getRow(2).height = 22;
+
+      wsSummary.addRow([]);
+
+      const sumHeaderRow = wsSummary.addRow([
+        'STT',
+        'Tên nhóm phân loại',
+        'Cổng tiếp nhận / Cơ quan',
+        'Quy cách nhận diện',
+        'Số lượng hồ sơ',
+        'Tỷ lệ (%)',
+        'Tên Sheet dữ liệu'
+      ]);
+      sumHeaderRow.height = 26;
+      sumHeaderRow.eachCell((cell) => {
+        cell.font = { name: 'Times New Roman', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF2563EB' }
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+
+      const sortedKeys = Object.keys(groups).sort((a, b) => {
+        if (a === 'PROVINCE') return -1;
+        if (b === 'PROVINCE') return 1;
+        return groups[b].rows.length - groups[a].rows.length;
+      });
+
+      let stt = 1;
+      sortedKeys.forEach(k => {
+        const g = groups[k];
+        const count = g.rows.length;
+        const pct = total > 0 ? (count / total) * 100 : 0;
+        const ruleText = g.isProvince ? 'Số thứ tự 4 chữ số' : (g.prefix ? `Mã tiền tố ${g.prefix}xxxx (6-7 số)` : 'Khác');
+
+        const row = wsSummary.addRow([
+          stt++,
+          g.name,
+          g.isProvince ? 'Cổng DVC Tỉnh Đắk Lắk' : 'Cổng Bộ - Ngành liên thông',
+          ruleText,
+          count,
+          Number(pct.toFixed(2)),
+          g.sheetName
+        ]);
+        row.height = 22;
+
+        row.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+        row.getCell(2).alignment = { horizontal: 'left', vertical: 'middle' };
+        row.getCell(3).alignment = { horizontal: 'left', vertical: 'middle' };
+        row.getCell(4).alignment = { horizontal: 'center', vertical: 'middle' };
+        row.getCell(5).alignment = { horizontal: 'right', vertical: 'middle' };
+        row.getCell(5).numFmt = '#,##0';
+        row.getCell(6).alignment = { horizontal: 'right', vertical: 'middle' };
+        row.getCell(6).numFmt = '0.00"%"';
+        row.getCell(7).alignment = { horizontal: 'center', vertical: 'middle' };
+
+        row.eachCell(cell => {
+          cell.font = { name: 'Times New Roman', size: 11 };
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+          };
+        });
+      });
+
+      const totalRow = wsSummary.addRow([
+        '',
+        'TỔNG CỘNG',
+        '',
+        '',
+        total,
+        100.0,
+        `${sortedKeys.length} sheet`
+      ]);
+      totalRow.height = 24;
+      totalRow.eachCell(cell => {
+        cell.font = { name: 'Times New Roman', size: 11, bold: true };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFF1F5F9' }
+        };
+        cell.border = {
+          top: { style: 'medium' },
+          bottom: { style: 'double' },
+          left: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+      totalRow.getCell(5).numFmt = '#,##0';
+      totalRow.getCell(5).alignment = { horizontal: 'right', vertical: 'middle' };
+      totalRow.getCell(6).numFmt = '0.00"%"';
+      totalRow.getCell(6).alignment = { horizontal: 'right', vertical: 'middle' };
+
+      wsSummary.columns = [
+        { width: 8 },
+        { width: 32 },
+        { width: 28 },
+        { width: 26 },
+        { width: 16 },
+        { width: 14 },
+        { width: 22 }
+      ];
+
+      // ==========================================
+      // CÁC SHEET DỮ LIỆU RIÊNG TỪNG BỘ VÀ CỔNG TỈNH
+      // ==========================================
+      sortedKeys.forEach(k => {
+        const g = groups[k];
+        let safeSheetName = g.sheetName.replace(/[\\/*?[\]:]/g, '_').slice(0, 31);
+        let finalSheetName = safeSheetName;
+        let counter = 1;
+        while (outWb.getWorksheet(finalSheetName)) {
+          finalSheetName = `${safeSheetName.slice(0, 28)}_${counter++}`;
+        }
+
+        const ws = outWb.addWorksheet(finalSheetName, {
+          views: [{ showGridLines: true }]
+        });
+
+        // Banner đầu sheet
+        ws.mergeCells(1, 1, 1, headers.length + 1);
+        const wsTitleCell = ws.getCell(1, 1);
+        wsTitleCell.value = `DANH SÁCH HỒ SƠ: ${g.name.toUpperCase()} (TỔNG SỐ: ${g.rows.length.toLocaleString()} HỒ SƠ)`;
+        wsTitleCell.font = { name: 'Times New Roman', size: 12, bold: true, color: { argb: 'FFFFFFFF' } };
+        wsTitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+        wsTitleCell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: g.isProvince ? 'FF059669' : 'FF1E3A8A' }
+        };
+        ws.getRow(1).height = 30;
+
+        const headerRowArr = ['STT', ...headers];
+        const hRow = ws.addRow(headerRowArr);
+        hRow.height = 24;
+        hRow.eachCell((cell, colNum) => {
+          cell.font = { name: 'Times New Roman', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+          cell.alignment = { horizontal: colNum === 1 ? 'center' : 'left', vertical: 'middle' };
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: g.isProvince ? 'FF10B981' : 'FF2563EB' }
+          };
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+        });
+
+        g.rows.forEach((r, rowIdx) => {
+          const dataRowArr = [rowIdx + 1, ...r.values];
+          const dRow = ws.addRow(dataRowArr);
+          dRow.height = 20;
+
+          dRow.eachCell((cell, colNum) => {
+            cell.font = { name: 'Times New Roman', size: 11 };
+            cell.alignment = { horizontal: colNum === 1 ? 'center' : 'left', vertical: 'middle' };
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+            };
+          });
+        });
+
+        ws.columns.forEach((col, idx) => {
+          if (idx === 0) {
+            col.width = 8;
+          } else {
+            let maxLen = 12;
+            const headerStr = headers[idx - 1] || '';
+            if (headerStr.length > maxLen) maxLen = headerStr.length;
+            col.width = Math.min(Math.max(maxLen + 4, 14), 45);
+          }
+        });
+      });
+
+      const buffer = await outWb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      const baseName = splitModuleState.fileName.replace(/\.[^/.]+$/, '');
+      const dateTag = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const downloadName = `${baseName}_DaBocTach_${dateTag}.xlsx`;
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = downloadName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast(`Đã xuất và tải file "${downloadName}" thành công!`, 'success');
+    } catch (err) {
+      console.error('[DossierSplit] Lỗi xuất file Excel:', err);
+      showToast(`Lỗi khi tạo file Excel: ${err.message}`, 'error');
+    } finally {
+      btnDownload.disabled = false;
+      btnDownload.innerHTML = originalBtnText;
+    }
+  }
+}
+
 
 
 

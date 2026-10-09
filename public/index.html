@@ -141,6 +141,19 @@
               <span>Tiện ích</span>
             </button>
           </li>
+          <!-- Tab Bóc tách hồ sơ (Chỉ hiển thị với Admin) -->
+          <li class="nav-tab-item" id="nav-item-dossier-split" style="display: none;">
+            <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Bóc tách hồ sơ <span class="tab-admin-badge">Admin</span></span>
+            </button>
+          </li>
         </ul>
       </div>
     </nav>
@@ -2630,6 +2643,280 @@
       </div> <!-- end .tools-unified-card -->
     </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-tools -->
+
+  <!-- TAB 6: BÓC TÁCH HỒ SƠ (CHỈ DÀNH CHO ADMIN) -->
+  <div id="tab-content-dossier-split" class="tab-pane" style="display: none;">
+    <div class="split-container">
+      <!-- UNIFIED ENTERPRISE CARD -->
+      <div class="split-unified-card">
+        
+        <!-- Card Header -->
+        <div class="split-card-header">
+          <div class="split-header-top">
+            <div class="split-title-row">
+              <div class="split-title-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="split-header-icon">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+              <div class="split-title-text-wrap">
+                <div class="split-badge-row">
+                  <span class="split-admin-tag">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    CHỈ DÀNH CHO QUẢN TRỊ VIÊN
+                  </span>
+                  <span class="split-format-tag">Định dạng chuẩn: Cổng Tỉnh (4 số) • Cổng Bộ (6-7 số)</span>
+                </div>
+                <h2 class="split-clean-title">Bóc tách hồ sơ TTHC theo Cổng Tỉnh và các Bộ</h2>
+                <p class="split-clean-subtitle">
+                  Tải lên file danh sách hồ sơ (.xlsx, .xls). Hệ thống tự động bóc tách thành các Sheet độc lập: 
+                  <strong>1 Sheet Cổng Tỉnh</strong> và <strong>mỗi Bộ 1 Sheet riêng</strong> (Bộ Nội vụ, Y Tế, GD&ĐT, NN&MT, Xây dựng, Công Thương, KH&CN, Tư Pháp, VHTTDL...) kèm <strong>1 Sheet Tổng hợp thống kê</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="split-card-body">
+          
+          <!-- Khối cảnh báo nếu chưa đăng nhập quyền Admin -->
+          <div id="split-auth-lock-card" class="split-lock-box" style="display: none;">
+            <div class="split-lock-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 class="split-lock-title">Yêu cầu quyền Quản trị viên (Admin)</h3>
+            <p class="split-lock-desc">Tính năng bóc tách và phân loại hồ sơ TTHC theo Cổng Tỉnh & Bộ - Ngành chỉ phục vụ tài khoản Quản trị viên của hệ thống.</p>
+            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Quản trị viên để sử dụng công cụ Bóc tách hồ sơ.')">
+              Đăng nhập Quản trị viên
+            </button>
+          </div>
+
+          <!-- Khối làm việc chính (Khi đã xác thực Admin) -->
+          <div id="split-workspace-wrap">
+            
+            <!-- BƯỚC 1: KHU VỰC TẢI LÊN FILE EXCEL -->
+            <div class="split-section-card">
+              <div class="split-section-head">
+                <span class="split-step-badge">BƯỚC 1</span>
+                <h3 class="split-section-title">Tải lên file danh sách hồ sơ (.xlsx, .xls)</h3>
+              </div>
+
+              <div class="split-dropzone-wrapper" id="split-dropzone">
+                <input type="file" id="split-file-input" accept=".xlsx, .xls" style="display: none;" />
+                <div class="split-dropzone-inner" id="split-dropzone-inner">
+                  <div class="split-dz-icon-wrap">
+                    <svg class="split-dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <path d="M8 13h8"></path>
+                      <path d="M8 17h8"></path>
+                      <path d="M10 9h1"></path>
+                    </svg>
+                  </div>
+                  <h4 class="split-dz-title">Kéo & thả file Excel vào đây, hoặc bấm để duyệt file</h4>
+                  <p class="split-dz-sub">Hỗ trợ các file báo cáo kết xuất từ Cổng DVC Quốc gia, Cổng DVC tỉnh (.xlsx, .xls)</p>
+                  <button type="button" class="btn btn-primary split-btn-browse" id="btn-browse-split-file">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Chọn file Excel từ máy</span>
+                  </button>
+                </div>
+
+                <!-- File Details Card (Khi đã chọn file) -->
+                <div class="split-file-selected-box" id="split-file-selected-box" style="display: none;">
+                  <div class="split-file-info-left">
+                    <div class="split-file-excel-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    </div>
+                    <div class="split-file-details">
+                      <h4 class="split-file-name" id="split-file-name">danh-sach-ho-so.xlsx</h4>
+                      <div class="split-file-meta-row">
+                        <span class="split-file-meta" id="split-file-size">0 KB</span>
+                        <span class="split-meta-dot">•</span>
+                        <span class="split-file-meta" id="split-file-sheets">1 Sheet</span>
+                        <span class="split-meta-dot">•</span>
+                        <span class="split-file-meta num-emerald" id="split-file-rows">0 dòng</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="split-file-actions-right">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-reselect-split-file">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                      <span>Chọn file khác</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tùy chọn cấu hình cột phân tích (Tự động hoặc chỉnh tay) -->
+              <div class="split-config-row" id="split-config-row" style="display: none;">
+                <div class="split-config-field">
+                  <label class="split-field-label" for="split-sheet-select">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Sheet cần xử lý:
+                  </label>
+                  <select id="split-sheet-select" class="split-select-input"></select>
+                </div>
+
+                <div class="split-config-field">
+                  <label class="split-field-label" for="split-header-row-select">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    Dòng tiêu đề (Header):
+                  </label>
+                  <select id="split-header-row-select" class="split-select-input"></select>
+                </div>
+
+                <div class="split-config-field split-col-field">
+                  <label class="split-field-label" for="split-code-col-select">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Cột chứa Mã/Số hồ sơ:
+                  </label>
+                  <select id="split-code-col-select" class="split-select-input"></select>
+                </div>
+
+                <div class="split-config-action">
+                  <button type="button" class="btn btn-primary" id="btn-process-split">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Bắt đầu bóc tách</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- BƯỚC 2: TIẾN TRÌNH & KẾT QUẢ PHÂN TÍCH -->
+            <div class="split-loading-box" id="split-loading-box" style="display: none;">
+              <div class="split-spinner"></div>
+              <h4 class="split-loading-title">Đang phân tích cấu trúc mã số hồ sơ...</h4>
+              <p class="split-loading-subtitle" id="split-loading-status">Đang đọc các dòng và phân loại theo Cổng Tỉnh / Cổng Bộ</p>
+            </div>
+
+            <!-- KẾT QUẢ ĐÃ PHÂN TÍCH XONG -->
+            <div id="split-result-section" style="display: none;">
+              
+              <!-- BANNER TỔNG KẾT VÀ NÚT TẢI VỀ -->
+              <div class="split-summary-banner">
+                <div class="split-summary-left">
+                  <div class="split-summary-badge">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    BÓC TÁCH THÀNH CÔNG
+                  </div>
+                  <h3 class="split-summary-title" id="split-summary-title">Đã phân loại thành công 0 hồ sơ</h3>
+                  <p class="split-summary-desc" id="split-summary-desc">
+                    File Excel xuất ra gồm <strong>1 Sheet Cổng Tỉnh</strong> và <strong>các Sheet riêng cho từng Bộ</strong> có hồ sơ phát sinh, kèm <strong>1 Sheet Tổng hợp thống kê</strong>.
+                  </p>
+                </div>
+                <div class="split-summary-right">
+                  <button type="button" class="btn btn-success btn-lg split-btn-download" id="btn-download-split-excel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Tải về file Excel đã bóc tách (.xlsx)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- THẺ THỐNG KÊ TỔNG QUAN -->
+              <div class="split-stats-grid">
+                <div class="split-stat-card">
+                  <div class="split-stat-icon icon-blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                  </div>
+                  <div class="split-stat-info">
+                    <span class="split-stat-label">Tổng số hồ sơ</span>
+                    <span class="split-stat-val" id="split-stat-total">0</span>
+                  </div>
+                </div>
+
+                <div class="split-stat-card">
+                  <div class="split-stat-icon icon-emerald">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                  </div>
+                  <div class="split-stat-info">
+                    <span class="split-stat-label">Cổng Tỉnh (4 số)</span>
+                    <span class="split-stat-val num-emerald" id="split-stat-province">0</span>
+                  </div>
+                </div>
+
+                <div class="split-stat-card">
+                  <div class="split-stat-icon icon-purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                  </div>
+                  <div class="split-stat-info">
+                    <span class="split-stat-label">Cổng các Bộ (6-7 số)</span>
+                    <span class="split-stat-val num-purple" id="split-stat-ministry">0</span>
+                  </div>
+                </div>
+
+                <div class="split-stat-card">
+                  <div class="split-stat-icon icon-amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                  </div>
+                  <div class="split-stat-info">
+                    <span class="split-stat-label">Tổng số Sheet xuất</span>
+                    <span class="split-stat-val num-amber" id="split-stat-sheets">0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DANH SÁCH CHI TIẾT TỪNG BỘ & CỔNG TỈNH -->
+              <div class="split-breakdown-card">
+                <div class="split-breakdown-head">
+                  <div>
+                    <h4 class="split-breakdown-title">Chi tiết phân bổ các Sheet trong file xuất</h4>
+                    <span class="split-breakdown-hint">Mỗi nhóm sẽ được xuất thành một Sheet độc lập với toàn bộ cột dữ liệu gốc</span>
+                  </div>
+                </div>
+
+                <div class="split-groups-grid" id="split-groups-grid">
+                  <!-- Rendered by JS -->
+                </div>
+              </div>
+
+              <!-- XEM TRƯỚC DỮ LIỆU TỪNG SHEET -->
+              <div class="split-preview-card">
+                <div class="split-preview-header">
+                  <div class="split-preview-title-row">
+                    <div>
+                      <h4 class="split-preview-title">Xem trước dữ liệu các Sheet (tối đa 20 dòng)</h4>
+                      <span class="split-preview-hint">Bấm vào từng tab để xem nhanh danh sách hồ sơ tương ứng</span>
+                    </div>
+                  </div>
+                  <div class="split-preview-tabs" id="split-preview-tabs">
+                    <!-- Pill buttons rendered by JS -->
+                  </div>
+                </div>
+
+                <div class="split-preview-table-wrap">
+                  <table class="split-preview-table" id="split-preview-table">
+                    <thead id="split-preview-thead"></thead>
+                    <tbody id="split-preview-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div> <!-- end #split-result-section -->
+
+          </div> <!-- end #split-workspace-wrap -->
+
+        </div> <!-- end .split-card-body -->
+      </div> <!-- end .split-unified-card -->
+    </div> <!-- end .split-container -->
+  </div> <!-- end #tab-content-dossier-split -->
 </div>
 </main>
 
@@ -2945,9 +3232,10 @@
     </footer>
   </div>
 
-  <!-- PDF Processing Libraries (100% Local Offline) -->
+  <!-- PDF & Excel Processing Libraries (100% Local Offline) -->
   <script src="libs/pdf.min.js"></script>
   <script src="libs/jspdf.umd.min.js"></script>
+  <script src="libs/exceljs.min.js"></script>
   <script src="app.js"></script>
   <!-- Vercel Web Analytics -->
   <script>

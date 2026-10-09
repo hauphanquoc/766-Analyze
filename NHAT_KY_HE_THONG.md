@@ -186,6 +186,20 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Lưu trữ quy tắc vĩnh viễn tại `.agents/rules/dossier-code-rules.md`.
   - Xây dựng module phân tích `src/dossierParser.js` (`parseDossierCode`) sẵn sàng phục vụ bóc tách tự động.
 
+### 16. Xây dựng Menu "Bóc tách hồ sơ" chuyên dụng cho Admin (09/10/2026)
+* **Yêu cầu:** Thêm menu "Bóc tách hồ sơ" chỉ hiển thị với tài khoản Admin. Cho phép Admin tải lên 1 file Excel danh sách hồ sơ; hệ thống tự động bóc tách thành các Sheet độc lập: 1 Sheet Cổng Tỉnh và mỗi Bộ 1 Sheet riêng (Bộ Nội vụ, Bộ Y Tế, Bộ GD&ĐT, Bộ NN&MT, Bộ Xây dựng, Bộ Công Thương, Bộ KH&CN, Bộ Tư Pháp, Bộ VHTTDL...), cùng 1 Sheet tổng hợp thống kê số lượng và tỷ lệ, rồi cho phép tải về lại file Excel hoàn chỉnh (.xlsx).
+* **Xử lý:**
+  - **Phân quyền truy cập:** Tab menu `Bóc tách hồ sơ (Admin)` ẩn mặc định đối với khách và cán bộ; chỉ tự động mở ra khi đăng nhập bằng tài khoản Quản trị viên (`admin`).
+  - **Thư viện xử lý Excel offline:** Tích hợp `libs/exceljs.min.js` cục bộ trong hệ thống, xử lý bóc tách 100% trên trình duyệt client siêu tốc, không giới hạn dung lượng file tải lên và bảo mật tuyệt đối dữ liệu hồ sơ.
+  - **Cơ chế bóc tách thông minh:**
+    - Tự động quét và phát hiện dòng tiêu đề (Header row) và cột chứa mã/số hồ sơ (hỗ trợ cả chọn thủ công nếu file có cấu trúc đặc biệt).
+    - Phân loại Cổng Tỉnh (dãy số thứ tự 4 số) và Cổng Bộ (6-7 số với 2 số đầu định danh Bộ chủ quản: 09 Nội vụ, 18 Y tế, 03 GD&ĐT, 10 NN&MT, 17 Xây dựng, 02 Công Thương, 06 KH&CN, 15 Tư pháp, 16 VHTTDL).
+  - **Giao diện & Xuất file:**
+    - Thẻ thống kê tổng quan (Tổng số hồ sơ, số hồ sơ Cổng Tỉnh, Cổng các Bộ, tổng số Sheet sẽ xuất).
+    - Lưới chi tiết số lượng và tỷ lệ % của từng Bộ.
+    - Xem trước 20 dòng đầu dữ liệu của từng Sheet theo các tab con trực quan.
+    - Nút tải về xuất file `.xlsx` đầy đủ: Sheet `Tổng hợp thống kê` định dạng chuẩn báo cáo kèm các Sheet dữ liệu riêng biệt cho Cổng Tỉnh và từng Bộ.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
