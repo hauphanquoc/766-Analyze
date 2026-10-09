@@ -10,7 +10,7 @@ const MINISTRY_PREFIX_MAP = {
   '03': 'Bộ Giáo dục và Đào tạo',
   '10': 'Bộ Nông nghiệp và Môi trường',
   '17': 'Bộ Xây dựng',
-  '02': 'Bộ Xây dựng',
+  '02': 'Bộ Công Thương',
   '06': 'Bộ Khoa học và Công nghệ',
   '15': 'Bộ Tư Pháp',
   '16': 'Bộ Văn hóa, thể thao và du lịch'

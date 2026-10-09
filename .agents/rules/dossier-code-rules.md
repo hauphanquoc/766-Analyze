@@ -27,7 +27,8 @@ Mã số hồ sơ thủ tục hành chính (TTHC) có dạng:
 | `18` | **Bộ Y tế** (`18xxxx`) |
 | `03` | **Bộ Giáo dục và Đào tạo** (`03xxxx`) |
 | `10` | **Bộ Nông nghiệp và Môi trường** (`10xxxx`) |
-| `17` hoặc `02` | **Bộ Xây dựng** (`17xxxx`, `02xxxx`) |
+| `17` | **Bộ Xây dựng** (`17xxxx`) |
+| `02` | **Bộ Công Thương** (`02xxxx`) |
 | `06` | **Bộ Khoa học và Công nghệ** (`06xxxx`) |
 | `15` | **Bộ Tư pháp** (`15xxxx`) |
 | `16` | **Bộ Văn hóa, Thể thao và Du lịch** (`16xxxx`) |

@@ -177,7 +177,8 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - `18xxxx`: Bộ Y Tế
   - `03xxxx`: Bộ Giáo dục và Đào tạo
   - `10xxxx`: Bộ Nông nghiệp và Môi trường
-  - `17xxxx` hoặc `02xxxx`: Bộ Xây dựng
+  - `17xxxx`: Bộ Xây dựng
+  - `02xxxx`: Bộ Công Thương
   - `06xxxx`: Bộ Khoa học và Công nghệ
   - `15xxxx`: Bộ Tư Pháp
   - `16xxxx`: Bộ Văn hóa, Thể thao và Du lịch
