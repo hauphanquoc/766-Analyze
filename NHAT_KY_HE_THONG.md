@@ -200,6 +200,12 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     - Xem trước 20 dòng đầu dữ liệu của từng Sheet theo các tab con trực quan.
     - Nút tải về xuất file `.xlsx` đầy đủ: Sheet `Tổng hợp thống kê` định dạng chuẩn báo cáo kèm các Sheet dữ liệu riêng biệt cho Cổng Tỉnh và từng Bộ.
 
+### 17. Bổ sung Menu "Mã QR TTHC (soon)" (09/10/2026)
+* **Yêu cầu:** Thêm menu `Mã QR TTHC (soon)` nằm ngay trước menu *Tiện ích* trên thanh điều hướng.
+* **Xử lý:**
+  - Thêm mục menu `Mã QR TTHC` với biểu tượng mã QR chuẩn SVG và huy hiệu trạng thái `(soon)`.
+  - Tích hợp khung placeholder thông báo tính năng đang trong lộ trình phát triển để sẵn sàng cho các phiên bản tiếp theo.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
