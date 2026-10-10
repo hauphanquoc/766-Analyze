@@ -1886,112 +1886,175 @@
               </div>
 
               <!-- CẤU HÌNH CỘT VÀ TẠO MÃ QR (XUẤT HIỆN KHI CÓ FILE) -->
-              <div class="qr-config-panel" id="qr-config-card" style="display: none; margin-top: 24px;">
-                <div class="qr-config-panel-head">
-                  <h4 class="qr-config-panel-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    <span>Cấu hình Cột & Tùy chọn Đính kèm</span>
+              <div class="qr-config-card-box" id="qr-config-card" style="display: none;">
+                <div class="qr-config-card-head">
+                  <h4 class="qr-config-card-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Cấu hình Cột & Thông số tạo mã QR</span>
                   </h4>
-                  <span class="qr-config-panel-hint">Mã QR đính kèm trực tiếp vào cột cuối cùng</span>
+                  <span style="font-size: 12.5px; color: #64748b;">Hệ thống tự động phát hiện Cột B và dòng tiêu đề</span>
                 </div>
+
+                <div class="qr-config-fields-grid">
+                  <div class="qr-field-item">
+                    <label class="qr-field-label" for="qr-sheet-select">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                      <span>Sheet danh sách:</span>
+                    </label>
+                    <select id="qr-sheet-select" class="qr-select-control"></select>
+                  </div>
+
+                  <div class="qr-field-item">
+                    <label class="qr-field-label" for="qr-header-row-select">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                      <span>Dòng Tiêu đề (Header):</span>
+                    </label>
+                    <select id="qr-header-row-select" class="qr-select-control">
+                      <option value="1">Dòng 1</option>
+                      <option value="2">Dòng 2</option>
+                      <option value="3">Dòng 3</option>
+                      <option value="4">Dòng 4</option>
+                      <option value="5">Dòng 5</option>
+                    </select>
+                  </div>
+
+                  <div class="qr-field-item">
+                    <label class="qr-field-label" for="qr-code-col-select">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                      <span>Cột chứa Mã TTHC:</span>
+                    </label>
+                    <select id="qr-code-col-select" class="qr-select-control"></select>
+                  </div>
+
+                  <div class="qr-field-item">
+                    <label class="qr-field-label" for="qr-size-select">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><rect x="7" y="7" width="3" height="3"></rect></svg>
+                      <span>Kích thước QR trong Excel:</span>
+                    </label>
+                    <select id="qr-size-select" class="qr-select-control">
+                      <option value="130" selected>Lớn (130px) - Quét cực nhạy</option>
+                      <option value="150">Rất lớn (150px) - In ấn khổ to</option>
+                      <option value="110">Vừa (110px) - Bảng gọn</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="qr-config-footer-row">
+                  <div style="font-size: 13px; color: #64748b; display: flex; align-items: center; gap: 8px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span id="qr-target-col-display">Vị trí chèn: Cột cuối cùng của bảng dữ liệu (tự động tạo mới cột "MÃ QR TRA CỨU")</span>
+                  </div>
+                  <button type="button" class="btn btn-primary" id="btn-process-qr" style="height: 40px; padding: 0 24px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                      <path d="M14 14h3v3h-3z"></path>
+                    </svg>
+                    <span>Tạo mã QR & Đính vào Excel</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- TIẾN TRÌNH XỬ LÝ (PROGRESS) -->
+              <div class="split-loading-box" id="qr-progress-card" style="display: none; margin-top: 24px;">
+                <div class="split-spinner"></div>
+                <h4 class="split-loading-title" id="qr-progress-title">Đang xử lý dữ liệu...</h4>
+                <p class="split-loading-subtitle" id="qr-progress-desc">Hệ thống đang tạo mã QR kèm logo Đắk Lắk và chèn vào file Excel...</p>
+                <div style="max-width: 420px; margin: 16px auto 0;">
+                  <div class="progress" style="height: 8px; background-color: #e2e8f0; border-radius: 6px; overflow: hidden;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="qr-progress-bar-fill" style="width: 0%;"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #475569; margin-top: 8px;">
+                    <span id="qr-progress-count">0 / 0 thủ tục</span>
+                    <span id="qr-progress-percent">0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KẾT QUẢ & XUẤT FILE -->
+              <div id="qr-result-section" style="display: none; margin-top: 24px;">
                 
-                <div class="qr-config-panel-body">
-                  <div class="qr-config-row">
-                    <div class="qr-form-group">
-                      <label class="qr-form-label" for="qr-sheet-select">Sheet chứa danh sách:</label>
-                      <select id="qr-sheet-select" class="form-select form-select-sm"></select>
+                <!-- BANNER TỔNG KẾT VÀ NÚT TẢI VỀ -->
+                <div class="split-summary-banner" style="background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); box-shadow: 0 8px 24px -4px rgba(6, 95, 70, 0.35);">
+                  <div class="split-summary-left">
+                    <div class="split-summary-badge">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      ĐÃ TẠO MÃ QR THÀNH CÔNG
                     </div>
-                    <div class="qr-form-group">
-                      <label class="qr-form-label" for="qr-header-row-select">Dòng Tiêu đề (Header):</label>
-                      <select id="qr-header-row-select" class="form-select form-select-sm">
-                        <option value="1">Dòng 1</option>
-                        <option value="2">Dòng 2</option>
-                        <option value="3">Dòng 3</option>
-                        <option value="4">Dòng 4</option>
-                        <option value="5">Dòng 5</option>
-                      </select>
+                    <h3 class="split-summary-title">Đã tạo mã QR & Đính kèm vào file Excel hoàn tất!</h3>
+                    <p class="split-summary-desc" id="qr-result-summary-text">
+                      Hoàn tất xử lý các thủ tục hành chính, đính kèm mã QR có biểu trưng Đắk Lắk trực tiếp vào file Excel.
+                    </p>
+                  </div>
+                  <div class="split-summary-right">
+                    <button type="button" class="btn btn-success btn-lg split-btn-download" id="btn-download-qr-excel">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      <span>Tải file Excel kèm mã QR (.xlsx)</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- THẺ THỐNG KÊ TỔNG QUAN -->
+                <div class="split-stats-grid">
+                  <div class="split-stat-card">
+                    <div class="split-stat-icon icon-blue">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     </div>
-                    <div class="qr-form-group">
-                      <label class="qr-form-label" for="qr-code-col-select">Cột chứa Mã TTHC:</label>
-                      <select id="qr-code-col-select" class="form-select form-select-sm"></select>
-                    </div>
-                    <div class="qr-form-group">
-                      <label class="qr-form-label" for="qr-size-select">Kích thước mã QR trong Excel:</label>
-                      <select id="qr-size-select" class="form-select form-select-sm">
-                        <option value="130" selected>Lớn (130px) - Quét cực nhạy</option>
-                        <option value="150">Rất lớn (150px) - In ấn khổ to</option>
-                        <option value="110">Vừa (110px) - Bảng tính nhỏ gọn</option>
-                      </select>
+                    <div class="split-stat-info">
+                      <span class="split-stat-label">Tổng số dòng dữ liệu</span>
+                      <span class="split-stat-val" id="qr-stat-total-rows">0</span>
                     </div>
                   </div>
 
-                  <div class="qr-config-actions-bar">
-                    <div class="qr-target-note">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                      <span id="qr-target-col-display">Cột cuối bảng (Tự động thêm mới cột "MÃ QR TRA CỨU")</span>
-                    </div>
-                    <button type="button" class="btn btn-primary" id="btn-process-qr">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <div class="split-stat-card">
+                    <div class="split-stat-icon icon-emerald">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="7" height="7"></rect>
                         <rect x="14" y="3" width="7" height="7"></rect>
                         <rect x="3" y="14" width="7" height="7"></rect>
                         <path d="M14 14h3v3h-3z"></path>
                       </svg>
-                      <span>Tạo mã QR & Đính vào Excel</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TIẾN TRÌNH XỬ LÝ (PROGRESS) -->
-              <div class="qr-progress-panel" id="qr-progress-card" style="display: none; margin-top: 24px;">
-                <div class="qr-progress-status-row">
-                  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                  <div class="qr-progress-text-wrap">
-                    <div class="qr-progress-title" id="qr-progress-title">Đang xử lý dữ liệu...</div>
-                    <div class="qr-progress-desc" id="qr-progress-desc">Hệ thống đang tạo mã QR kèm logo Đắk Lắk...</div>
-                  </div>
-                  <span class="qr-progress-pct" id="qr-progress-percent">0%</span>
-                </div>
-                <div class="progress" style="height: 6px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 10px;">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="qr-progress-bar-fill" style="width: 0%;"></div>
-                </div>
-                <div class="qr-progress-sub-stats">
-                  <span id="qr-progress-count">0 / 0 thủ tục</span>
-                </div>
-              </div>
-
-              <!-- KẾT QUẢ & XUẤT FILE -->
-              <div class="qr-result-panel" id="qr-result-section" style="display: none; margin-top: 24px;">
-                <div class="alert alert-success" style="display: flex; align-items: center; justify-content: space-between; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 38px; height: 38px; border-radius: 8px; background: #10b981; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
+                    <div class="split-stat-info">
+                      <span class="split-stat-label">Mã QR đã tạo & đính kèm</span>
+                      <span class="split-stat-val num-emerald" id="qr-stat-success-qrs">0</span>
+                    </div>
+                  </div>
+
+                  <div class="split-stat-card">
+                    <div class="split-stat-icon icon-purple">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                    </div>
+                    <div class="split-stat-info">
+                      <span class="split-stat-label">Cột đính kèm mã QR</span>
+                      <span class="split-stat-val num-purple" id="qr-stat-col-name">-</span>
+                    </div>
+                  </div>
+
+                  <div class="split-stat-card">
+                    <div class="split-stat-icon icon-amber">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <div class="split-stat-info">
+                      <span class="split-stat-label">Biểu trưng tích hợp</span>
+                      <span class="split-stat-val num-amber" style="font-size: 16px;">Tỉnh Đắk Lắk</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BẢNG XEM TRƯỚC KẾT QUẢ -->
+                <div class="split-preview-card">
+                  <div class="split-preview-header" style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
-                      <div style="font-size: 15px; font-weight: 700; color: #065f46;">Đã tạo mã QR & Đính kèm vào file Excel thành công!</div>
-                      <div style="font-size: 13px; color: #047857;" id="qr-result-summary-text">Hoàn tất xử lý các thủ tục hành chính.</div>
+                      <h4 class="split-preview-title" style="margin: 0 0 2px;">Danh sách xem trước kết quả</h4>
+                      <span class="split-preview-hint">Hiển thị các thủ tục đã tạo mã QR (bấm ảnh để phóng to)</span>
                     </div>
-                  </div>
-                  <button type="button" class="btn btn-success" id="btn-download-qr-excel" style="padding: 9px 20px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span>Tải file Excel kèm mã QR (.xlsx)</span>
-                  </button>
-                </div>
-
-                <!-- Thống kê nhanh matching portals/provinces tabs -->
-                <div class="portals-stats-strip" style="margin-bottom: 20px;">
-                  <span class="portal-stat-chip"><strong id="qr-stat-total-rows">0</strong> Dòng dữ liệu</span>
-                  <span class="portal-stat-chip"><strong id="qr-stat-success-qrs" style="color: #0284c7;">0</strong> Mã QR đã tạo</span>
-                  <span class="portal-stat-chip"><strong id="qr-stat-col-name">-</strong> Vị trí chèn</span>
-                  <span class="portal-stat-chip"><strong>Biểu trưng</strong> Tỉnh Đắk Lắk</span>
-                </div>
-
-                <!-- Bảng Xem Trước (Preview Table) -->
-                <div class="qr-preview-card">
-                  <div class="qr-preview-head">
-                    <h4 class="qr-preview-title">Danh sách xem trước kết quả</h4>
-                    <span class="qr-preview-badge" id="qr-preview-count-badge">Hiển thị các thủ tục đã tạo</span>
+                    <span class="qr-preview-badge" id="qr-preview-count-badge">0 thủ tục</span>
                   </div>
                   <div class="qr-preview-table-wrap">
                     <table class="qr-preview-table" id="qr-preview-table">

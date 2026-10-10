@@ -5640,7 +5640,9 @@ function initProcedureQrModule() {
     // Cập nhật hiển thị cột đích chèn mã QR
     const targetColLetter = colNumberToName(maxCol + 1);
     if (targetColDisplay) {
-      targetColDisplay.value = `Cột ${targetColLetter} (Cột cuối bảng, Tự động thêm cột "MÃ QR TRA CỨU")`;
+      const msg = `Vị trí chèn: Cột ${targetColLetter} (Cột cuối bảng, tự động tạo mới cột "MÃ QR TRA CỨU")`;
+      if ('value' in targetColDisplay) targetColDisplay.value = msg;
+      targetColDisplay.textContent = msg;
     }
   }
 
@@ -5853,8 +5855,12 @@ function initProcedureQrModule() {
 
       if (progressCard) progressCard.style.display = 'none';
       if (resultSection) {
-        resultSection.style.display = 'flex';
-        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        resultSection.style.display = 'block';
+        setTimeout(() => {
+          const yOffset = -70;
+          const y = resultSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+        }, 50);
       }
 
       showToast(`Hoàn tất tạo ${successCount} mã QR TTHC và đính vào file Excel!`, 'success');
