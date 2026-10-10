@@ -206,6 +206,16 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Thêm mục menu `Mã QR TTHC` với biểu tượng mã QR chuẩn SVG và huy hiệu trạng thái `(soon)`.
   - Tích hợp khung placeholder thông báo tính năng đang trong lộ trình phát triển để sẵn sàng cho các phiên bản tiếp theo.
 
+### 18. Quy chuẩn liên kết và tạo Mã QR tra cứu TTHC có Logo Đắk Lắk (10/10/2026)
+* **Cấu trúc Mã thủ tục:** Dạng `{Phân loại}.{Mã số}` (ví dụ: `2.000206`).
+* **Đường link tra cứu chuẩn:**
+  `https://dichvucong.gov.vn/tra-cuu-thu-tuc/danh-sach?keyword={MA_THU_TUC}&showAdvanced=false&formalityType=STANDARD&limit=10&activeKey=STANDARD`
+* **Quy chuẩn mã QR:**
+  - Áp dụng Error Correction Level `H` (30% chịu lỗi).
+  - Nhúng biểu trưng tỉnh Đắk Lắk (`icon-qr.png`) ở chính giữa với viền tròn nền trắng bảo vệ.
+  - Xây dựng module sinh mã tự động `src/qrGenerator.js` (`generateProcedureQRCode`, `buildProcedureLookupUrl`).
+  - Đã khởi tạo thành công mã QR mẫu cho thủ tục `2.000206` tại `public/qr-2.000206.png`.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
@@ -255,6 +265,7 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 | `src/storage.js` | Module quản lý đọc/ghi snapshot, xếp hạng tỉnh và tài khoản (chế độ Local + Cloud Redis). |
 | `src/excelGenerator.js` | Module xuất báo cáo Excel 3 Sheet theo mẫu chuẩn. |
 | `src/dossierParser.js` | Module phân tích và giải mã cấu trúc Số hồ sơ TTHC (phân biệt Cổng tỉnh / Cổng bộ và các Bộ). |
+| `src/qrGenerator.js` | Module sinh Mã QR tra cứu Thủ tục hành chính chuẩn Cổng DVCQG có nhúng Logo Đắk Lắk ở giữa. |
 | `api/auth.js` | API Serverless phục vụ đăng nhập (`/login`), kiểm tra phiên (`/me`), đăng xuất (`/logout`). |
 | `api/provinces.js` | API Serverless cung cấp dữ liệu bảng xếp hạng 766 các tỉnh. |
 | `api/data.js` | API Serverless cung cấp dữ liệu snapshot điểm 766 của tỉnh Đắk Lắk. |
