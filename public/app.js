@@ -5276,6 +5276,7 @@ function initProcedureQrModule() {
   const sheetSelect = document.getElementById('qr-sheet-select');
   const headerRowSelect = document.getElementById('qr-header-row-select');
   const codeColSelect = document.getElementById('qr-code-col-select');
+  const sizeSelect = document.getElementById('qr-size-select');
   const targetColDisplay = document.getElementById('qr-target-col-display');
   const btnProcess = document.getElementById('btn-process-qr');
   const progressCard = document.getElementById('qr-progress-card');
@@ -5379,11 +5380,11 @@ function initProcedureQrModule() {
     const targetUrl = buildProcedureUrl(code);
     const canvas = document.createElement('canvas');
     
-    // Sử dụng Error Correction Level H (30%) để đảm bảo quét tốt ngay cả khi có logo
+    // Sử dụng Error Correction Level H (30%) và độ phân giải 500x500px siêu nét
     await QRCode.toCanvas(canvas, targetUrl, {
       errorCorrectionLevel: 'H',
       margin: 2,
-      width: 360,
+      width: 500,
       color: {
         dark: '#000000',
         light: '#ffffff'
@@ -5393,11 +5394,11 @@ function initProcedureQrModule() {
     if (logoImg) {
       const ctx = canvas.getContext('2d');
       const qrSize = canvas.width;
-      // Logo chiếm ~22% kích thước QR
-      const logoSize = Math.round(qrSize * 0.22);
+      // Logo chiếm ~19% kích thước QR (chuẩn vàng: không che khuất timing pattern & finder pattern)
+      const logoSize = Math.round(qrSize * 0.19);
       const x = (qrSize - logoSize) / 2;
       const y = (qrSize - logoSize) / 2;
-      const padding = 5;
+      const padding = 6;
       const bgSize = logoSize + padding * 2;
       const bgX = (qrSize - bgSize) / 2;
       const bgY = (qrSize - bgSize) / 2;
@@ -5407,13 +5408,13 @@ function initProcedureQrModule() {
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(bgX, bgY, bgSize, bgSize, 10);
+        ctx.roundRect(bgX, bgY, bgSize, bgSize, 12);
       } else {
         ctx.rect(bgX, bgY, bgSize, bgSize);
       }
       ctx.fill();
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
       // Vẽ logo Đắk Lắk
@@ -5733,8 +5734,13 @@ function initProcedureQrModule() {
         right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
       };
 
+      // Lấy cấu hình kích thước từ giao diện (mặc định 130px lớn rõ nét)
+      const qrSizePx = parseInt(sizeSelect ? sizeSelect.value : 130, 10) || 130;
+      const rowHeightPt = Math.max(90, Math.round(qrSizePx * 0.82)); // 130px -> ~107pt; 150px -> ~123pt
+      const colWidth = Math.max(20, Math.round(qrSizePx / 5.8));     // 130px -> ~22.5; 150px -> ~26
+
       // Đặt độ rộng chuẩn cho cột mã QR
-      ws.getColumn(targetColIndex).width = 18;
+      ws.getColumn(targetColIndex).width = colWidth;
 
       // Tìm cột tên TTHC (nếu có) để hiển thị trong preview
       let nameColIndex = null;
@@ -5802,15 +5808,15 @@ function initProcedureQrModule() {
             extension: 'png'
           });
 
-          // Đính ảnh vào ô của dòng tương ứng
+          // Đính ảnh vào ô của dòng tương ứng với kích thước rõ nét chuẩn ext
           ws.addImage(imageId, {
-            tl: { col: targetColIndex - 1 + 0.08, row: item.rowNumber - 1 + 0.08 },
-            br: { col: targetColIndex - 0.08, row: item.rowNumber - 0.08 },
+            tl: { col: targetColIndex - 1 + 0.09, row: item.rowNumber - 1 + 0.04 },
+            ext: { width: qrSizePx, height: qrSizePx },
             editAs: 'oneCell'
           });
 
-          // Đặt độ cao dòng thành 75pt để mã QR hiển thị vuông vắn, sắc nét
-          ws.getRow(item.rowNumber).height = 75;
+          // Đặt độ cao dòng tương ứng để ô vuông vắn, mã QR không bị chèn ép
+          ws.getRow(item.rowNumber).height = rowHeightPt;
 
           const cell = ws.getCell(item.rowNumber, targetColIndex);
           cell.alignment = { vertical: 'middle', horizontal: 'center' };

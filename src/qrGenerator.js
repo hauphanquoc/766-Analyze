@@ -52,11 +52,11 @@ async function generateProcedureQRCode(procedureCode, options = {}) {
     const logoBuffer = fs.readFileSync(logoPath);
     const logoPng = PNG.sync.read(logoBuffer);
 
-    // Kích thước logo ~ 22% chiều rộng QR
-    const logoSize = Math.round(qrSize * 0.22);
+    // Kích thước logo ~ 19% chiều rộng QR (chuẩn vàng: không che khuất timing pattern & finder pattern)
+    const logoSize = Math.round(qrSize * 0.19);
     const centerX = Math.round(qrSize / 2);
     const centerY = Math.round(qrSize / 2);
-    const bgRadius = Math.round(logoSize / 2 + 8); // Vòng đệm nền trắng an toàn
+    const bgRadius = Math.round(logoSize / 2 + 6); // Vòng đệm nền trắng an toàn
 
     // Vẽ nền tròn màu trắng phía sau logo để xóa các module QR đen
     for (let y = centerY - bgRadius - 2; y <= centerY + bgRadius + 2; y++) {

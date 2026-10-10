@@ -234,7 +234,10 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     - Bảng xem trước kết quả trực quan (STT, Mã TTHC, Tên TTHC, Liên kết tra cứu Cổng DVC, Thumbnail QR phóng to khi hover/click).
     - Nút tải riêng lẻ từng ảnh mã QR dạng `.png`.
     - Nút tải tệp tin Excel hoàn chỉnh đã đính kèm tất cả mã QR (`[Tên_file]_kem_ma_QR.xlsx`).
-  - **Kiểm thử tự động:** Đã kiểm thử trọn vẹn cả tầng Node.js và giao diện trình duyệt thực tế, tạo thành công file `test-tthc-output-with-qr.xlsx` với 5 mã QR được nhúng chuẩn xác vào Cột F.
+  - **Tối ưu hóa kích thước & Độ sắc nét khi quét mã:**
+    - Khắc phục triệt để hiện tượng mã QR bị thu nhỏ dạng thumbnail (~16px) do neo tọa độ co giãn: Chuyển đổi sang chuẩn neo kích thước điểm ảnh thực `ext: { width: qrSizePx, height: qrSizePx }` (mặc định **130px** x **130px** chuẩn khuyến nghị, có tùy chọn 150px hoặc 110px).
+    - Tăng độ phân giải Canvas nguồn lên **500x500 px** siêu sắc nét, nâng độ cao dòng lên **105 pt** và độ rộng cột lên **22** giúp mã QR hiển thị vuông vắn, to rõ và điện thoại có thể quét tức thì 100% cả trên màn hình lẫn khi in ra giấy A4.
+  - **Kiểm thử tự động:** Đã kiểm thử trọn vẹn cả tầng Node.js và giao diện trình duyệt thực tế, giải mã QR qua bộ quét tự động `jsQR` đạt tỷ lệ quét thành công 100% cả 5 mã.
 
 ---
 

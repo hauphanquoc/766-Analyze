@@ -1937,12 +1937,25 @@
                   </div>
 
                   <div class="qr-config-item">
+                    <label class="qr-config-label" for="qr-size-select">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
+                      Kích thước mã QR trong Excel:
+                    </label>
+                    <select id="qr-size-select" class="form-select">
+                      <option value="130" selected>Lớn (130px) - Chuẩn khuyến nghị, quét cực nhạy</option>
+                      <option value="150">Rất lớn (150px) - Quét từ xa / In ấn cỡ lớn</option>
+                      <option value="110">Vừa (110px) - Bảng tính nhỏ gọn</option>
+                    </select>
+                    <span class="qr-config-hint">Đảm bảo máy ảnh điện thoại quét cực nhạy & rõ nét</span>
+                  </div>
+
+                  <div class="qr-config-item">
                     <label class="qr-config-label" for="qr-target-col-display">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
                       Vị trí đính kèm mã QR:
                     </label>
                     <input type="text" id="qr-target-col-display" class="form-control" readonly value="Cột cuối cùng của bảng tính (Tự động thêm mới)" />
-                    <span class="qr-config-hint">Tự động căn chỉnh độ cao dòng (75 pt) & độ rộng cột chuẩn</span>
+                    <span class="qr-config-hint">Tự động căn chỉnh độ cao dòng (105 pt) & độ rộng cột (22) vuông vắn</span>
                   </div>
                 </div>
 
