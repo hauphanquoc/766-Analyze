@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initWelcomeNotice();
   initAuth();
   initDossierSplitModule();
+  initProcedureQrModule();
   loadInitialData();
 });
 
@@ -5255,6 +5256,728 @@ function initDossierSplitModule() {
     }
   }
 }
+
+/* ==========================================================================
+   MODULE: TẠO MÃ QR THỦ TỤC HÀNH CHÍNH (TTHC)
+   ========================================================================== */
+
+function initProcedureQrModule() {
+  const fileInput = document.getElementById('qr-file-input');
+  const dropzone = document.getElementById('qr-dropzone');
+  const dropzoneInner = document.getElementById('qr-dropzone-inner');
+  const fileSelectedBox = document.getElementById('qr-file-selected-box');
+  const fileNameDisplay = document.getElementById('qr-file-name-display');
+  const fileSizeDisplay = document.getElementById('qr-file-size-display');
+  const fileSheetCountDisplay = document.getElementById('qr-file-sheet-count-display');
+  const btnBrowse = document.getElementById('btn-browse-qr-file');
+  const btnLoadSample = document.getElementById('btn-load-sample-qr-file');
+  const btnReselect = document.getElementById('btn-reselect-qr-file');
+  const configCard = document.getElementById('qr-config-card');
+  const sheetSelect = document.getElementById('qr-sheet-select');
+  const headerRowSelect = document.getElementById('qr-header-row-select');
+  const codeColSelect = document.getElementById('qr-code-col-select');
+  const targetColDisplay = document.getElementById('qr-target-col-display');
+  const btnProcess = document.getElementById('btn-process-qr');
+  const progressCard = document.getElementById('qr-progress-card');
+  const progressTitle = document.getElementById('qr-progress-title');
+  const progressDesc = document.getElementById('qr-progress-desc');
+  const progressBarFill = document.getElementById('qr-progress-bar-fill');
+  const progressCount = document.getElementById('qr-progress-count');
+  const progressPercent = document.getElementById('qr-progress-percent');
+  const resultSection = document.getElementById('qr-result-section');
+  const btnDownload = document.getElementById('btn-download-qr-excel');
+  const summaryText = document.getElementById('qr-result-summary-text');
+  const statTotalRows = document.getElementById('qr-stat-total-rows');
+  const statSuccessQrs = document.getElementById('qr-stat-success-qrs');
+  const statColName = document.getElementById('qr-stat-col-name');
+  const previewTbody = document.getElementById('qr-preview-tbody');
+  const previewCountBadge = document.getElementById('qr-preview-count-badge');
+
+  if (!fileInput || !dropzone) return;
+
+  // State nội bộ của module tạo mã QR
+  let qrModuleState = {
+    file: null,
+    fileName: '',
+    arrayBuffer: null,
+    workbook: null,
+    sheetNames: [],
+    selectedSheetName: '',
+    headerRow: 1,
+    codeColIndex: 2, // Mặc định Cột B
+    maxColIndex: 1,
+    generatedItems: [],
+    processedWorkbookBuffer: null,
+    downloadFileName: ''
+  };
+
+  let cachedDakLakLogo = null;
+
+  function getDakLakLogo() {
+    return new Promise((resolve) => {
+      if (cachedDakLakLogo && cachedDakLakLogo.complete) {
+        return resolve(cachedDakLakLogo);
+      }
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        cachedDakLakLogo = img;
+        resolve(img);
+      };
+      img.onerror = (e) => {
+        console.warn('[QR] Không thể tải icon-qr.png, tạo QR không có logo:', e);
+        resolve(null);
+      };
+      img.src = 'icon-qr.png';
+    });
+  }
+
+  function cellToString(val) {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'string') return val.trim();
+    if (typeof val === 'number') return String(val);
+    if (val instanceof Date) {
+      const d = String(val.getDate()).padStart(2, '0');
+      const m = String(val.getMonth() + 1).padStart(2, '0');
+      const y = val.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+    if (typeof val === 'object') {
+      if (val.result !== undefined && val.result !== null) return String(val.result).trim();
+      if (val.text !== undefined && val.text !== null) return String(val.text).trim();
+      if (Array.isArray(val.richText)) {
+        return val.richText.map(t => t.text || '').join('').trim();
+      }
+    }
+    return String(val).trim();
+  }
+
+  function formatBytes(bytes) {
+    if (!bytes || bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  function colNumberToName(num) {
+    let s = '';
+    while (num > 0) {
+      let m = (num - 1) % 26;
+      s = String.fromCharCode(65 + m) + s;
+      num = Math.floor((num - m) / 26);
+    }
+    return s || 'A';
+  }
+
+  function buildProcedureUrl(code) {
+    return `https://dichvucong.gov.vn/tra-cuu-thu-tuc/danh-sach?keyword=${encodeURIComponent(code)}&showAdvanced=false&formalityType=STANDARD&limit=10&activeKey=STANDARD`;
+  }
+
+  // Tạo mã QR bằng QRCode.toCanvas + vẽ logo Đắk Lắk ở giữa
+  async function generateQrWithLogo(code, logoImg) {
+    const targetUrl = buildProcedureUrl(code);
+    const canvas = document.createElement('canvas');
+    
+    // Sử dụng Error Correction Level H (30%) để đảm bảo quét tốt ngay cả khi có logo
+    await QRCode.toCanvas(canvas, targetUrl, {
+      errorCorrectionLevel: 'H',
+      margin: 2,
+      width: 360,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    });
+
+    if (logoImg) {
+      const ctx = canvas.getContext('2d');
+      const qrSize = canvas.width;
+      // Logo chiếm ~22% kích thước QR
+      const logoSize = Math.round(qrSize * 0.22);
+      const x = (qrSize - logoSize) / 2;
+      const y = (qrSize - logoSize) / 2;
+      const padding = 5;
+      const bgSize = logoSize + padding * 2;
+      const bgX = (qrSize - bgSize) / 2;
+      const bgY = (qrSize - bgSize) / 2;
+
+      ctx.save();
+      // Khối nền bo tròn màu trắng bảo vệ logo
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(bgX, bgY, bgSize, bgSize, 10);
+      } else {
+        ctx.rect(bgX, bgY, bgSize, bgSize);
+      }
+      ctx.fill();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Vẽ logo Đắk Lắk
+      ctx.drawImage(logoImg, x, y, logoSize, logoSize);
+      ctx.restore();
+    }
+
+    const dataUrl = canvas.toDataURL('image/png');
+    const base64Pure = dataUrl.split(',')[1];
+    return { targetUrl, dataUrl, base64Pure };
+  }
+
+  // Thiết lập sự kiện kéo thả (Drag & Drop)
+  if (dropzoneInner) {
+    dropzoneInner.addEventListener('click', () => fileInput.click());
+
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropzoneInner.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneInner.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropzoneInner.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneInner.classList.remove('dragover');
+      });
+    });
+
+    dropzoneInner.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        handleFileSelection(files[0]);
+      }
+    });
+  }
+
+  if (btnBrowse) {
+    btnBrowse.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+  }
+
+  if (btnLoadSample) {
+    btnLoadSample.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      try {
+        showToast('Đang tải dữ liệu mẫu thử nghiệm (5 TTHC)...', 'info');
+        const resp = await fetch('test-tthc-sample.xlsx');
+        if (!resp.ok) throw new Error('Không thể tải file mẫu');
+        const blob = await resp.blob();
+        const sampleFile = new File([blob], 'danh-sach-tthc-mau.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        await handleFileSelection(sampleFile);
+      } catch (err) {
+        console.error('[QR] Lỗi tải file mẫu:', err);
+        showToast('Lỗi khi tải file mẫu thử nghiệm: ' + err.message, 'error');
+      }
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFileSelection(e.target.files[0]);
+      }
+    });
+  }
+
+  if (btnReselect) {
+    btnReselect.addEventListener('click', () => {
+      resetQrModuleState();
+    });
+  }
+
+  function resetQrModuleState() {
+    fileInput.value = '';
+    qrModuleState.file = null;
+    qrModuleState.fileName = '';
+    qrModuleState.arrayBuffer = null;
+    qrModuleState.workbook = null;
+    qrModuleState.generatedItems = [];
+    qrModuleState.processedWorkbookBuffer = null;
+
+    if (fileSelectedBox) fileSelectedBox.style.display = 'none';
+    if (dropzoneInner) dropzoneInner.style.display = 'block';
+    if (configCard) configCard.style.display = 'none';
+    if (progressCard) progressCard.style.display = 'none';
+    if (resultSection) resultSection.style.display = 'none';
+  }
+
+  async function handleFileSelection(file) {
+    const validExtensions = ['.xlsx', '.xls'];
+    const isExcel = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    if (!isExcel) {
+      showToast('Vui lòng chọn file định dạng Excel (.xlsx hoặc .xls)', 'error');
+      return;
+    }
+
+    try {
+      showToast('Đang phân tích cấu trúc file Excel...', 'info');
+      qrModuleState.file = file;
+      qrModuleState.fileName = file.name;
+      
+      const buffer = await file.arrayBuffer();
+      qrModuleState.arrayBuffer = buffer;
+
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(buffer);
+      qrModuleState.workbook = wb;
+
+      qrModuleState.sheetNames = wb.worksheets.map(ws => ws.name);
+      if (qrModuleState.sheetNames.length === 0) {
+        showToast('File Excel không chứa bất kỳ Sheet dữ liệu nào!', 'error');
+        return;
+      }
+
+      // Cập nhật UI thông tin file đã chọn
+      if (fileNameDisplay) fileNameDisplay.textContent = file.name;
+      if (fileSizeDisplay) fileSizeDisplay.textContent = formatBytes(file.size);
+      if (fileSheetCountDisplay) fileSheetCountDisplay.textContent = `${qrModuleState.sheetNames.length} Sheet`;
+
+      if (dropzoneInner) dropzoneInner.style.display = 'none';
+      if (fileSelectedBox) fileSelectedBox.style.display = 'flex';
+
+      // Nạp danh sách Sheet vào select
+      sheetSelect.innerHTML = '';
+      qrModuleState.sheetNames.forEach((name, idx) => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = `${idx + 1}. ${name}`;
+        sheetSelect.appendChild(opt);
+      });
+      qrModuleState.selectedSheetName = qrModuleState.sheetNames[0];
+
+      // Phân tích và nạp cấu hình cột
+      updateSheetAnalysis();
+
+      if (configCard) configCard.style.display = 'block';
+      if (resultSection) resultSection.style.display = 'none';
+      if (progressCard) progressCard.style.display = 'none';
+
+      showToast(`Đã nhận diện file: ${file.name}`, 'success');
+    } catch (err) {
+      console.error('[QR Module] Lỗi đọc file Excel:', err);
+      showToast(`Không thể đọc file Excel: ${err.message}`, 'error');
+      resetQrModuleState();
+    }
+  }
+
+  // Khi người dùng đổi Sheet hoặc Dòng tiêu đề
+  if (sheetSelect) {
+    sheetSelect.addEventListener('change', () => {
+      qrModuleState.selectedSheetName = sheetSelect.value;
+      updateSheetAnalysis();
+    });
+  }
+
+  if (headerRowSelect) {
+    headerRowSelect.addEventListener('change', () => {
+      qrModuleState.headerRow = parseInt(headerRowSelect.value, 10) || 1;
+      updateSheetAnalysis();
+    });
+  }
+
+  function updateSheetAnalysis() {
+    if (!qrModuleState.workbook) return;
+    const ws = qrModuleState.workbook.getWorksheet(qrModuleState.selectedSheetName);
+    if (!ws) return;
+
+    const headerRowNum = parseInt(headerRowSelect.value, 10) || 1;
+    qrModuleState.headerRow = headerRowNum;
+
+    // Tìm cột lớn nhất có dữ liệu
+    let maxCol = ws.actualColumnCount || ws.columnCount || 1;
+    const headerRow = ws.getRow(headerRowNum);
+    headerRow.eachCell((cell, colNumber) => {
+      if (colNumber > maxCol) maxCol = colNumber;
+    });
+    if (maxCol < 2) maxCol = 2;
+    qrModuleState.maxColIndex = maxCol;
+
+    // Quét các cột để tìm cột Mã TTHC và Tên TTHC
+    codeColSelect.innerHTML = '';
+    let autoDetectedCodeCol = 2; // Mặc định Cột B
+
+    // Thu thập tên cột và kiểm tra mẫu mã thủ tục (ví dụ: "2.000206", "1.000123")
+    const sampleRows = [headerRowNum + 1, headerRowNum + 2, headerRowNum + 3, headerRowNum + 4];
+    
+    for (let c = 1; c <= maxCol; c++) {
+      const colLetter = colNumberToName(c);
+      const headerVal = cellToString(headerRow.getCell(c).value);
+      const opt = document.createElement('option');
+      opt.value = c;
+
+      let isCandidate = false;
+      // Kiểm tra tên tiêu đề
+      if (/mã|ma\s*tthc|thủ\s*tục|thu\s*tuc/i.test(headerVal)) {
+        isCandidate = true;
+      }
+      // Kiểm tra mẫu mã trong các dòng dữ liệu mẫu
+      for (const rNum of sampleRows) {
+        if (rNum <= ws.rowCount) {
+          const sampleVal = cellToString(ws.getRow(rNum).getCell(c).value);
+          if (/^\d+\.\d+$/.test(sampleVal)) {
+            isCandidate = true;
+            autoDetectedCodeCol = c;
+            break;
+          }
+        }
+      }
+
+      let label = `Cột ${colLetter}`;
+      if (headerVal) {
+        label += `: ${headerVal.substring(0, 35)}`;
+      } else {
+        label += ' (Không có tiêu đề)';
+      }
+      if (c === 2) {
+        label += ' - [Khuyến nghị: Cột B]';
+      } else if (isCandidate && c !== 2) {
+        label += ' - [Phát hiện mã TTHC]';
+      }
+
+      opt.textContent = label;
+      codeColSelect.appendChild(opt);
+    }
+
+    // Ưu tiên chọn Cột B (index 2) hoặc cột được phát hiện
+    if (autoDetectedCodeCol && autoDetectedCodeCol <= maxCol) {
+      codeColSelect.value = autoDetectedCodeCol;
+      qrModuleState.codeColIndex = autoDetectedCodeCol;
+    } else {
+      codeColSelect.value = 2;
+      qrModuleState.codeColIndex = 2;
+    }
+
+    // Cập nhật hiển thị cột đích chèn mã QR
+    const targetColLetter = colNumberToName(maxCol + 1);
+    if (targetColDisplay) {
+      targetColDisplay.value = `Cột ${targetColLetter} (Cột cuối bảng, Tự động thêm cột "MÃ QR TRA CỨU")`;
+    }
+  }
+
+  if (codeColSelect) {
+    codeColSelect.addEventListener('change', () => {
+      qrModuleState.codeColIndex = parseInt(codeColSelect.value, 10) || 2;
+    });
+  }
+
+  // Thực hiện tạo mã QR & đính vào Excel
+  if (btnProcess) {
+    btnProcess.addEventListener('click', async () => {
+      await processGenerateAndEmbedQr();
+    });
+  }
+
+  async function processGenerateAndEmbedQr() {
+    if (!qrModuleState.arrayBuffer) {
+      showToast('Vui lòng tải lên file danh sách TTHC trước!', 'error');
+      return;
+    }
+
+    const headerRowNum = parseInt(headerRowSelect.value, 10) || 1;
+    const codeColNum = parseInt(codeColSelect.value, 10) || 2;
+    const sheetName = qrModuleState.selectedSheetName;
+
+    btnProcess.disabled = true;
+    if (progressCard) progressCard.style.display = 'block';
+    if (resultSection) resultSection.style.display = 'none';
+
+    try {
+      progressTitle.textContent = 'Đang chuẩn bị logo & nạp dữ liệu...';
+      progressDesc.textContent = 'Đang tải hình ảnh biểu trưng tỉnh Đắk Lắk...';
+      progressBarFill.style.width = '5%';
+      progressPercent.textContent = '5%';
+
+      const logoImg = await getDakLakLogo();
+
+      // Nạp lại workbook mới từ buffer gốc để không bị lặp đè
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(qrModuleState.arrayBuffer);
+      const ws = wb.getWorksheet(sheetName);
+
+      if (!ws) {
+        throw new Error(`Không tìm thấy Sheet "${sheetName}" trong file.`);
+      }
+
+      // Xác định cột cuối cùng để đính mã QR
+      let maxCol = ws.actualColumnCount || ws.columnCount || 1;
+      const hRow = ws.getRow(headerRowNum);
+      hRow.eachCell((cell, colNumber) => {
+        if (colNumber > maxCol) maxCol = colNumber;
+      });
+      const targetColIndex = maxCol + 1;
+      const targetColLetter = colNumberToName(targetColIndex);
+
+      // Thêm tiêu đề cột mới
+      const headerCell = ws.getCell(headerRowNum, targetColIndex);
+      headerCell.value = 'MÃ QR TRA CỨU';
+      headerCell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11, name: 'Arial' };
+      headerCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF0284C7' } // Sky-600
+      };
+      headerCell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      headerCell.border = {
+        top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
+      };
+
+      // Đặt độ rộng chuẩn cho cột mã QR
+      ws.getColumn(targetColIndex).width = 18;
+
+      // Tìm cột tên TTHC (nếu có) để hiển thị trong preview
+      let nameColIndex = null;
+      for (let c = 1; c <= maxCol; c++) {
+        const hVal = cellToString(hRow.getCell(c).value);
+        if (/tên\s*thủ\s*tục|ten\s*thu\s*tuc|tên\s*tthc/i.test(hVal)) {
+          nameColIndex = c;
+          break;
+        }
+      }
+      if (!nameColIndex && maxCol >= 3 && codeColNum === 2) {
+        nameColIndex = 3; // Cột C thường là Tên TTHC
+      }
+
+      // Thu thập các dòng hợp lệ cần xử lý
+      const rowsToProcess = [];
+      const totalSheetRows = ws.rowCount;
+
+      for (let r = headerRowNum + 1; r <= totalSheetRows; r++) {
+        const row = ws.getRow(r);
+        const codeVal = cellToString(row.getCell(codeColNum).value);
+        
+        // Bỏ qua dòng trống hoặc dòng tiêu đề lặp
+        if (!codeVal || codeVal.toLowerCase() === 'mã tthc' || codeVal.toLowerCase() === 'mã thủ tục') {
+          continue;
+        }
+
+        let nameVal = '';
+        if (nameColIndex) {
+          nameVal = cellToString(row.getCell(nameColIndex).value);
+        }
+
+        rowsToProcess.push({
+          rowNumber: r,
+          code: codeVal,
+          name: nameVal
+        });
+      }
+
+      const totalItems = rowsToProcess.length;
+      if (totalItems === 0) {
+        throw new Error(`Không tìm thấy mã thủ tục nào tại Cột ${colNumberToName(codeColNum)} (từ dòng ${headerRowNum + 1} trở đi).`);
+      }
+
+      progressTitle.textContent = `Đang tạo mã QR cho ${totalItems} thủ tục...`;
+      qrModuleState.generatedItems = [];
+
+      let successCount = 0;
+
+      for (let i = 0; i < totalItems; i++) {
+        const item = rowsToProcess[i];
+        const pct = Math.round(((i + 1) / totalItems) * 85) + 10;
+        
+        progressBarFill.style.width = `${pct}%`;
+        progressPercent.textContent = `${pct}%`;
+        progressCount.textContent = `${i + 1} / ${totalItems} thủ tục`;
+        progressDesc.textContent = `Đang tạo mã QR cho thủ tục: "${item.code}"...`;
+
+        try {
+          const { targetUrl, dataUrl, base64Pure } = await generateQrWithLogo(item.code, logoImg);
+
+          // Thêm ảnh vào workbook
+          const imageId = wb.addImage({
+            base64: base64Pure,
+            extension: 'png'
+          });
+
+          // Đính ảnh vào ô của dòng tương ứng
+          ws.addImage(imageId, {
+            tl: { col: targetColIndex - 1 + 0.08, row: item.rowNumber - 1 + 0.08 },
+            br: { col: targetColIndex - 0.08, row: item.rowNumber - 0.08 },
+            editAs: 'oneCell'
+          });
+
+          // Đặt độ cao dòng thành 75pt để mã QR hiển thị vuông vắn, sắc nét
+          ws.getRow(item.rowNumber).height = 75;
+
+          const cell = ws.getCell(item.rowNumber, targetColIndex);
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+            right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+          };
+
+          qrModuleState.generatedItems.push({
+            rowNumber: item.rowNumber,
+            code: item.code,
+            name: item.name,
+            targetUrl: targetUrl,
+            dataUrl: dataUrl
+          });
+
+          successCount++;
+        } catch (itemErr) {
+          console.warn(`[QR] Lỗi khi tạo mã cho dòng ${item.rowNumber} (${item.code}):`, itemErr);
+        }
+
+        // Cứ mỗi 5 dòng nhường CPU một chút để trình duyệt cập nhật giao diện
+        if (i % 5 === 0) {
+          await new Promise(res => setTimeout(res, 0));
+        }
+      }
+
+      progressTitle.textContent = 'Đang đóng gói file Excel kèm mã QR...';
+      progressDesc.textContent = 'Hệ thống đang xuất tệp tin .xlsx hoàn chỉnh...';
+      progressBarFill.style.width = '98%';
+      progressPercent.textContent = '98%';
+
+      const outBuffer = await wb.xlsx.writeBuffer();
+      qrModuleState.processedWorkbookBuffer = outBuffer;
+
+      // Đặt tên file tải về
+      const baseName = qrModuleState.fileName.replace(/\.[^/.]+$/, '');
+      qrModuleState.downloadFileName = `${baseName}_kem_ma_QR.xlsx`;
+
+      progressBarFill.style.width = '100%';
+      progressPercent.textContent = '100%';
+
+      // Cập nhật thống kê và bảng preview
+      if (statTotalRows) statTotalRows.textContent = totalItems.toLocaleString('vi-VN');
+      if (statSuccessQrs) statSuccessQrs.textContent = successCount.toLocaleString('vi-VN');
+      if (statColName) statColName.textContent = `Cột ${targetColLetter} (Cột ${targetColIndex})`;
+      if (summaryText) {
+        summaryText.textContent = `Đã tạo thành công ${successCount}/${totalItems} mã QR tra cứu TTHC kèm logo tỉnh và đính vào Cột ${targetColLetter}.`;
+      }
+
+      renderPreviewTable(qrModuleState.generatedItems);
+
+      if (progressCard) progressCard.style.display = 'none';
+      if (resultSection) {
+        resultSection.style.display = 'flex';
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      showToast(`Hoàn tất tạo ${successCount} mã QR TTHC và đính vào file Excel!`, 'success');
+    } catch (err) {
+      console.error('[QR Module] Lỗi quá trình tạo mã QR:', err);
+      showToast(`Lỗi: ${err.message}`, 'error');
+      if (progressCard) progressCard.style.display = 'none';
+    } finally {
+      btnProcess.disabled = false;
+    }
+  }
+
+  function renderPreviewTable(items) {
+    if (!previewTbody) return;
+    previewTbody.innerHTML = '';
+
+    if (!items || items.length === 0) {
+      previewTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px; color: #64748b;">Không có dữ liệu mã QR để hiển thị</td></tr>';
+      return;
+    }
+
+    if (previewCountBadge) {
+      previewCountBadge.textContent = `${items.length} thủ tục`;
+    }
+
+    // Hiển thị tối đa 100 thủ tục trong preview để tối ưu hiệu năng DOM
+    const displayLimit = Math.min(items.length, 100);
+
+    for (let idx = 0; idx < displayLimit; idx++) {
+      const item = items[idx];
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td style="text-align: center; color: #64748b; font-weight: 600;">${idx + 1}</td>
+        <td>
+          <span class="qr-code-pill">${escapeHtml(item.code)}</span>
+        </td>
+        <td>
+          <div style="font-weight: 600; color: #0f172a; line-height: 1.4;">${escapeHtml(item.name || 'Thủ tục hành chính ' + item.code)}</div>
+        </td>
+        <td>
+          <a href="${item.targetUrl}" target="_blank" rel="noopener noreferrer" class="qr-link-btn" title="${item.targetUrl}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            Tra cứu DVC Quốc gia
+          </a>
+        </td>
+        <td class="qr-thumb-cell">
+          <img src="${item.dataUrl}" alt="QR ${item.code}" class="qr-thumb-img" title="Click hoặc di chuột để phóng to" />
+        </td>
+        <td style="text-align: center;">
+          <button type="button" class="btn btn-outline-secondary btn-sm qr-btn-dl-single" data-code="${escapeHtml(item.code)}" data-src="${item.dataUrl}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Tải PNG
+          </button>
+        </td>
+      `;
+
+      previewTbody.appendChild(tr);
+    }
+
+    // Gắn sự kiện tải ảnh lẻ
+    previewTbody.querySelectorAll('.qr-btn-dl-single').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const code = btn.getAttribute('data-code');
+        const src = btn.getAttribute('data-src');
+        downloadSingleQrImage(code, src);
+      });
+    });
+  }
+
+  function downloadSingleQrImage(code, dataUrl) {
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `QR_${code}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Đã tải ảnh mã QR cho thủ tục ${code}`, 'success');
+  }
+
+  // Tải file Excel kèm mã QR
+  if (btnDownload) {
+    btnDownload.addEventListener('click', () => {
+      if (!qrModuleState.processedWorkbookBuffer) {
+        showToast('Chưa có file Excel hoàn chỉnh để tải về!', 'error');
+        return;
+      }
+
+      try {
+        const blob = new Blob([qrModuleState.processedWorkbookBuffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = qrModuleState.downloadFileName || 'danh-sach-tthc-kem-ma-QR.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast(`Đã tải xuống file "${qrModuleState.downloadFileName}"!`, 'success');
+      } catch (err) {
+        console.error('[QR Module] Lỗi tải file Excel:', err);
+        showToast(`Không thể tải file: ${err.message}`, 'error');
+      }
+    });
+  }
+}
+
 
 
 

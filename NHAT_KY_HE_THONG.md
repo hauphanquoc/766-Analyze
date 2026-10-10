@@ -216,6 +216,26 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Xây dựng module sinh mã tự động `src/qrGenerator.js` (`generateProcedureQRCode`, `buildProcedureLookupUrl`).
   - Đã khởi tạo thành công mã QR mẫu cho thủ tục `2.000206` tại `public/qr-2.000206.png`.
 
+### 19. Hoàn thiện tính năng Tạo mã QR TTHC và đính kèm trực tiếp vào file Excel (10/10/2026)
+* **Yêu cầu:** Xây dựng tính năng hoàn chỉnh cho menu "Mã QR TTHC" (gỡ bỏ nhãn `(soon)`). Người dùng tải lên file Excel chứa danh sách TTHC (mã TTHC thường ở Cột B). Hệ thống tự động tạo mã QR có gắn logo tỉnh Đắk Lắk ở giữa cho từng thủ tục và đính hình ảnh trực tiếp vào cột cuối cùng của bảng danh sách Excel, sau đó cho phép tải file về.
+* **Xử lý toàn diện:**
+  - **Gỡ nhãn `(soon)`:** Chuyển đổi tab điều hướng thành `Mã QR TTHC` chính thức.
+  - **Giao diện người dùng Enterprise:** Xây dựng card chức năng chuẩn Gov-tech hiện đại trong `#tab-content-qr`:
+    - Khu vực kéo thả file Excel (.xlsx, .xls) kèm nút nạp file mẫu thử nghiệm 5 TTHC tức thì.
+    - Hộp cấu hình thông minh: Chọn Sheet, chọn Dòng tiêu đề (Header), tự động phát hiện Cột B (Mã TTHC) hoặc cột chứa mã số dạng `\d+\.\d+`.
+    - Tự động nhận diện cột cuối cùng của bảng tính để tạo mới cột `MÃ QR TRA CỨU` với nền xanh Sky-600, chữ trắng đậm.
+  - **Xử lý Offline Client-side 100%:**
+    - Tích hợp thư viện `libs/qrcode.min.js` (Canvas API) và `libs/exceljs.min.js`.
+    - Sinh mã QR tra cứu Cổng DVC Quốc gia với cấp độ sửa lỗi `H` (30%) đảm bảo máy quét đọc chính xác 100%.
+    - Tự động vẽ nền bo tròn màu trắng có viền bóng và nhúng biểu trưng tỉnh Đắk Lắk (`icon-qr.png`) ở tâm mã QR.
+    - Đính hình ảnh vào từng ô tương ứng trong ExcelJS (`ws.addImage` với `editAs: 'oneCell'`), tự động căn chỉnh chiều cao dòng (`75pt`) và độ rộng cột (`18`) giúp hiển thị vuông vắn, sắc nét khi in ấn hoặc mở trên Microsoft Excel / WPS Office.
+  - **Xem trước & Tải về:**
+    - Thanh tiến trình thời gian thực hiển thị % và số lượng thủ tục đang xử lý.
+    - Bảng xem trước kết quả trực quan (STT, Mã TTHC, Tên TTHC, Liên kết tra cứu Cổng DVC, Thumbnail QR phóng to khi hover/click).
+    - Nút tải riêng lẻ từng ảnh mã QR dạng `.png`.
+    - Nút tải tệp tin Excel hoàn chỉnh đã đính kèm tất cả mã QR (`[Tên_file]_kem_ma_QR.xlsx`).
+  - **Kiểm thử tự động:** Đã kiểm thử trọn vẹn cả tầng Node.js và giao diện trình duyệt thực tế, tạo thành công file `test-tthc-output-with-qr.xlsx` với 5 mã QR được nhúng chuẩn xác vào Cột F.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
