@@ -237,6 +237,9 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Tối ưu hóa kích thước & Độ sắc nét khi quét mã:**
     - Khắc phục triệt để hiện tượng mã QR bị thu nhỏ dạng thumbnail (~16px) do neo tọa độ co giãn: Chuyển đổi sang chuẩn neo kích thước điểm ảnh thực `ext: { width: qrSizePx, height: qrSizePx }` (mặc định **130px** x **130px** chuẩn khuyến nghị, có tùy chọn 150px hoặc 110px).
     - Tăng độ phân giải Canvas nguồn lên **500x500 px** siêu sắc nét, nâng độ cao dòng lên **105 pt** và độ rộng cột lên **22** giúp mã QR hiển thị vuông vắn, to rõ và điện thoại có thể quét tức thì 100% cả trên màn hình lẫn khi in ra giấy A4.
+  - **Đồng bộ hóa phong cách giao diện (Gov-tech) & Bỏ file thử nghiệm:**
+    - Thiết kế lại toàn bộ giao diện menu `Mã QR TTHC` theo đúng quy chuẩn chung của hệ thống (đồng bộ với tab *Tiện ích* và *Đường dẫn các cổng*): sử dụng card viền `tools-unified-card`, thanh tiêu đề `tools-card-header`, huy hiệu `Xử lý Offline 100% (An toàn bảo mật)`, dải thẻ thông tin `portals-stats-strip` và khung tải file kéo thả `dropzone-dashed-box`.
+    - Bỏ hoàn toàn nút và tính năng "Dùng file mẫu thử nghiệm" khỏi giao diện lẫn mã nguồn, tạo không gian làm việc sạch sẽ, trang nhã và tập trung vào nghiệp vụ thực tế của cán bộ.
   - **Kiểm thử tự động:** Đã kiểm thử trọn vẹn cả tầng Node.js và giao diện trình duyệt thực tế, giải mã QR qua bộ quét tự động `jsQR` đạt tỷ lệ quét thành công 100% cả 5 mã.
 
 ---

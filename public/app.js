@@ -5270,7 +5270,6 @@ function initProcedureQrModule() {
   const fileSizeDisplay = document.getElementById('qr-file-size-display');
   const fileSheetCountDisplay = document.getElementById('qr-file-sheet-count-display');
   const btnBrowse = document.getElementById('btn-browse-qr-file');
-  const btnLoadSample = document.getElementById('btn-load-sample-qr-file');
   const btnReselect = document.getElementById('btn-reselect-qr-file');
   const configCard = document.getElementById('qr-config-card');
   const sheetSelect = document.getElementById('qr-sheet-select');
@@ -5459,25 +5458,6 @@ function initProcedureQrModule() {
     btnBrowse.addEventListener('click', (e) => {
       e.stopPropagation();
       fileInput.click();
-    });
-  }
-
-  if (btnLoadSample) {
-    btnLoadSample.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      try {
-        showToast('Đang tải dữ liệu mẫu thử nghiệm (5 TTHC)...', 'info');
-        const resp = await fetch('test-tthc-sample.xlsx');
-        if (!resp.ok) throw new Error('Không thể tải file mẫu');
-        const blob = await resp.blob();
-        const sampleFile = new File([blob], 'danh-sach-tthc-mau.xlsx', {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        });
-        await handleFileSelection(sampleFile);
-      } catch (err) {
-        console.error('[QR] Lỗi tải file mẫu:', err);
-        showToast('Lỗi khi tải file mẫu thử nghiệm: ' + err.message, 'error');
-      }
     });
   }
 
