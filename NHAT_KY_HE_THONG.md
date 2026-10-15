@@ -242,6 +242,13 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     - Bỏ hoàn toàn nút và tính năng "Dùng file mẫu thử nghiệm" khỏi giao diện lẫn mã nguồn, tạo không gian làm việc sạch sẽ, trang nhã và tập trung vào nghiệp vụ thực tế của cán bộ.
   - **Kiểm thử tự động:** Đã kiểm thử trọn vẹn cả tầng Node.js và giao diện trình duyệt thực tế, giải mã QR qua bộ quét tự động `jsQR` đạt tỷ lệ quét thành công 100% cả 5 mã.
 
+### 20. Cập nhật lại số liệu Bộ chỉ số 766 sau 6h sáng (15/10/2026)
+* **Bối cảnh:** Cổng DVCQG điều chỉnh và cập nhật lại điểm sau khung giờ 6h sáng ngày 15/10/2026.
+* **Xử lý:**
+  - Kích hoạt tiến trình thu thập và phân tích lại toàn bộ 6 nhóm chỉ số cho tỉnh Đắk Lắk: Tổng điểm cập nhật mới đạt **65.93 / 100 điểm** (tăng từ mức 65.78 - 65.87 điểm trước 6h sáng).
+  - Thu thập lại bảng xếp hạng 766 của toàn bộ **34 tỉnh/thành phố** trên cả nước: Đắk Lắk xếp hạng **#7 toàn quốc** với 65.93 điểm (cả nước đạt 63.16 điểm).
+  - Đồng bộ tự động lên Upstash Redis Cloud, cập nhật các tệp snapshot cục bộ (`data/snapshots/2026-10-15.json`, `data/provinces/2026-10-15.json`, `data/provinces-latest.json`), đồng thời làm mới bộ nhớ đệm (cache) máy chủ.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
