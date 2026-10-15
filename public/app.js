@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAuth();
   initDossierSplitModule();
   initProcedureQrModule();
+  initQuickReportModule();
   loadInitialData();
 });
 
@@ -145,6 +146,13 @@ function initNavigationTabs() {
     if (targetTabId === 'tab-content-provinces') {
       if (!provincesState.loaded) {
         loadProvincesData();
+      }
+    }
+
+    // Tự động tải và phân tích dữ liệu khi mở tab Báo cáo nhanh
+    if (targetTabId === 'tab-content-quick-report') {
+      if (typeof activateQuickReportTab === 'function') {
+        activateQuickReportTab();
       }
     }
 
@@ -4178,6 +4186,31 @@ function updateAuthUI() {
     }
   }
 
+  // Quản lý hiển thị Menu Báo cáo nhanh (CHỈ DÀNH CHO CÁN BỘ HOẶC QUẢN TRỊ VIÊN ĐĂNG NHẬP)
+  const isStaffOrAdmin = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
+  const navQuickReportItem = document.getElementById('nav-item-quick-report');
+  const qrptAuthLock = document.getElementById('qrpt-auth-lock-card');
+  const qrptWorkspace = document.getElementById('qrpt-workspace-wrap');
+
+  if (navQuickReportItem) {
+    navQuickReportItem.style.display = isStaffOrAdmin ? 'inline-block' : 'none';
+  }
+  if (qrptAuthLock) {
+    qrptAuthLock.style.display = isStaffOrAdmin ? 'none' : 'block';
+  }
+  if (qrptWorkspace) {
+    qrptWorkspace.style.display = isStaffOrAdmin ? 'block' : 'none';
+  }
+
+  // Nếu người dùng chưa đăng nhập nhưng đang ở trên tab Báo cáo nhanh thì chuyển về tab Cổng thông tin
+  if (!isStaffOrAdmin) {
+    const qrptTabPane = document.getElementById('tab-content-quick-report');
+    if (qrptTabPane && qrptTabPane.classList.contains('active')) {
+      const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
+      if (defaultTabBtn) defaultTabBtn.click();
+    }
+  }
+
   // Re-render table if units exist, to toggle clickability of score cells
   if (appState.currentData && dom.unitsTableBody) {
     renderUnitsTable();
@@ -5969,6 +6002,1200 @@ function initProcedureQrModule() {
     });
   }
 }
+
+/**
+ * ==============================================================================
+ * MODULE: BÁO CÁO NHANH BIẾN ĐỘNG BỘ CHỈ SỐ 766 (102 CẤP XÃ TỈNH ĐẮK LẮK)
+ * ==============================================================================
+ */
+
+const quickReportState = {
+  cachedSnapshots: {},      // dateString -> snapshot object
+  availableDates: [],       // list of date strings ['2026-10-15', '2026-10-14', ...]
+  communesList: [],         // array of { code, name, id }
+  selectedUnitCode: 'H15.100', // default to UBND phường Buôn Ma Thuột
+  dateTo: null,             // Mốc mới nhất (Hôm nay)
+  dateFrom: null,           // Mốc đối chiếu (Hôm trước)
+  lastMarkdownText: '',     // Generated report for clipboard copy
+  isInitialized: false,
+  isRendering: false
+};
+
+/**
+ * Khởi tạo sự kiện cho Module Báo Cáo Nhanh
+ */
+function initQuickReportModule() {
+  const unitSelect = document.getElementById('qrpt-unit-select');
+  const dateToSelect = document.getElementById('qrpt-date-to');
+  const dateFromSelect = document.getElementById('qrpt-date-from');
+  const btnCopy = document.getElementById('qrpt-btn-copy');
+  const btnToggleText = document.getElementById('qrpt-btn-toggle-text');
+  const btnPrint = document.getElementById('qrpt-btn-print');
+  const modal = document.getElementById('qrpt-text-modal');
+  const btnModalClose = document.getElementById('qrpt-modal-btn-close');
+  const btnModalCopy = document.getElementById('qrpt-modal-btn-copy');
+
+  // Đổi đơn vị qua select
+  if (unitSelect) {
+    unitSelect.addEventListener('change', (e) => {
+      const code = e.target.value;
+      if (!code) return;
+      quickReportState.selectedUnitCode = code;
+      runQuickReportAnalysis();
+    });
+  }
+
+  // Đổi ngày phân tích (Mới nhất)
+  if (dateToSelect) {
+    dateToSelect.addEventListener('change', (e) => {
+      quickReportState.dateTo = e.target.value;
+      runQuickReportAnalysis();
+    });
+  }
+
+  // Đổi ngày so sánh (Hôm trước)
+  if (dateFromSelect) {
+    dateFromSelect.addEventListener('change', (e) => {
+      quickReportState.dateFrom = e.target.value;
+      runQuickReportAnalysis();
+    });
+  }
+
+  // Sao chép báo cáo văn bản
+  if (btnCopy) {
+    btnCopy.addEventListener('click', () => {
+      copyQuickReportToClipboard();
+    });
+  }
+
+  // Mở modal xem văn bản
+  if (btnToggleText) {
+    btnToggleText.addEventListener('click', () => {
+      const pre = document.getElementById('qrpt-modal-text-content');
+      if (pre) pre.textContent = quickReportState.lastMarkdownText || 'Chưa có dữ liệu báo cáo.';
+      if (modal) modal.style.display = 'flex';
+    });
+  }
+
+  // Đóng modal
+  if (btnModalClose && modal) {
+    btnModalClose.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  }
+
+  // Sao chép từ trong modal
+  if (btnModalCopy) {
+    btnModalCopy.addEventListener('click', () => {
+      copyQuickReportToClipboard();
+    });
+  }
+
+  // In / Xuất PDF
+  if (btnPrint) {
+    btnPrint.addEventListener('click', () => {
+      window.print();
+    });
+  }
+}
+
+/**
+ * Kích hoạt tab Báo Cáo Nhanh và nạp dữ liệu
+ */
+async function activateQuickReportTab() {
+  const user = appState.currentUser;
+  const isStaffOrAdmin = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
+  const lockCard = document.getElementById('qrpt-auth-lock-card');
+  const workspace = document.getElementById('qrpt-workspace-wrap');
+
+  if (!isStaffOrAdmin) {
+    if (lockCard) lockCard.style.display = 'block';
+    if (workspace) workspace.style.display = 'none';
+    return;
+  }
+
+  if (lockCard) lockCard.style.display = 'none';
+  if (workspace) workspace.style.display = 'block';
+
+  if (quickReportState.isInitialized) {
+    const contentEl = document.getElementById('qrpt-report-content');
+    if (contentEl && !contentEl.innerHTML.trim()) {
+      runQuickReportAnalysis();
+    }
+    return; // Đã sẵn sàng
+  }
+
+  const loadingEl = document.getElementById('qrpt-loading');
+  if (loadingEl) loadingEl.style.display = 'flex';
+
+  try {
+    // 1. Lấy danh sách ngày có dữ liệu
+    let dates = appState.availableDates;
+    if (!dates || !dates.length) {
+      const res = await fetch('/api/data?action=dates');
+      const json = await res.json();
+      if (json.success && json.dates) {
+        dates = json.dates;
+      }
+    }
+
+    if (!dates || !dates.length) {
+      throw new Error('Hệ thống chưa có snapshot dữ liệu nào.');
+    }
+
+    quickReportState.availableDates = dates;
+
+    // Xác định 2 ngày so sánh gần nhất:
+    // dateTo: Ngày mới nhất (index 0)
+    // dateFrom: Ngày hôm trước (index 1 nếu có, hoặc index 0)
+    quickReportState.dateTo = dates[0];
+    quickReportState.dateFrom = dates.length > 1 ? dates[1] : dates[0];
+
+    // Điền vào 2 dropdown ngày
+    populateQuickReportDateSelects();
+
+    // 2. Tải snapshot ngày dateTo và dateFrom
+    const snapTo = await getSnapshotForDate(quickReportState.dateTo);
+    await getSnapshotForDate(quickReportState.dateFrom);
+
+    // 3. Trích xuất danh sách 102 Cấp Xã theo thứ tự mã định danh (H15.100 -> H15.201)
+    function parseCommuneCodeNumber(code) {
+      const m = String(code).match(/^H15\.(\d+)$/);
+      return m ? parseInt(m[1], 10) : 9999;
+    }
+
+    const communes = (snapTo.units || [])
+      .filter(u => u.group === 'COMMUNE' || u.departmentLevel === 'COMMUNE')
+      .map(u => ({
+        code: u.departmentCode,
+        name: u.departmentName,
+        id: u.departmentId,
+        num: parseCommuneCodeNumber(u.departmentCode)
+      }))
+      .sort((a, b) => a.num - b.num);
+
+    quickReportState.communesList = communes;
+
+    // Điền vào select đơn vị
+    const unitSelect = document.getElementById('qrpt-unit-select');
+    if (unitSelect) {
+      unitSelect.innerHTML = '';
+      communes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.textContent = `${c.code} - ${c.name}`;
+        if (c.code === quickReportState.selectedUnitCode) opt.selected = true;
+        unitSelect.appendChild(opt);
+      });
+
+      // Nếu không có Buôn Ma Thuột thì chọn đơn vị đầu tiên
+      if (!communes.some(c => c.code === quickReportState.selectedUnitCode) && communes.length > 0) {
+        quickReportState.selectedUnitCode = communes[0].code;
+        unitSelect.value = communes[0].code;
+      }
+    }
+
+    quickReportState.isInitialized = true;
+
+    // 4. Chạy phân tích
+    await runQuickReportAnalysis();
+  } catch (err) {
+    console.error('[QuickReport] Lỗi kích hoạt:', err);
+    showToast('Lỗi tải dữ liệu Báo cáo nhanh: ' + err.message, 'error');
+  } finally {
+    if (loadingEl) loadingEl.style.display = 'none';
+  }
+}
+
+/**
+ * Điền ngày vào select Mốc phân tích và Mốc đối chiếu
+ */
+function populateQuickReportDateSelects() {
+  const dateToSelect = document.getElementById('qrpt-date-to');
+  const dateFromSelect = document.getElementById('qrpt-date-from');
+  if (!dateToSelect || !dateFromSelect) return;
+
+  dateToSelect.innerHTML = '';
+  dateFromSelect.innerHTML = '';
+
+  quickReportState.availableDates.forEach((d, idx) => {
+    const formatted = formatVnDate(d);
+
+    const optTo = document.createElement('option');
+    optTo.value = d;
+    optTo.textContent = `${formatted} ${idx === 0 ? '(Mới nhất)' : ''}`;
+    if (d === quickReportState.dateTo) optTo.selected = true;
+    dateToSelect.appendChild(optTo);
+
+    const optFrom = document.createElement('option');
+    optFrom.value = d;
+    optFrom.textContent = `${formatted} ${idx === 1 ? '(Hôm trước)' : ''}`;
+    if (d === quickReportState.dateFrom) optFrom.selected = true;
+    dateFromSelect.appendChild(optFrom);
+  });
+}
+
+/**
+ * Định dạng ngày YYYY-MM-DD sang DD/MM/YYYY
+ */
+function formatVnDate(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return dateStr;
+}
+
+/**
+ * Lấy snapshot (từ cache hoặc API)
+ */
+async function getSnapshotForDate(date) {
+  if (quickReportState.cachedSnapshots[date]) {
+    return quickReportState.cachedSnapshots[date];
+  }
+
+  // Nếu appState.currentData đã là date này thì lấy luôn
+  if (appState.currentData && appState.currentData.date === date) {
+    quickReportState.cachedSnapshots[date] = appState.currentData;
+    return appState.currentData;
+  }
+
+  const res = await fetch(`/api/data?date=${encodeURIComponent(date)}`);
+  const json = await res.json();
+  if (!json.success || !json.data) {
+    throw new Error(json.error || `Không thể tải snapshot ngày ${date}`);
+  }
+
+  quickReportState.cachedSnapshots[date] = json.data;
+  return json.data;
+}
+
+/**
+ * Chạy phân tích so sánh và render giao diện
+ */
+async function runQuickReportAnalysis() {
+  if (quickReportState.isRendering) return;
+  quickReportState.isRendering = true;
+
+  const loadingEl = document.getElementById('qrpt-loading');
+  const contentEl = document.getElementById('qrpt-report-content');
+
+  if (loadingEl) loadingEl.style.display = 'flex';
+  if (contentEl) contentEl.style.opacity = '0.5';
+
+  try {
+    const dateTo = quickReportState.dateTo;
+    const dateFrom = quickReportState.dateFrom;
+    const unitCode = quickReportState.selectedUnitCode;
+
+    const snapTo = await getSnapshotForDate(dateTo);
+    const snapFrom = await getSnapshotForDate(dateFrom);
+
+    const uTo = (snapTo.units || []).find(u => u.departmentCode === unitCode);
+    const uFrom = (snapFrom.units || []).find(u => u.departmentCode === unitCode);
+
+    if (!uTo) {
+      throw new Error(`Không tìm thấy đơn vị mã ${unitCode} trong dữ liệu ngày ${dateTo}`);
+    }
+
+    // Render báo cáo
+    renderQuickReportHtml(uFrom, uTo, dateFrom, dateTo);
+  } catch (err) {
+    console.error('[QuickReport] Lỗi phân tích:', err);
+    if (contentEl) {
+      contentEl.innerHTML = `
+        <div class="qrpt-eval-box danger" style="padding: 24px; text-align: center;">
+          <p style="font-weight: 600; font-size: 15px; margin: 0 0 6px;">Không thể tạo báo cáo so sánh</p>
+          <p style="margin: 0; font-size: 13.5px;">${err.message}</p>
+        </div>
+      `;
+    }
+    showToast('Lỗi phân tích: ' + err.message, 'error');
+  } finally {
+    quickReportState.isRendering = false;
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (contentEl) contentEl.style.opacity = '1';
+  }
+}
+
+/**
+ * Helper tính toán biến động chỉ tiêu (Tử số, Mẫu số, Tỷ lệ, Điểm)
+ */
+function diffMetric(mOld, mNew) {
+  const numOld = (mOld && mOld.numerator !== null && mOld.numerator !== undefined) ? mOld.numerator : null;
+  const numNew = (mNew && mNew.numerator !== null && mNew.numerator !== undefined) ? mNew.numerator : null;
+  const denOld = (mOld && mOld.denominator !== null && mOld.denominator !== undefined) ? mOld.denominator : null;
+  const denNew = (mNew && mNew.denominator !== null && mNew.denominator !== undefined) ? mNew.denominator : null;
+  const ratOld = (mOld && mOld.ratio !== null && mOld.ratio !== undefined) ? mOld.ratio : null;
+  const ratNew = (mNew && mNew.ratio !== null && mNew.ratio !== undefined) ? mNew.ratio : null;
+  const scoOld = (mOld && mOld.score !== null && mOld.score !== undefined) ? mOld.score : null;
+  const scoNew = (mNew && mNew.score !== null && mNew.score !== undefined) ? mNew.score : null;
+
+  const deltaNum = (numOld !== null && numNew !== null) ? (numNew - numOld) : null;
+  const deltaDen = (denOld !== null && denNew !== null) ? (denNew - denOld) : null;
+  const deltaRat = (ratOld !== null && ratNew !== null) ? +(ratNew - ratOld).toFixed(2) : null;
+  const deltaSco = (scoOld !== null && scoNew !== null) ? +(scoNew - scoOld).toFixed(2) : null;
+
+  return {
+    numOld, numNew, deltaNum,
+    denOld, denNew, deltaDen,
+    ratOld, ratNew, deltaRat,
+    scoOld, scoNew, deltaSco
+  };
+}
+
+/**
+ * Format chuỗi Delta hiển thị (+0.21, -0.06, 0.00)
+ */
+function fmtDelta(delta, unit = '', digits = 2) {
+  if (delta === null || delta === undefined) return '—';
+  if (delta > 0) return `+${delta.toFixed ? delta.toFixed(digits) : delta}${unit}`;
+  if (delta < 0) return `${delta.toFixed ? delta.toFixed(digits) : delta}${unit}`;
+  return `0${unit}`;
+}
+
+/**
+ * Format số nguyên có phân cách hàng nghìn
+ */
+function fmtInt(val) {
+  if (val === null || val === undefined) return '—';
+  return val.toLocaleString('vi-VN');
+}
+
+/**
+ * Render toàn bộ HTML báo cáo so sánh
+ */
+function renderQuickReportHtml(uFrom, uTo, dateFrom, dateTo) {
+  const contentEl = document.getElementById('qrpt-report-content');
+  if (!contentEl) return;
+
+  const dateFromVn = formatVnDate(dateFrom);
+  const dateToVn = formatVnDate(dateTo);
+
+  // 1. TỔNG ĐIỂM & THỨ HẠNG
+  const scoreOld = uFrom ? uFrom.totalScore : 0;
+  const scoreNew = uTo.totalScore;
+  const deltaTotal = +(scoreNew - scoreOld).toFixed(2);
+
+  const provRankOld = uFrom ? uFrom.rank : '—';
+  const provRankNew = uTo.rank;
+  const deltaProvRank = uFrom ? (uFrom.rank - uTo.rank) : 0; // Hạng cũ - Hạng mới > 0 nghĩa là tăng bậc
+
+  const communeRankOld = uFrom ? uFrom.rankInGroup : '—';
+  const communeRankNew = uTo.rankInGroup;
+  const deltaCommuneRank = uFrom ? (uFrom.rankInGroup - uTo.rankInGroup) : 0;
+
+  // Tổng hồ sơ
+  const totalRecOld = uFrom ? (uFrom.indicatorDetails?.progress?.totalReceived || 0) : 0;
+  const totalRecNew = uTo.indicatorDetails?.progress?.totalReceived || 0;
+  const deltaTotalRec = totalRecNew - totalRecOld;
+
+  // 2. BIẾN ĐỘNG 6 NHÓM CHỈ TIÊU
+  const groupsData = [
+    {
+      code: 'NHÓM 1',
+      name: 'Công khai, minh bạch',
+      key: 'transparency',
+      maxScore: 18,
+      color: '#2563eb',
+      scoreOld: uFrom?.scores?.transparency ?? 0,
+      scoreNew: uTo.scores?.transparency ?? 0
+    },
+    {
+      code: 'NHÓM 2',
+      name: 'Tiến độ giải quyết',
+      key: 'progress',
+      maxScore: 20,
+      color: '#059669',
+      scoreOld: uFrom?.scores?.progress ?? 0,
+      scoreNew: uTo.scores?.progress ?? 0
+    },
+    {
+      code: 'NHÓM 3',
+      name: 'Dịch vụ công trực tuyến',
+      key: 'onlineService',
+      maxScore: 12,
+      color: '#4f46e5',
+      scoreOld: uFrom?.scores?.onlineService ?? 0,
+      scoreNew: uTo.scores?.onlineService ?? 0
+    },
+    {
+      code: 'NHÓM 4',
+      name: 'Số hóa hồ sơ',
+      key: 'digitized',
+      maxScore: 22,
+      color: '#7c3aed',
+      scoreOld: uFrom?.scores?.digitized ?? 0,
+      scoreNew: uTo.scores?.digitized ?? 0
+    },
+    {
+      code: 'NHÓM 5',
+      name: 'Thanh toán trực tuyến',
+      key: 'payment',
+      maxScore: 10,
+      color: '#d97706',
+      scoreOld: uFrom?.scores?.payment ?? 0,
+      scoreNew: uTo.scores?.payment ?? 0
+    },
+    {
+      code: 'NHÓM 6',
+      name: 'Mức độ hài lòng',
+      key: 'satisfaction',
+      maxScore: 18,
+      color: '#e11d48',
+      scoreOld: uFrom?.scores?.satisfaction ?? 0,
+      scoreNew: uTo.scores?.satisfaction ?? 0
+    }
+  ];
+
+  groupsData.forEach(g => {
+    g.delta = +(g.scoreNew - g.scoreOld).toFixed(2);
+    g.pct = +((g.scoreNew / g.maxScore) * 100).toFixed(1);
+  });
+
+  // 3. XỬ LÝ CHI TIẾT TỪNG TIÊU CHÍ CON
+  // Nhóm 1: Công khai minh bạch
+  const transMetricsTo = uTo.indicatorDetails?.transparency?.metrics || [];
+  const transMetricsFrom = uFrom?.indicatorDetails?.transparency?.metrics || [];
+  const group1Details = transMetricsTo.map(mTo => {
+    const mFrom = transMetricsFrom.find(m => m.code === mTo.code);
+    const diff = diffMetric(mFrom, mTo);
+    let evalText = '';
+
+    if (diff.deltaDen > 0 && diff.deltaNum > 0) {
+      evalText = `Tử số tăng +${diff.deltaNum} trên mẫu số tăng +${diff.deltaDen}. Tỷ lệ đạt ${diff.ratNew}%, giữ vững mức tối đa.`;
+    } else if (diff.numNew === diff.denNew && diff.denNew > 0) {
+      evalText = `Đạt tỷ lệ tuyệt đối 100% (${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)}), bảo toàn điểm tối đa (${mTo.score}/${mTo.maxScore}đ).`;
+    } else if (diff.numNew === 0) {
+      evalText = `Chưa phát sinh thủ tục công bố đúng hạn (0/${diff.denNew}), đạt 0/${mTo.maxScore}đ.`;
+    } else {
+      evalText = `Tử số ${fmtInt(diff.numNew)} trên mẫu số ${fmtInt(diff.denNew)}, tỷ lệ ${diff.ratNew}%, đạt ${mTo.score}/${mTo.maxScore}đ.`;
+    }
+
+    return {
+      name: mTo.name,
+      code: mTo.code,
+      maxScore: mTo.maxScore,
+      diff,
+      evalText,
+      status: diff.deltaSco > 0 ? 'success' : (diff.deltaSco < 0 ? 'danger' : 'neutral')
+    };
+  });
+
+  // Nhóm 2: Tiến độ giải quyết
+  const progTo = uTo.indicatorDetails?.progress || {};
+  const progFrom = uFrom?.indicatorDetails?.progress || {};
+  const diffOnTime = diffMetric(progFrom.onTime, progTo.onTime);
+  const diffOverdue = diffMetric(progFrom.overdue, progTo.overdue);
+
+  let onTimeEval = '';
+  if (diffOnTime.deltaNum > 0 && diffOnTime.deltaDen > 0) {
+    if (diffOnTime.deltaRat >= 0) {
+      onTimeEval = `Tử số (hồ sơ đúng hạn) tăng +${fmtInt(diffOnTime.deltaNum)} hồ sơ, nhanh hơn mẫu số tăng +${fmtInt(diffOnTime.deltaDen)} hồ sơ. Tỷ lệ đúng hạn tăng +${diffOnTime.deltaRat}% (đạt ${diffOnTime.ratNew}%).`;
+    } else {
+      onTimeEval = `Tử số (hồ sơ đúng hạn) tăng +${fmtInt(diffOnTime.deltaNum)} hồ sơ trong khi mẫu số tiếp nhận tăng +${fmtInt(diffOnTime.deltaDen)} hồ sơ, khiến tỷ lệ đúng hạn đạt ${diffOnTime.ratNew}% (${fmtDelta(diffOnTime.deltaRat, '%')}).`;
+    }
+  } else {
+    onTimeEval = `Tỷ lệ hồ sơ đúng hạn đạt ${diffOnTime.ratNew}%, giải quyết ${fmtInt(diffOnTime.numNew)} / ${fmtInt(diffOnTime.denNew)} hồ sơ.`;
+  }
+
+  let overdueEval = '';
+  if (diffOverdue.deltaNum > 0) {
+    overdueEval = `CẢNH BÁO: Phát sinh thêm +${fmtInt(diffOverdue.deltaNum)} hồ sơ quá hạn (từ ${fmtInt(diffOverdue.numOld)} lên ${fmtInt(diffOverdue.numNew)} hồ sơ, tỷ lệ quá hạn tăng lên ${diffOverdue.ratNew}%). Đây là nguyên nhân trực tiếp kéo giảm ${Math.abs(diffOnTime.deltaSco)} điểm của nhóm Tiến độ!`;
+  } else if (diffOverdue.numNew === 0) {
+    overdueEval = `Rất tốt: Không có hồ sơ quá hạn nào phát sinh (0/${fmtInt(diffOverdue.denNew)} hồ sơ).`;
+  } else {
+    overdueEval = `Không phát sinh thêm hồ sơ quá hạn mới trong kỳ so sánh (duy trì ${fmtInt(diffOverdue.numNew)} hồ sơ quá hạn cũ).`;
+  }
+
+  const group2Details = [
+    {
+      name: 'Hồ sơ giải quyết đúng hạn (và trước hạn)',
+      code: 'PROGRESS_ON_TIME',
+      maxScore: 20,
+      diff: diffOnTime,
+      evalText: onTimeEval,
+      status: diffOnTime.deltaSco >= 0 ? 'success' : 'danger'
+    },
+    {
+      name: 'Hồ sơ giải quyết quá hạn (Chỉ tiêu kiểm soát rủi ro)',
+      code: 'PROGRESS_OVERDUE',
+      maxScore: null,
+      diff: diffOverdue,
+      evalText: overdueEval,
+      status: diffOverdue.deltaNum > 0 ? 'danger' : 'neutral'
+    }
+  ];
+
+  // Nhóm 3: DVC Trực tuyến
+  const onlineTo = uTo.indicatorDetails?.onlineService?.metrics?.[0] || {};
+  const onlineFrom = uFrom?.indicatorDetails?.onlineService?.metrics?.[0] || {};
+  const diffOnline = diffMetric(onlineFrom, onlineTo);
+  let onlineEval = '';
+  if (diffOnline.deltaRat > 0) {
+    onlineEval = `Tỷ lệ nộp hồ sơ trực tuyến tăng +${diffOnline.deltaRat}% (từ ${diffOnline.ratOld}% lên ${diffOnline.ratNew}%), mang về thêm +${fmtDelta(diffOnline.deltaSco, 'đ')} cho đơn vị.`;
+  } else if (diffOnline.deltaRat < 0) {
+    onlineEval = `Tỷ lệ nộp hồ sơ trực tuyến giảm ${fmtDelta(diffOnline.deltaRat, '%')} (đạt ${diffOnline.ratNew}%), làm giảm ${fmtDelta(diffOnline.deltaSco, 'đ')}.`;
+  } else {
+    onlineEval = `Tỷ lệ trực tuyến giữ nguyên ở mức ${diffOnline.ratNew}%, đạt ${onlineTo.score || 0}/${onlineTo.maxScore || 12}đ.`;
+  }
+
+  const group3Details = [
+    {
+      name: 'Tỷ lệ cung cấp dịch vụ công trực tuyến & nộp hồ sơ trực tuyến',
+      code: 'ONLINE_SERVICE_RATIO',
+      maxScore: 12,
+      diff: diffOnline,
+      evalText: onlineEval,
+      status: diffOnline.deltaSco > 0 ? 'success' : (diffOnline.deltaSco < 0 ? 'danger' : 'neutral')
+    }
+  ];
+
+  // Nhóm 4: Số hóa hồ sơ
+  const digitTo = uTo.indicatorDetails?.digitized?.metrics || [];
+  const digitFrom = uFrom?.indicatorDetails?.digitized?.metrics || [];
+  const group4Details = digitTo.map(mTo => {
+    const mFrom = digitFrom.find(m => m.code === mTo.code);
+    const diff = diffMetric(mFrom, mTo);
+    let evalText = '';
+
+    if (diff.deltaNum > 0 && diff.deltaDen > 0) {
+      evalText = `Tử số tăng +${fmtInt(diff.deltaNum)} trên mẫu số tăng +${fmtInt(diff.deltaDen)}. Tỷ lệ đạt ${diff.ratNew}% (${fmtDelta(diff.deltaRat, '%')}), điểm số tăng +${fmtDelta(diff.deltaSco, 'đ')}.`;
+    } else if (diff.deltaNum > 0 && (!diff.deltaDen || diff.deltaDen === 0)) {
+      evalText = `Mẫu số giữ nguyên (${fmtInt(diff.denNew)}), tử số tăng thêm +${fmtInt(diff.deltaNum)}, kéo tỷ lệ tăng +${diff.deltaRat}% và tăng +${fmtDelta(diff.deltaSco, 'đ')}.`;
+    } else if (diff.numNew === null && diff.ratNew === 100) {
+      evalText = `Duy trì tỷ lệ 100%, bảo toàn trọn vẹn ${mTo.score}/${mTo.maxScore}đ.`;
+    } else {
+      evalText = `Thực hiện ${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)}, tỷ lệ ${diff.ratNew}%, đạt ${mTo.score}/${mTo.maxScore}đ.`;
+    }
+
+    return {
+      name: mTo.name,
+      code: mTo.code,
+      maxScore: mTo.maxScore,
+      diff,
+      evalText,
+      status: diff.deltaSco > 0 ? 'success' : (diff.deltaSco < 0 ? 'danger' : 'neutral')
+    };
+  });
+
+  // Nhóm 5: Thanh toán trực tuyến
+  const payMetricsTo = uTo.indicatorDetails?.payment?.metrics || [];
+  const payMetricsFrom = uFrom?.indicatorDetails?.payment?.metrics || [];
+  const group5Details = payMetricsTo.map((mTo, idx) => {
+    const mFrom = payMetricsFrom[idx];
+    const diff = diffMetric(mFrom, mTo);
+    let evalText = '';
+
+    if (idx === 0) {
+      // Tỷ lệ hồ sơ thanh toán trực tuyến
+      if (diff.deltaNum > 0 && diff.deltaDen > 0) {
+        evalText = `Đánh giá tăng trưởng rất tích cực: Tử số (hồ sơ thanh toán trực tuyến thành công) tăng +${fmtInt(diff.deltaNum)} hồ sơ (từ ${fmtInt(diff.numOld)} lên ${fmtInt(diff.numNew)}), trong khi mẫu số (hồ sơ có nghĩa vụ tài chính) chỉ tăng +${fmtInt(diff.deltaDen)} hồ sơ (từ ${fmtInt(diff.denOld)} lên ${fmtInt(diff.denNew)}). Tỷ lệ thanh toán trực tuyến tăng +${diff.deltaRat}% (đạt ${diff.ratNew}%).`;
+      } else {
+        evalText = `Tỷ lệ hồ sơ thanh toán trực tuyến đạt ${diff.ratNew}% (${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} hồ sơ).`;
+      }
+    } else if (idx === 1) {
+      // Tỷ lệ TTHC có phát sinh giao dịch TTTT
+      if (diff.deltaNum > 0) {
+        evalText = `Tăng trưởng thêm +${diff.deltaNum} TTHC có phát sinh giao dịch thanh toán trực tuyến (${fmtInt(diff.numOld)} lên ${fmtInt(diff.numNew)} TTHC), tỷ lệ đạt ${diff.ratNew}% (${fmtDelta(diff.deltaRat, '%')}).`;
+      } else {
+        evalText = `Đạt ${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} TTHC có giao dịch thanh toán trực tuyến, tỷ lệ ${diff.ratNew}%.`;
+      }
+    } else {
+      // Tỷ lệ TTHC thu phí có phát sinh hồ sơ
+      if (diff.deltaNum > 0) {
+        evalText = `Phát sinh thêm hồ sơ ở +${diff.deltaNum} TTHC có thu phí (${fmtInt(diff.numOld)} lên ${fmtInt(diff.numNew)} TTHC), nâng tỷ lệ lên ${diff.ratNew}%.`;
+      } else {
+        evalText = `Có ${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} TTHC thu phí phát sinh hồ sơ (${diff.ratNew}%).`;
+      }
+    }
+
+    return {
+      name: mTo.name,
+      code: `PAYMENT_SUB_${idx + 1}`,
+      maxScore: null,
+      diff,
+      evalText,
+      status: (diff.deltaNum > 0 || diff.deltaRat > 0) ? 'success' : 'neutral'
+    };
+  });
+
+  // Nhóm 6: Mức độ hài lòng
+  const satTo = uTo.indicatorDetails?.satisfaction?.metrics || [];
+  const satFrom = uFrom?.indicatorDetails?.satisfaction?.metrics || [];
+  const group6Details = satTo.map(mTo => {
+    const mFrom = satFrom.find(m => m.code === mTo.code);
+    const diff = diffMetric(mFrom, mTo);
+    let evalText = '';
+
+    if (mTo.code === 'DOSSIER_RECEIVING_SATISFACTION') {
+      if (diff.deltaNum > 0 && diff.deltaDen > 0) {
+        evalText = `Số lượt hài lòng trong giải quyết TTHC tăng +${fmtInt(diff.deltaNum)} lượt (từ ${fmtInt(diff.numOld)} lên ${fmtInt(diff.numNew)} lượt trên mẫu số ${fmtInt(diff.denNew)} hồ sơ). Tỷ lệ hài lòng đạt ${diff.ratNew}%.`;
+      } else {
+        evalText = `Tỷ lệ hài lòng đạt ${diff.ratNew}% (${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} hồ sơ), đạt ${mTo.score}/${mTo.maxScore}đ.`;
+      }
+    } else if (mTo.code === 'PETITION_PROCESSING_ON_TIME') {
+      if (diff.denNew > 0 && diff.numNew === 0) {
+        evalText = `LƯU Ý QUAN TRỌNG: Đơn vị đang có ${fmtInt(diff.denNew)} phản ánh kiến nghị (PAKN). Hiện chưa có PAKN xử lý xong đúng hạn (0/${fmtInt(diff.denNew)}), đang mất trắng 6.00đ của chỉ tiêu này! Cần khẩn trương giải quyết dứt điểm.`;
+      } else if (diff.denNew === 0) {
+        evalText = `Không phát sinh phản ánh kiến nghị.`;
+      } else {
+        evalText = `Xử lý đúng hạn ${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} PAKN, tỷ lệ ${diff.ratNew}%, đạt ${mTo.score}/${mTo.maxScore}đ.`;
+      }
+    } else if (mTo.code === 'PETITION_HANDLING_SATISFACTION') {
+      if (diff.denNew > 0 && diff.numNew === 0) {
+        evalText = `LƯU Ý: Chưa ghi nhận đánh giá hài lòng trong xử lý PAKN (0/${fmtInt(diff.denNew)}), đang mất 6.00đ. Khi xử lý xong PAKN cần hướng dẫn công dân đánh giá hài lòng.`;
+      } else if (diff.denNew === 0) {
+        evalText = `Không có phản ánh kiến nghị.`;
+      } else {
+        evalText = `Đánh giá hài lòng ${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} PAKN, đạt ${mTo.score}/${mTo.maxScore}đ.`;
+      }
+    } else {
+      evalText = `Số lượng PAKN ghi nhận: ${fmtInt(diff.numNew)}/${fmtInt(diff.denNew)} (${diff.ratNew}%).`;
+    }
+
+    return {
+      name: mTo.name,
+      code: mTo.code,
+      maxScore: mTo.maxScore,
+      diff,
+      evalText,
+      status: diff.deltaSco > 0 ? 'success' : (diff.deltaSco < 0 ? 'danger' : 'neutral')
+    };
+  });
+
+  // 4. KHUYẾN NGHỊ VÀ HÀNH ĐỘNG TRỌNG TÂM
+  const recommendations = [];
+
+  // Quá hạn
+  const overdueNum = progTo.overdue?.numerator || 0;
+  if (diffOverdue.deltaNum > 0) {
+    recommendations.push({
+      type: 'danger',
+      title: 'Kiểm soát và xử lý dứt điểm hồ sơ quá hạn',
+      desc: `Kỳ so sánh ghi nhận phát sinh thêm <strong>+${diffOverdue.deltaNum} hồ sơ quá hạn</strong> (tổng tồn ${fmtInt(overdueNum)} hồ sơ). Cần rà soát ngay trên Hệ thống Một cửa điện tử các phòng/bộ phận chuyên môn để đẩy nhanh tiến độ trả lời, hạn chế tối đa việc tiếp tục phát sinh trễ hẹn kéo tụt điểm nhóm Tiến độ giải quyết.`
+    });
+  } else if (overdueNum > 0) {
+    recommendations.push({
+      type: 'warning',
+      title: 'Xử lý tồn đọng hồ sơ quá hạn',
+      desc: `Đơn vị đang có <strong>${fmtInt(overdueNum)} hồ sơ quá hạn</strong> cần tập trung giải quyết và ban hành văn bản xin lỗi công dân theo đúng quy định Nghị định 61/2018/NĐ-CP.`
+    });
+  }
+
+  // PAKN
+  const petitionCount = uTo.indicatorDetails?.satisfaction?.metrics?.find(m => m.code === 'PETITION_PROCESSING_ON_TIME')?.denominator || 0;
+  const petitionOnTimeScore = uTo.indicatorDetails?.satisfaction?.metrics?.find(m => m.code === 'PETITION_PROCESSING_ON_TIME')?.score || 0;
+  if (petitionCount > 0 && petitionOnTimeScore === 0) {
+    recommendations.push({
+      type: 'danger',
+      title: 'Khẩn trương giải quyết phản ánh kiến nghị (PAKN) để gỡ từ 6 đến 12 điểm',
+      desc: `Đơn vị đang tiếp nhận <strong>${petitionCount} PAKN</strong> nhưng hiện tại chỉ tiêu Đúng hạn và Hài lòng đều đang là <strong>0.00 / 12.00 điểm</strong>. Nếu khẩn trương phối hợp giải quyết đúng hạn và đạt sự đồng thuận, hài lòng của người dân, tổng điểm của đơn vị sẽ tăng vọt thêm từ <strong>+6.00 đến +12.00 điểm</strong>, bứt phá mạnh mẽ trên bảng xếp hạng!`
+    });
+  }
+
+  // Số hóa
+  recommendations.push({
+    type: 'info',
+    title: 'Đẩy mạnh Tái sử dụng dữ liệu và Cấp kết quả điện tử',
+    desc: `Tập trung vào chỉ tiêu <em>Số hóa đầu vào</em> và <em>Tái sử dụng dữ liệu số hóa</em>. Nhắc nhở công chức tại Bộ phận Một cửa khai thác kho dữ liệu công dân trên Cổng DVCQG, tránh yêu cầu công dân nộp lại các giấy tờ đã có trong hệ thống.`
+  });
+
+  // Thanh toán trực tuyến
+  recommendations.push({
+    type: 'success',
+    title: 'Mở rộng thủ tục thanh toán trực tuyến',
+    desc: `Tiếp tục tuyên truyền, hướng dẫn người dân thực hiện quét mã QR thanh toán phí, lệ phí trực tuyến tại Bộ phận Tiếp nhận và Trả kết quả để duy trì tỷ lệ thanh toán trực tuyến trên 70%.`
+  });
+
+  // 5. TẠO MARKDOWN TEXT BÁO CÁO TOÀN DIỆN (ĐỂ SAO CHÉP & XEM VĂN BẢN)
+  const reportMd = buildQuickReportMarkdownText({
+    unitName: uTo.departmentName,
+    unitCode: uTo.departmentCode,
+    dateFromVn,
+    dateToVn,
+    scoreOld,
+    scoreNew,
+    deltaTotal,
+    provRankOld,
+    provRankNew,
+    deltaProvRank,
+    communeRankOld,
+    communeRankNew,
+    deltaCommuneRank,
+    classification: uTo.classification?.label || 'Chưa xếp loại',
+    totalRecOld,
+    totalRecNew,
+    deltaTotalRec,
+    groupsData,
+    group1Details,
+    group2Details,
+    group3Details,
+    group4Details,
+    group5Details,
+    group6Details,
+    recommendations
+  });
+
+  quickReportState.lastMarkdownText = reportMd;
+
+  // 6. BUILD HTML DÀNH CHO GIAO DIỆN
+  let html = `
+    <!-- BANNER ĐƠN VỊ -->
+    <div class="qrpt-unit-banner">
+      <div class="qrpt-unit-banner-left">
+        <div class="qrpt-unit-badge-row">
+          <span class="qrpt-unit-code-badge">${uTo.departmentCode}</span>
+          <span class="qrpt-unit-type-badge">${uTo.levelLabel || 'Cấp Xã'}</span>
+          <span class="classification-badge badge-${uTo.classification?.grade || 'average'}">${uTo.classification?.label || 'Trung bình'}</span>
+        </div>
+        <h3 class="qrpt-unit-name">${uTo.departmentName}</h3>
+        <p class="qrpt-timeframe-text">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Mốc so sánh: <strong>Ngày ${dateToVn}</strong> so với <strong>Ngày ${dateFromVn}</strong>
+        </p>
+      </div>
+
+      <div class="qrpt-unit-banner-right">
+        <div class="qrpt-banner-stat-box">
+          <div class="qrpt-banner-stat-label">Tổng Điểm 766</div>
+          <div class="qrpt-banner-stat-val" style="color: #60a5fa;">${scoreNew.toFixed(2)}</div>
+        </div>
+        <div class="qrpt-banner-stat-box">
+          <div class="qrpt-banner-stat-label">Biến Động Điểm</div>
+          <div class="qrpt-banner-stat-val" style="color: ${deltaTotal >= 0 ? '#4ade80' : '#f87171'};">
+            ${fmtDelta(deltaTotal, 'đ')}
+          </div>
+        </div>
+        <div class="qrpt-banner-stat-box">
+          <div class="qrpt-banner-stat-label">Hạng Khối Xã</div>
+          <div class="qrpt-banner-stat-val" style="color: #facc15;">#${communeRankNew} / 102</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 KPI CARDS GRID -->
+    <div class="qrpt-kpi-grid">
+      <!-- KPI 1: TỔNG ĐIỂM -->
+      <div class="qrpt-kpi-card accent-score">
+        <div class="qrpt-kpi-header">
+          <span class="qrpt-kpi-label">Tổng Điểm Bộ Chỉ Số 766</span>
+          <span class="qrpt-delta-badge ${deltaTotal > 0 ? 'pos' : (deltaTotal < 0 ? 'neg' : 'neutral')}">
+            ${fmtDelta(deltaTotal, 'đ')}
+          </span>
+        </div>
+        <div class="qrpt-kpi-body">
+          <span class="qrpt-kpi-value">${scoreNew.toFixed(2)}</span>
+          <span class="qrpt-kpi-subval">/ 100đ</span>
+        </div>
+        <div class="qrpt-kpi-footer">
+          <span>Ngày ${dateFromVn}: <strong>${scoreOld.toFixed(2)}đ</strong></span>
+          <span style="font-weight: 600; color: #1e40af;">${uTo.classification?.label || 'Trung bình'}</span>
+        </div>
+      </div>
+
+      <!-- KPI 2: HẠNG TOÀN TỈNH -->
+      <div class="qrpt-kpi-card accent-rank">
+        <div class="qrpt-kpi-header">
+          <span class="qrpt-kpi-label">Xếp Hạng Toàn Tỉnh</span>
+          <span class="qrpt-delta-badge ${deltaProvRank > 0 ? 'pos' : (deltaProvRank < 0 ? 'neg' : 'neutral')}">
+            ${deltaProvRank > 0 ? `▲ Tăng ${deltaProvRank} bậc` : (deltaProvRank < 0 ? `▼ Giảm ${Math.abs(deltaProvRank)} bậc` : 'Giữ nguyên')}
+          </span>
+        </div>
+        <div class="qrpt-kpi-body">
+          <span class="qrpt-kpi-value">#${provRankNew}</span>
+          <span class="qrpt-kpi-subval">/ 115 đơn vị</span>
+        </div>
+        <div class="qrpt-kpi-footer">
+          <span>Ngày ${dateFromVn}: <strong>#${provRankOld}</strong></span>
+          <span>Toàn tỉnh Đắk Lắk</span>
+        </div>
+      </div>
+
+      <!-- KPI 3: HẠNG KHỐI XÃ -->
+      <div class="qrpt-kpi-card accent-commune">
+        <div class="qrpt-kpi-header">
+          <span class="qrpt-kpi-label">Xếp Hạng Khối Cấp Xã</span>
+          <span class="qrpt-delta-badge ${deltaCommuneRank > 0 ? 'pos' : (deltaCommuneRank < 0 ? 'neg' : 'neutral')}">
+            ${deltaCommuneRank > 0 ? `▲ Tăng ${deltaCommuneRank} bậc` : (deltaCommuneRank < 0 ? `▼ Giảm ${Math.abs(deltaCommuneRank)} bậc` : 'Giữ nguyên')}
+          </span>
+        </div>
+        <div class="qrpt-kpi-body">
+          <span class="qrpt-kpi-value">#${communeRankNew}</span>
+          <span class="qrpt-kpi-subval">/ 102 Cấp Xã</span>
+        </div>
+        <div class="qrpt-kpi-footer">
+          <span>Ngày ${dateFromVn}: <strong>#${communeRankOld}</strong></span>
+          <span>Nhóm UBND Xã/Phường</span>
+        </div>
+      </div>
+
+      <!-- KPI 4: TỔNG HỒ SƠ TIẾP NHẬN -->
+      <div class="qrpt-kpi-card accent-dossier">
+        <div class="qrpt-kpi-header">
+          <span class="qrpt-kpi-label">Tổng Hồ Sơ Tiếp Nhận</span>
+          <span class="qrpt-delta-badge ${deltaTotalRec > 0 ? 'pos' : 'neutral'}">
+            ${fmtDelta(deltaTotalRec, ' hồ sơ', 0)}
+          </span>
+        </div>
+        <div class="qrpt-kpi-body">
+          <span class="qrpt-kpi-value">${fmtInt(totalRecNew)}</span>
+          <span class="qrpt-kpi-subval">hồ sơ</span>
+        </div>
+        <div class="qrpt-kpi-footer">
+          <span>Đúng hạn: <strong>${fmtInt(progTo.onTime?.numerator || 0)} (${progTo.onTime?.ratio || 0}%)</strong></span>
+          <span style="color: ${overdueNum > 0 ? '#dc2626' : '#16a34a'}; font-weight: 600;">
+            Quá hạn: ${fmtInt(overdueNum)}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TÓM TẮT 6 NHÓM TIÊU CHÍ -->
+    <div class="qrpt-section-title-wrap">
+      <h3 class="qrpt-section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        Tổng Hợp Biến Động 6 Nhóm Chỉ Tiêu
+      </h3>
+      <span style="font-size: 13px; color: #64748b;">Điểm tối đa: 100 điểm</span>
+    </div>
+
+    <div class="qrpt-groups-grid">
+      ${groupsData.map(g => `
+        <div class="qrpt-group-card">
+          <div class="qrpt-group-card-header">
+            <div>
+              <span class="qrpt-group-code-tag" style="background: ${g.color};">${g.code}</span>
+              <h4 class="qrpt-group-name">${g.name}</h4>
+            </div>
+            <span class="qrpt-delta-badge ${g.delta > 0 ? 'pos' : (g.delta < 0 ? 'neg' : 'neutral')}">
+              ${fmtDelta(g.delta, 'đ')}
+            </span>
+          </div>
+
+          <div class="qrpt-group-scores">
+            <div>
+              <span class="qrpt-group-main-score">${g.scoreNew.toFixed(2)}</span>
+              <span class="qrpt-group-max-score">/ ${g.maxScore}đ</span>
+            </div>
+            <span style="font-size: 12.5px; font-weight: 700; color: ${g.color};">${g.pct}%</span>
+          </div>
+
+          <div class="qrpt-group-progress-wrap">
+            <div class="qrpt-group-progress-bar" style="width: ${Math.min(g.pct, 100)}%; background: ${g.color};"></div>
+          </div>
+
+          <div class="qrpt-group-card-footer">
+            <span>Ngày ${dateFromVn}: <strong>${g.scoreOld.toFixed(2)}đ</strong></span>
+            <span>${g.delta > 0 ? '▲ Tăng trưởng' : (g.delta < 0 ? '▼ Sụt giảm' : 'Giữ nguyên')}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- BÁO CÁO BIẾN ĐỘNG CHI TIẾT TỪNG TIÊU CHÍ CON -->
+    <div class="qrpt-section-title-wrap" style="margin-top: 12px;">
+      <h3 class="qrpt-section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Báo Cáo Biến Động Chi Tiết Từng Tiêu Chí Con (Đầy đủ Tử Số & Mẫu Số)
+      </h3>
+      <span style="font-size: 13px; color: #64748b;">Phân tích sâu tăng trưởng</span>
+    </div>
+
+    <div class="qrpt-details-container">
+      ${renderDetailGroupCard('Nhóm 1: Công khai, minh bạch', '1', groupsData[0], group1Details, dateFromVn, dateToVn)}
+      ${renderDetailGroupCard('Nhóm 2: Tiến độ giải quyết', '2', groupsData[1], group2Details, dateFromVn, dateToVn)}
+      ${renderDetailGroupCard('Nhóm 3: Dịch vụ công trực tuyến', '3', groupsData[2], group3Details, dateFromVn, dateToVn)}
+      ${renderDetailGroupCard('Nhóm 4: Số hóa hồ sơ', '4', groupsData[3], group4Details, dateFromVn, dateToVn)}
+      ${renderDetailGroupCard('Nhóm 5: Thanh toán trực tuyến', '5', groupsData[4], group5Details, dateFromVn, dateToVn)}
+      ${renderDetailGroupCard('Nhóm 6: Mức độ hài lòng', '6', groupsData[5], group6Details, dateFromVn, dateToVn)}
+    </div>
+
+    <!-- KHUYẾN NGHỊ VÀ HÀNH ĐỘNG TRỌNG TÂM -->
+    <div class="qrpt-recommendations-card">
+      <div class="qrpt-rec-header">
+        <div class="qrpt-rec-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <h4 class="qrpt-rec-title">Khuyến Nghị & Hành Động Trọng Tâm Cho ${uTo.departmentName}</h4>
+      </div>
+
+      <ul class="qrpt-rec-list">
+        ${recommendations.map(r => `
+          <li class="qrpt-rec-item">
+            <strong>${r.title}:</strong> ${r.desc}
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+
+  contentEl.innerHTML = html;
+}
+
+/**
+ * Render card chi tiết cho 1 nhóm chỉ tiêu
+ */
+function renderDetailGroupCard(groupTitle, groupNum, groupSummary, metricsDetails, dateFromVn, dateToVn) {
+  return `
+    <div class="qrpt-group-detail-card">
+      <div class="qrpt-group-detail-header">
+        <div class="qrpt-group-detail-title-wrap">
+          <div class="qrpt-group-indicator-circle" style="background: ${groupSummary.color};">
+            ${groupNum}
+          </div>
+          <div>
+            <h4 class="qrpt-group-detail-title">${groupTitle}</h4>
+            <span style="font-size: 12px; color: #64748b;">Điểm số: <strong>${groupSummary.scoreNew.toFixed(2)} / ${groupSummary.maxScore}đ</strong> (${fmtDelta(groupSummary.delta, 'đ')})</span>
+          </div>
+        </div>
+        <div class="qrpt-group-detail-score-pill">
+          <span class="qrpt-detail-score-text">${groupSummary.scoreNew.toFixed(2)}đ</span>
+          <span class="qrpt-delta-badge ${groupSummary.delta > 0 ? 'pos' : (groupSummary.delta < 0 ? 'neg' : 'neutral')}">
+            ${fmtDelta(groupSummary.delta, 'đ')}
+          </span>
+        </div>
+      </div>
+
+      <div class="qrpt-metrics-list">
+        ${metricsDetails.map(m => `
+          <div class="qrpt-metric-card">
+            <div class="qrpt-metric-card-top">
+              <h5 class="qrpt-metric-title">${m.name}</h5>
+              <div class="qrpt-metric-right-badges">
+                ${m.maxScore !== null ? `
+                  <span class="qrpt-metric-score-tag">
+                    Điểm: <strong>${m.diff.scoNew !== null ? m.diff.scoNew.toFixed(2) : '—'} / ${m.maxScore}đ</strong>
+                  </span>
+                  ${m.diff.deltaSco !== null ? `
+                    <span class="qrpt-delta-badge ${m.diff.deltaSco > 0 ? 'pos' : (m.diff.deltaSco < 0 ? 'neg' : 'neutral')}">
+                      ${fmtDelta(m.diff.deltaSco, 'đ')}
+                    </span>
+                  ` : ''}
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- MA TRẬN 4 THÔNG SỐ: TỬ SỐ, MẪU SỐ, TỶ LỆ, ĐIỂM SỐ -->
+            <div class="qrpt-param-matrix">
+              <!-- Cột 1: TỬ SỐ -->
+              <div class="qrpt-param-col">
+                <span class="qrpt-param-label">Tử số (Đạt/Hoàn thành)</span>
+                <div class="qrpt-param-flow">
+                  <span class="qrpt-param-old">${fmtInt(m.diff.numOld)}</span>
+                  <span class="qrpt-param-arrow">➔</span>
+                  <span>${fmtInt(m.diff.numNew)}</span>
+                </div>
+                <span class="qrpt-param-delta ${m.diff.deltaNum > 0 ? 'pos' : (m.diff.deltaNum < 0 ? 'neg' : 'zero')}">
+                  Biến động: ${fmtDelta(m.diff.deltaNum, '', 0)}
+                </span>
+              </div>
+
+              <!-- Cột 2: MẪU SỐ -->
+              <div class="qrpt-param-col">
+                <span class="qrpt-param-label">Mẫu số (Tổng phát sinh)</span>
+                <div class="qrpt-param-flow">
+                  <span class="qrpt-param-old">${fmtInt(m.diff.denOld)}</span>
+                  <span class="qrpt-param-arrow">➔</span>
+                  <span>${fmtInt(m.diff.denNew)}</span>
+                </div>
+                <span class="qrpt-param-delta ${m.diff.deltaDen > 0 ? 'pos' : (m.diff.deltaDen < 0 ? 'neg' : 'zero')}">
+                  Biến động: ${fmtDelta(m.diff.deltaDen, '', 0)}
+                </span>
+              </div>
+
+              <!-- Cột 3: TỶ LỆ % -->
+              <div class="qrpt-param-col">
+                <span class="qrpt-param-label">Tỷ lệ đạt (%)</span>
+                <div class="qrpt-param-flow">
+                  <span class="qrpt-param-old">${m.diff.ratOld !== null ? m.diff.ratOld + '%' : '—'}</span>
+                  <span class="qrpt-param-arrow">➔</span>
+                  <span>${m.diff.ratNew !== null ? m.diff.ratNew + '%' : '—'}</span>
+                </div>
+                <span class="qrpt-param-delta ${m.diff.deltaRat > 0 ? 'pos' : (m.diff.deltaRat < 0 ? 'neg' : 'zero')}">
+                  Biến động: ${fmtDelta(m.diff.deltaRat, '%')}
+                </span>
+              </div>
+
+              <!-- Cột 4: ĐIỂM SỐ -->
+              <div class="qrpt-param-col">
+                <span class="qrpt-param-label">Điểm số đạt được</span>
+                <div class="qrpt-param-flow">
+                  <span class="qrpt-param-old">${m.diff.scoOld !== null ? m.diff.scoOld.toFixed(2) : '—'}</span>
+                  <span class="qrpt-param-arrow">➔</span>
+                  <span>${m.diff.scoNew !== null ? m.diff.scoNew.toFixed(2) : '—'}</span>
+                </div>
+                <span class="qrpt-param-delta ${m.diff.deltaSco > 0 ? 'pos' : (m.diff.deltaSco < 0 ? 'neg' : 'zero')}">
+                  Biến động: ${fmtDelta(m.diff.deltaSco, 'đ')}
+                </span>
+              </div>
+            </div>
+
+            <!-- NHẬN ĐỊNH TĂNG TRƯỞNG CHUYÊN SÂU -->
+            <div class="qrpt-eval-box ${m.status}">
+              <span class="qrpt-eval-icon">
+                ${m.status === 'success' ? '📈' : (m.status === 'danger' ? '⚠️' : 'ℹ️')}
+              </span>
+              <p class="qrpt-eval-text">${m.evalText}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Xây dựng báo cáo dạng văn bản Markdown hoàn chỉnh
+ */
+function buildQuickReportMarkdownText(data) {
+  let text = `# BÁO CÁO BIẾN ĐỘNG BỘ CHỈ SỐ 766
+Đơn vị: ${data.unitName} (Mã: ${data.unitCode})
+Thời gian so sánh: Ngày ${data.dateToVn} so với Ngày ${data.dateFromVn}
+------------------------------------------------------------------------
+
+I. TỔNG QUAN KẾT QUẢ VÀ XẾP HẠNG
+- Tổng điểm 766: ${data.scoreNew.toFixed(2)} / 100 điểm (Ngày ${data.dateFromVn}: ${data.scoreOld.toFixed(2)}đ | Biến động: ${fmtDelta(data.deltaTotal, 'đ')}).
+- Xếp loại chất lượng: ${data.classification}.
+- Xếp hạng toàn tỉnh: #${data.provRankNew} / 115 đơn vị (${data.deltaProvRank > 0 ? `Tăng +${data.deltaProvRank} bậc` : (data.deltaProvRank < 0 ? `Giảm ${data.deltaProvRank} bậc` : 'Giữ nguyên')}).
+- Xếp hạng khối Cấp Xã: #${data.communeRankNew} / 102 Cấp Xã (${data.deltaCommuneRank > 0 ? `Tăng +${data.deltaCommuneRank} bậc` : (data.deltaCommuneRank < 0 ? `Giảm ${data.deltaCommuneRank} bậc` : 'Giữ nguyên')}).
+- Tổng hồ sơ tiếp nhận: ${fmtInt(data.totalRecNew)} hồ sơ (Tăng ${fmtDelta(data.deltaTotalRec, ' hồ sơ', 0)} so với ngày ${data.dateFromVn}).
+
+II. BIẾN ĐỘNG 6 NHÓM TIÊU CHÍ CHÍNH
+${data.groupsData.map((g, idx) => `  ${idx + 1}. ${g.name}: ${g.scoreNew.toFixed(2)} / ${g.maxScore}đ (Ngày ${data.dateFromVn}: ${g.scoreOld.toFixed(2)}đ | Biến động: ${fmtDelta(g.delta, 'đ')})`).join('\n')}
+
+III. BÁO CÁO CHI TIẾT TỪNG TIÊU CHÍ CON (TỬ SỐ & MẪU SỐ)
+
+1. NHÓM 1: CÔNG KHAI, MINH BẠCH (${data.groupsData[0].scoreNew.toFixed(2)} / 18đ | ${fmtDelta(data.groupsData[0].delta, 'đ')})
+${data.group1Details.map(m => `
+* ${m.name}:
+  - Tử số (Số TTHC/hồ sơ đạt): ${fmtInt(m.diff.numOld)} ➔ ${fmtInt(m.diff.numNew)} (Biến động: ${fmtDelta(m.diff.deltaNum, '', 0)})
+  - Mẫu số (Tổng phát sinh): ${fmtInt(m.diff.denOld)} ➔ ${fmtInt(m.diff.denNew)} (Biến động: ${fmtDelta(m.diff.deltaDen, '', 0)})
+  - Tỷ lệ: ${m.diff.ratOld}% ➔ ${m.diff.ratNew}% (${fmtDelta(m.diff.deltaRat, '%')})
+  - Điểm số: ${m.diff.scoOld?.toFixed(2) || '—'} ➔ ${m.diff.scoNew?.toFixed(2) || '—'} / ${m.maxScore}đ (${fmtDelta(m.diff.deltaSco, 'đ')})
+  - Nhận định: ${m.evalText}
+`).join('')}
+
+2. NHÓM 2: TIẾN ĐỘ GIẢI QUYẾT (${data.groupsData[1].scoreNew.toFixed(2)} / 20đ | ${fmtDelta(data.groupsData[1].delta, 'đ')})
+${data.group2Details.map(m => `
+* ${m.name}:
+  - Tử số: ${fmtInt(m.diff.numOld)} ➔ ${fmtInt(m.diff.numNew)} hồ sơ (Biến động: ${fmtDelta(m.diff.deltaNum, ' hồ sơ', 0)})
+  - Mẫu số (Tổng tiếp nhận): ${fmtInt(m.diff.denOld)} ➔ ${fmtInt(m.diff.denNew)} hồ sơ (Biến động: ${fmtDelta(m.diff.deltaDen, ' hồ sơ', 0)})
+  - Tỷ lệ: ${m.diff.ratOld}% ➔ ${m.diff.ratNew}% (${fmtDelta(m.diff.deltaRat, '%')})
+  ${m.maxScore ? `- Điểm số: ${m.diff.scoOld?.toFixed(2)} ➔ ${m.diff.scoNew?.toFixed(2)} / ${m.maxScore}đ (${fmtDelta(m.diff.deltaSco, 'đ')})` : ''}
+  - Nhận định: ${m.evalText}
+`).join('')}
+
+3. NHÓM 3: DỊCH VỤ CÔNG TRỰC TUYẾN (${data.groupsData[2].scoreNew.toFixed(2)} / 12đ | ${fmtDelta(data.groupsData[2].delta, 'đ')})
+${data.group3Details.map(m => `
+* ${m.name}:
+  - Tỷ lệ trực tuyến: ${m.diff.ratOld}% ➔ ${m.diff.ratNew}% (${fmtDelta(m.diff.deltaRat, '%')})
+  - Điểm số: ${m.diff.scoOld?.toFixed(2) || '—'} ➔ ${m.diff.scoNew?.toFixed(2) || '—'} / ${m.maxScore}đ (${fmtDelta(m.diff.deltaSco, 'đ')})
+  - Nhận định: ${m.evalText}
+`).join('')}
+
+4. NHÓM 4: SỐ HÓA HỒ SƠ (${data.groupsData[3].scoreNew.toFixed(2)} / 22đ | ${fmtDelta(data.groupsData[3].delta, 'đ')})
+${data.group4Details.map(m => `
+* ${m.name}:
+  - Tử số: ${fmtInt(m.diff.numOld)} ➔ ${fmtInt(m.diff.numNew)} (Biến động: ${fmtDelta(m.diff.deltaNum, '', 0)})
+  - Mẫu số: ${fmtInt(m.diff.denOld)} ➔ ${fmtInt(m.diff.denNew)} (Biến động: ${fmtDelta(m.diff.deltaDen, '', 0)})
+  - Tỷ lệ: ${m.diff.ratOld !== null ? m.diff.ratOld + '%' : '—'} ➔ ${m.diff.ratNew !== null ? m.diff.ratNew + '%' : '—'} (${fmtDelta(m.diff.deltaRat, '%')})
+  - Điểm số: ${m.diff.scoOld?.toFixed(2) || '—'} ➔ ${m.diff.scoNew?.toFixed(2) || '—'} / ${m.maxScore}đ (${fmtDelta(m.diff.deltaSco, 'đ')})
+  - Nhận định: ${m.evalText}
+`).join('')}
+
+5. NHÓM 5: THANH TOÁN TRỰC TUYẾN (${data.groupsData[4].scoreNew.toFixed(2)} / 10đ | ${fmtDelta(data.groupsData[4].delta, 'đ')})
+${data.group5Details.map(m => `
+* ${m.name}:
+  - Tử số: ${fmtInt(m.diff.numOld)} ➔ ${fmtInt(m.diff.numNew)} (Biến động: ${fmtDelta(m.diff.deltaNum, '', 0)})
+  - Mẫu số: ${fmtInt(m.diff.denOld)} ➔ ${fmtInt(m.diff.denNew)} (Biến động: ${fmtDelta(m.diff.deltaDen, '', 0)})
+  - Tỷ lệ: ${m.diff.ratOld}% ➔ ${m.diff.ratNew}% (${fmtDelta(m.diff.deltaRat, '%')})
+  - Nhận định: ${m.evalText}
+`).join('')}
+
+6. NHÓM 6: MỨC ĐỘ HÀI LÒNG (${data.groupsData[5].scoreNew.toFixed(2)} / 18đ | ${fmtDelta(data.groupsData[5].delta, 'đ')})
+${data.group6Details.map(m => `
+* ${m.name}:
+  - Tử số: ${fmtInt(m.diff.numOld)} ➔ ${fmtInt(m.diff.numNew)} (Biến động: ${fmtDelta(m.diff.deltaNum, '', 0)})
+  - Mẫu số: ${fmtInt(m.diff.denOld)} ➔ ${fmtInt(m.diff.denNew)} (Biến động: ${fmtDelta(m.diff.deltaDen, '', 0)})
+  - Tỷ lệ: ${m.diff.ratOld}% ➔ ${m.diff.ratNew}% (${fmtDelta(m.diff.deltaRat, '%')})
+  ${m.maxScore ? `- Điểm số: ${m.diff.scoOld?.toFixed(2) || '—'} ➔ ${m.diff.scoNew?.toFixed(2) || '—'} / ${m.maxScore}đ (${fmtDelta(m.diff.deltaSco, 'đ')})` : ''}
+  - Nhận định: ${m.evalText}
+`).join('')}
+
+IV. NHẬN ĐỊNH VÀ KHUYẾN NGHỊ HÀNH ĐỘNG TRỌNG TÂM
+${data.recommendations.map((r, idx) => `  ${idx + 1}. ${r.title}: ${r.desc.replace(/<[^>]*>/g, '')}`).join('\n')}
+
+---
+(Nguồn: Dữ liệu phân tích tự động từ Bộ Chỉ số 766 Cổng Dịch vụ công Quốc gia)
+`;
+
+  return text;
+}
+
+/**
+ * Sao chép báo cáo vào clipboard
+ */
+function copyQuickReportToClipboard() {
+  if (!quickReportState.lastMarkdownText) {
+    showToast('Chưa có nội dung báo cáo để sao chép!', 'error');
+    return;
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(quickReportState.lastMarkdownText)
+      .then(() => {
+        showToast('Đã sao chép toàn bộ văn bản báo cáo vào bộ nhớ tạm (Clipboard)!', 'success');
+      })
+      .catch(err => {
+        console.error('Clipboard copy error:', err);
+        fallbackCopyText(quickReportState.lastMarkdownText);
+      });
+  } else {
+    fallbackCopyText(quickReportState.lastMarkdownText);
+  }
+}
+
+/**
+ * Fallback sao chép text trên trình duyệt cũ
+ */
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('Đã sao chép toàn bộ văn bản báo cáo vào bộ nhớ tạm!', 'success');
+  } catch (e) {
+    showToast('Không thể tự động sao chép, vui lòng copy thủ công trong ô văn bản.', 'error');
+  }
+  document.body.removeChild(ta);
+}
+
 
 
 

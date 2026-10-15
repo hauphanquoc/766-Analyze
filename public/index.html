@@ -147,6 +147,17 @@
               <span>Mã QR TTHC</span>
             </button>
           </li>
+          <li class="nav-tab-item" id="nav-item-quick-report" style="display: none;">
+            <button class="nav-tab-btn" id="tab-btn-quick-report" data-tab="tab-content-quick-report">
+              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
+                <polyline points="13 13 16 13 16 16"></polyline>
+              </svg>
+              <span>Báo cáo nhanh <span class="tab-admin-badge" style="background:#e0f2fe; color:#0284c7; border: 1px solid #bae6fd;">Nội bộ</span></span>
+            </button>
+          </li>
           <li class="nav-tab-item">
             <button class="nav-tab-btn" id="tab-btn-tools" data-tab="tab-content-tools">
               <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -2079,6 +2090,151 @@
 
             </div>
 
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: BÁO CÁO NHANH BIẾN ĐỘNG 766 (102 CẤP XÃ - CHỈ DÀNH CHO CÁN BỘ / ADMIN) -->
+      <div id="tab-content-quick-report" class="tab-pane" style="display: none;">
+        <div class="qrpt-container">
+          <!-- Khối cảnh báo nếu chưa đăng nhập quyền Cán bộ hoặc Admin -->
+          <div id="qrpt-auth-lock-card" class="split-lock-box" style="display: none;">
+            <div class="split-lock-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 class="split-lock-title">Yêu cầu đăng nhập Cán bộ hoặc Quản trị viên</h3>
+            <p class="split-lock-desc">Chức năng Báo cáo nhanh biến động Bộ chỉ số 766 của 102 Cấp Xã chỉ áp dụng cho Cán bộ nghiệp vụ hoặc Quản trị viên của hệ thống.</p>
+            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Cán bộ hoặc Quản trị viên để xem Báo cáo nhanh.')">
+              Đăng nhập ngay
+            </button>
+          </div>
+
+          <!-- Khối làm việc chính (Khi đã đăng nhập Cán bộ / Admin) -->
+          <div id="qrpt-workspace-wrap" style="display: none;">
+            <!-- CONTROL PANEL CARD -->
+            <div class="qrpt-control-card">
+              <div class="qrpt-header-row">
+                <div class="qrpt-title-area">
+                  <div class="qrpt-badge-pill">
+                    <span class="qrpt-pulse-dot"></span>
+                    <span>Phân tích tự động 102 Cấp Xã</span>
+                  </div>
+                  <h2 class="qrpt-main-title">Báo Cáo Nhanh Biến Động Bộ Chỉ Số 766</h2>
+                </div>
+
+                <div class="qrpt-action-btns">
+                  <button type="button" id="qrpt-btn-copy" class="qrpt-action-btn qrpt-btn-primary" title="Sao chép toàn bộ nội dung báo cáo văn bản">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Sao chép báo cáo</span>
+                  </button>
+
+                  <button type="button" id="qrpt-btn-toggle-text" class="qrpt-action-btn qrpt-btn-secondary" title="Xem định dạng văn bản để gửi Zalo hoặc Báo cáo lãnh đạo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Xem văn bản</span>
+                  </button>
+
+                  <button type="button" id="qrpt-btn-print" class="qrpt-action-btn qrpt-btn-secondary" title="In trực tiếp hoặc Lưu dưới dạng PDF">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                      <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>In / PDF</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- FILTER BAR -->
+              <div class="qrpt-filter-toolbar">
+                <!-- Cột chọn đơn vị -->
+                <div class="qrpt-filter-field qrpt-field-unit">
+                  <label for="qrpt-unit-select" class="qrpt-label">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Đơn vị cấp xã (102 xã/phường/thị trấn theo mã H15.100 - H15.201):
+                  </label>
+                  <select id="qrpt-unit-select" class="qrpt-select" size="1">
+                    <option value="">-- Đang tải danh sách 102 đơn vị cấp xã... --</option>
+                  </select>
+                </div>
+
+                <!-- Cột chọn mốc ngày phân tích -->
+                <div class="qrpt-filter-field qrpt-field-date">
+                  <label for="qrpt-date-to" class="qrpt-label">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Ngày phân tích (Mới nhất):
+                  </label>
+                  <select id="qrpt-date-to" class="qrpt-date-select"></select>
+                </div>
+
+                <!-- Cột chọn mốc ngày so sánh -->
+                <div class="qrpt-filter-field qrpt-field-date">
+                  <label for="qrpt-date-from" class="qrpt-label">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Ngày so sánh (Hôm trước):
+                  </label>
+                  <select id="qrpt-date-from" class="qrpt-date-select"></select>
+                </div>
+              </div>
+            </div>
+
+            <!-- LOADING STATE -->
+            <div id="qrpt-loading" class="qrpt-loading-box" style="display: none;">
+              <div class="qrpt-spinner"></div>
+              <p class="qrpt-loading-text">Đang trích xuất dữ liệu và phân tích biến động các chỉ tiêu...</p>
+            </div>
+
+            <!-- MAIN REPORT CONTENT CONTAINER -->
+            <div id="qrpt-report-content" class="qrpt-content-wrap">
+              <!-- Sẽ được fill bằng JavaScript renderQuickReport() -->
+            </div>
+
+            <!-- MODAL / DRAWER XEM VĂN BẢN BÁO CÁO HOÀN CHỈNH -->
+            <div id="qrpt-text-modal" class="qrpt-modal-overlay" style="display: none;">
+              <div class="qrpt-modal-card">
+                <div class="qrpt-modal-header">
+                  <div class="qrpt-modal-title-wrap">
+                    <h3 class="qrpt-modal-title">Văn Bản Báo Cáo Biến Động Hoàn Chỉnh</h3>
+                    <p class="qrpt-modal-desc">Định dạng chuẩn để sao chép gửi Zalo, báo cáo giao ban hoặc chèn vào văn bản chỉ đạo điều hành</p>
+                  </div>
+                  <div class="qrpt-modal-actions">
+                    <button type="button" id="qrpt-modal-btn-copy" class="qrpt-action-btn qrpt-btn-primary">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      <span>Sao chép toàn bộ</span>
+                    </button>
+                    <button type="button" id="qrpt-modal-btn-close" class="qrpt-modal-close-btn">&times;</button>
+                  </div>
+                </div>
+                <div class="qrpt-modal-body">
+                  <pre id="qrpt-modal-text-content" class="qrpt-text-pre"></pre>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

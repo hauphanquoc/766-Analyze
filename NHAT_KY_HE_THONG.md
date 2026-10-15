@@ -249,6 +249,27 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Thu thập lại bảng xếp hạng 766 của toàn bộ **34 tỉnh/thành phố** trên cả nước: Đắk Lắk xếp hạng **#7 toàn quốc** với 65.93 điểm (cả nước đạt 63.16 điểm).
   - Đồng bộ tự động lên Upstash Redis Cloud, cập nhật các tệp snapshot cục bộ (`data/snapshots/2026-10-15.json`, `data/provinces/2026-10-15.json`, `data/provinces-latest.json`), đồng thời làm mới bộ nhớ đệm (cache) máy chủ.
 
+### 11. Xây dựng Menu "Báo Cáo Nhanh" Biến Động 766 Cho 102 Cấp Xã (15/10/2026)
+* **Yêu cầu:** 
+  - Tạo 1 menu mới mang tên "Báo cáo nhanh" nằm trước menu "Tiện ích".
+  - **Phân quyền bảo mật:** Chức năng chỉ hiển thị và áp dụng cho Cán bộ nghiệp vụ hoặc Quản trị viên (Admin) đăng nhập hệ thống.
+  - Cho phép người dùng chọn đơn vị là 1 trong 102 xã/phường/thị trấn tỉnh Đắk Lắk.
+  - Tự động so sánh số liệu giữa ngày hôm nay với ngày hôm trước (hôm gần nhất có dữ liệu).
+  - Báo cáo phân tích sâu: Ngoài biến động tử số, bổ sung đầy đủ biến động **mẫu số**, **tỷ lệ %**, **điểm số** và **nhận định tăng trưởng chuyên sâu** ở tất cả các tiêu chí con.
+  - Cung cấp nút sao chép văn bản báo cáo hoàn chỉnh (để gửi Zalo / Báo cáo lãnh đạo) và nút in ấn / PDF.
+  - Giao diện tinh gọn: Bỏ phần chọn nhanh và bỏ dòng mô tả phụ bên dưới tiêu đề để tăng tính chuyên nghiệp.
+* **Xử lý:**
+  - Bổ sung tab button `#tab-btn-quick-report` (nhãn *Nội bộ*) và tab content pane `#tab-content-quick-report` trong [index.html](file:///f:/DVC%20QG%20C12/766-Analyze/public/index.html).
+  - Cấu hình phân quyền trong `updateAuthUI` ([app.js](file:///f:/DVC%20QG%20C12/766-Analyze/public/app.js)): Chỉ hiển thị menu khi người dùng đăng nhập tài khoản có quyền `officer` (Cán bộ) hoặc `admin` (Quản trị viên). Người dùng chưa đăng nhập sẽ không thấy tab, hoặc nếu cố tình truy cập sẽ thấy màn hình khóa yêu cầu đăng nhập.
+  - Thiết kế Control Card trực quan, tinh gọn: thanh tìm kiếm nhanh tên xã/phường, dropdown chọn 102 đơn vị, 2 dropdown mốc ngày so sánh (mặc định hôm nay vs hôm trước).
+  - Triển khai động cơ phân tích `diffMetric` và `renderQuickReportHtml` trong [app.js](file:///f:/DVC%20QG%20C12/766-Analyze/public/app.js) tính toán ma trận 4 thông số:
+    * Tử số: Số cũ ➔ Số mới (Biến động: +X / -X hồ sơ hoặc TTHC)
+    * Mẫu số: Số cũ ➔ Số mới (Biến động: +Y / -Y hồ sơ hoặc TTHC)
+    * Tỷ lệ %: Cũ% ➔ Mới% (Biến động: +/- Z%)
+    * Điểm số: Cũđ ➔ Mớiđ (Biến động: +/- Wđ)
+    * Nhận định tăng trưởng chuyên sâu cho từng chỉ tiêu: Phân tích tử số tăng hay mẫu số tăng nhanh hơn, cảnh báo hồ sơ quá hạn, phản ánh kiến nghị (PAKN), thanh toán trực tuyến, số hóa hồ sơ.
+  - Tích hợp tính năng "Sao chép báo cáo" dạng văn bản Markdown chuẩn và Modal "Xem văn bản" trực tiếp trên giao diện.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
