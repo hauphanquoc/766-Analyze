@@ -268,7 +268,36 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Tỷ lệ %: Cũ% ➔ Mới% (Biến động: +/- Z%)
     * Điểm số: Cũđ ➔ Mớiđ (Biến động: +/- Wđ)
     * Nhận định tăng trưởng chuyên sâu cho từng chỉ tiêu: Phân tích tử số tăng hay mẫu số tăng nhanh hơn, cảnh báo hồ sơ quá hạn, phản ánh kiến nghị (PAKN), thanh toán trực tuyến, số hóa hồ sơ.
-  - Tích hợp tính năng "Sao chép báo cáo" dạng văn bản Markdown chuẩn và Modal "Xem văn bản" trực tiếp trên giao diện.
+### 21. Tinh chỉnh Tên Menu, Bỏ Huy Hiệu và Tối ưu Giao diện Điều hướng Di động (17/10/2026)
+* **Yêu cầu:**
+  - Ở menu `Công thức tính 766`: bỏ chữ `(Đang hoàn thiện)`.
+  - Ở menu `Báo cáo nhanh`: bỏ chữ `Nội bộ`.
+  - Đổi tên menu `Bóc tách hồ sơ` thành `Phân loại hồ sơ` và bỏ chữ `Admin`.
+  - Khắc phục triệt để hiện tượng vỡ giao diện trên điện thoại di động do toàn bộ 8 menu bị xếp thành 1 hàng dài cứng nhắc gây co nhỏ / vỡ layout trang.
+* **Xử lý toàn diện:**
+  - **Làm sạch & Đồng bộ tên Menu:**
+    * Cập nhật nhãn thanh điều hướng: `Công thức tính 766`, `Báo cáo nhanh`, `Phân loại hồ sơ` (gỡ bỏ các thẻ badge phụ `(Đang hoàn thiện)`, `Nội bộ`, `Admin`).
+    * Đồng bộ tiêu đề và nội dung mô tả trong tab [Phân loại hồ sơ](file:///f:/DVC%20QG%20C12/766-Analyze/public/index.html) thành *Phân loại hồ sơ TTHC theo Cổng Tỉnh và các Bộ*.
+  - **Tối ưu hóa Giao diện Điều hướng Di động (Responsive Gov-tech):**
+    * **Thanh cuộn ngang Chip Pill mượt mà (`.nav-tabs-scroll-container`):** Trên màn hình di động ($\le 768px$), các tab được chuyển đổi thành phong cách Chip Pill bo tròn hiện đại, hỗ trợ vuốt chạm cảm ứng (touch swipe) với thanh cuộn ẩn tinh tế và hiệu ứng làm mờ biên (mask-image gradient) báo hiệu trực quan nội dung có thể cuộn.
+    * **Tự động căn giữa:** Khi người dùng chọn tab bất kỳ hoặc khi mở trang, tab đang kích hoạt tự động trượt mượt mà vào chính giữa màn hình (`scrollIntoView({ behavior: 'smooth', inline: 'center' })`).
+    * **Nút & Menu Drawer Lưới 2 Cột (`#mobile-nav-toggle-btn` & `#mobile-menu-drawer`):** Bổ sung nút `Menu` gọn gàng ở góc thanh điều hướng di động. Khi bấm vào, một Drawer dạng Bottom Sheet trượt lên hiển thị toàn bộ các chức năng hệ thống dưới dạng lưới thẻ 2 cột trực quan, cho phép người dùng chuyển đổi tab tức thì mà không cần cuộn ngang tìm kiếm.
+    * **Kế thừa phân quyền tự động:** Các mục phân quyền (`Báo cáo nhanh` cho Cán bộ/Admin, `Phân loại hồ sơ` cho Admin) tự động ẩn/hiện đồng bộ trên cả thanh Chip Pill lẫn trong Drawer di động.
+### 22. Tái thiết kế giao diện "Phân loại hồ sơ" đồng bộ với phong cách chung (17/10/2026)
+* **Yêu cầu:** Giao diện của menu Phân loại hồ sơ (trước đây là Bóc tách hồ sơ) đang khác biệt so với các menu khác. Điều chỉnh lại cho đồng bộ phong cách chung của hệ thống.
+* **Xử lý toàn diện:**
+  - **Khung thẻ Card Enterprise thống nhất (`tools-container` & `tools-unified-card`):**
+    * Thay thế toàn bộ khung riêng biệt cũ bằng cấu trúc thẻ chuẩn chung đồng bộ với menu *Tiện ích*, *Mã QR TTHC* và *Đường dẫn các cổng*.
+    * Thanh tiêu đề chuẩn Gov-tech: Tiêu đề rõ ràng `Phân loại hồ sơ Thủ tục Hành chính`, huy hiệu bảo mật xanh ngọc lục bảo `Xử lý Offline 100% (An toàn bảo mật)`, kèm dải chip thông số (`Cổng Tỉnh - Dãy số 4 ký tự`, `Cổng Bộ - Định danh 6-7 ký tự`, `Đa Sheet - 1 Sheet/Bộ + Sheet Tổng hợp`).
+  - **Khu vực kéo thả file đồng bộ (`dropzone-dashed-box`):**
+    * Áp dụng khung viền nét đứt màu xanh dịu mắt, biểu tượng tải lên bo tròn trung tâm, nhãn hướng dẫn và nút bấm `Chọn file Excel tải lên` chuẩn `.btn-dz-primary`.
+    * Khối thông báo an ninh dữ liệu viền xám mềm mại khẳng định xử lý hoàn toàn Offline Client-side.
+  - **Hộp cấu hình thông số gọn gàng (`qr-config-card-box`):**
+    * Khi nạp file Excel, hộp cấu hình xuất hiện theo dạng lưới 3 cột tinh tế (Sheet cần xử lý, Dòng tiêu đề Header, Cột chứa Mã/Số hồ sơ).
+    * Nút hành động nổi bật `Bắt đầu phân loại` có bóng đổ màu xanh chuyên nghiệp.
+  - **Màn hình khóa xác thực Admin trang nhã (`tools-auth-lock-box`):**
+    * Khi người dùng chưa đăng nhập quyền Admin, giao diện hiển thị hộp thông báo khóa với biểu tượng ổ khóa màu xanh dương dịu mắt, nút kêu gọi đăng nhập màu xanh Royal Blue thay cho viền đỏ gắt cũ.
+  - **Trải nghiệm cuộn mượt:** Khắc phục triệt để hiện tượng giật trang khi chuyển tab sang Phân loại hồ sơ trên cả desktop lẫn điện thoại.
 
 ---
 

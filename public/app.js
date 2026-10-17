@@ -121,16 +121,65 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Navigation tabs (Đường dẫn các cổng / Xếp hạng các tỉnh / Bộ chỉ số 766)
+ * Navigation tabs (Đường dẫn các cổng / Xếp hạng các tỉnh / Bộ chỉ số 766 / ...)
  */
 function initNavigationTabs() {
   const tabButtons = document.querySelectorAll('.nav-tab-btn[data-tab]');
+  const mobileGridItems = document.querySelectorAll('.mobile-grid-item[data-tab]');
   const tabPanes = document.querySelectorAll('.tab-pane');
+  const mobileNavToggleBtn = document.getElementById('mobile-nav-toggle-btn');
+  const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
+  const mobileDrawerClose = document.getElementById('mobile-nav-drawer-close');
+
+  function openMobileMenu() {
+    if (mobileMenuDrawer) {
+      mobileMenuDrawer.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeMobileMenu() {
+    if (mobileMenuDrawer) {
+      mobileMenuDrawer.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (mobileNavToggleBtn) {
+    mobileNavToggleBtn.addEventListener('click', openMobileMenu);
+  }
+  if (mobileDrawerClose) {
+    mobileDrawerClose.addEventListener('click', closeMobileMenu);
+  }
+  if (mobileMenuDrawer) {
+    mobileMenuDrawer.addEventListener('click', (e) => {
+      if (e.target === mobileMenuDrawer) {
+        closeMobileMenu();
+      }
+    });
+  }
 
   function switchTab(targetTabId) {
     tabButtons.forEach(b => {
-      b.classList.toggle('active', b.getAttribute('data-tab') === targetTabId);
+      const isActive = b.getAttribute('data-tab') === targetTabId;
+      b.classList.toggle('active', isActive);
+      if (isActive) {
+        // Tự động cuộn tab đang chọn vào chính giữa thanh trượt ngang mà không làm giật vị trí cuộn dọc trang
+        const scrollContainer = document.getElementById('nav-tabs-scroll-container');
+        if (scrollContainer) {
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const btnRect = b.getBoundingClientRect();
+          const offset = (btnRect.left - containerRect.left) + scrollContainer.scrollLeft - (containerRect.width / 2) + (btnRect.width / 2);
+          scrollContainer.scrollTo({ left: offset, behavior: 'smooth' });
+        }
+      }
     });
+
+    mobileGridItems.forEach(item => {
+      item.classList.toggle('active', item.getAttribute('data-tab') === targetTabId);
+    });
+
+    closeMobileMenu();
 
     tabPanes.forEach(pane => {
       if (pane.id === targetTabId) {
@@ -168,6 +217,13 @@ function initNavigationTabs() {
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetTabId = btn.getAttribute('data-tab');
+      switchTab(targetTabId);
+    });
+  });
+
+  mobileGridItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const targetTabId = item.getAttribute('data-tab');
       switchTab(targetTabId);
     });
   });
@@ -4162,13 +4218,17 @@ function updateAuthUI() {
     if (dom.userProfileHeader) dom.userProfileHeader.style.display = 'none';
   }
 
-  // Quản lý hiển thị Menu Bóc tách hồ sơ (CHỈ DÀNH RIÊNG QUẢN TRỊ VIÊN)
+  // Quản lý hiển thị Menu Phân loại hồ sơ (CHỈ DÀNH RIÊNG QUẢN TRỊ VIÊN)
   const navSplitItem = document.getElementById('nav-item-dossier-split');
+  const mobileGridSplit = document.getElementById('mobile-grid-item-dossier-split');
   const splitAuthLock = document.getElementById('split-auth-lock-card');
   const splitWorkspace = document.getElementById('split-workspace-wrap');
 
   if (navSplitItem) {
     navSplitItem.style.display = isAdmin ? 'inline-block' : 'none';
+  }
+  if (mobileGridSplit) {
+    mobileGridSplit.style.display = isAdmin ? 'flex' : 'none';
   }
   if (splitAuthLock) {
     splitAuthLock.style.display = isAdmin ? 'none' : 'block';
@@ -4177,7 +4237,7 @@ function updateAuthUI() {
     splitWorkspace.style.display = isAdmin ? 'block' : 'none';
   }
 
-  // Nếu người dùng không phải Admin nhưng đang ở trên tab Bóc tách hồ sơ thì chuyển về tab Cổng thông tin
+  // Nếu người dùng không phải Admin nhưng đang ở trên tab Phân loại hồ sơ thì chuyển về tab Cổng thông tin
   if (!isAdmin) {
     const splitTabPane = document.getElementById('tab-content-dossier-split');
     if (splitTabPane && splitTabPane.classList.contains('active')) {
@@ -4189,11 +4249,15 @@ function updateAuthUI() {
   // Quản lý hiển thị Menu Báo cáo nhanh (CHỈ DÀNH CHO CÁN BỘ HOẶC QUẢN TRỊ VIÊN ĐĂNG NHẬP)
   const isStaffOrAdmin = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
   const navQuickReportItem = document.getElementById('nav-item-quick-report');
+  const mobileGridQuickReport = document.getElementById('mobile-grid-item-quick-report');
   const qrptAuthLock = document.getElementById('qrpt-auth-lock-card');
   const qrptWorkspace = document.getElementById('qrpt-workspace-wrap');
 
   if (navQuickReportItem) {
     navQuickReportItem.style.display = isStaffOrAdmin ? 'inline-block' : 'none';
+  }
+  if (mobileGridQuickReport) {
+    mobileGridQuickReport.style.display = isStaffOrAdmin ? 'flex' : 'none';
   }
   if (qrptAuthLock) {
     qrptAuthLock.style.display = isStaffOrAdmin ? 'none' : 'block';

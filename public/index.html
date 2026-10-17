@@ -81,105 +81,244 @@
     <!-- TẦNG 2: NAVIGATION BAR (Thanh menu riêng biệt nằm ngay phía dưới) -->
     <nav class="sub-nav-bar" aria-label="Main Navigation">
       <div class="sub-nav-inner">
-        <ul class="nav-tabs-list">
-          <li class="nav-tab-item">
-            <button class="nav-tab-btn active" id="tab-btn-portals" data-tab="tab-content-portals">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        <!-- Vùng cuộn ngang các Tab menu (Swipeable Chip Bar) -->
+        <div class="nav-tabs-scroll-container" id="nav-tabs-scroll-container">
+          <ul class="nav-tabs-list" id="main-nav-tabs-list">
+            <li class="nav-tab-item">
+              <button class="nav-tab-btn active" id="tab-btn-portals" data-tab="tab-content-portals">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span>Đường dẫn các cổng</span>
+              </button>
+            </li>
+            <li class="nav-tab-item">
+              <button class="nav-tab-btn" id="tab-btn-provinces" data-tab="tab-content-provinces">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+                  <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+                </svg>
+                <span>Xếp hạng 766 các tỉnh</span>
+              </button>
+            </li>
+            <li class="nav-tab-item">
+              <button class="nav-tab-btn" id="tab-btn-766" data-tab="tab-content-766">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M18 17V9"></path>
+                  <path d="M13 17V5"></path>
+                  <path d="M8 17v-3"></path>
+                </svg>
+                <span>Bộ chỉ số 766</span>
+              </button>
+            </li>
+            <li class="nav-tab-item">
+              <button class="nav-tab-btn" id="tab-btn-formula" data-tab="tab-content-formula">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="16" y1="14" x2="16" y2="18"></line>
+                  <path d="M16 10h.01"></path>
+                  <path d="M12 10h.01"></path>
+                  <path d="M8 10h.01"></path>
+                  <path d="M12 14h.01"></path>
+                  <path d="M8 14h.01"></path>
+                  <path d="M12 18h.01"></path>
+                  <path d="M8 18h.01"></path>
+                </svg>
+                <span>Công thức tính 766</span>
+              </button>
+            </li>
+            <li class="nav-tab-item">
+              <button class="nav-tab-btn" id="tab-btn-qr" data-tab="tab-content-qr">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                  <path d="M14 14h3v3h-3z"></path>
+                  <path d="M21 14v3"></path>
+                  <path d="M14 21v-3"></path>
+                  <path d="M17 21h4"></path>
+                </svg>
+                <span>Mã QR TTHC</span>
+              </button>
+            </li>
+            <li class="nav-tab-item" id="nav-item-quick-report" style="display: none;">
+              <button class="nav-tab-btn" id="tab-btn-quick-report" data-tab="tab-content-quick-report">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
+                  <polyline points="13 13 16 13 16 16"></polyline>
+                </svg>
+                <span>Báo cáo nhanh</span>
+              </button>
+            </li>
+            <li class="nav-tab-item">
+              <button class="nav-tab-btn" id="tab-btn-tools" data-tab="tab-content-tools">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                <span>Tiện ích</span>
+              </button>
+            </li>
+            <!-- Tab Phân loại hồ sơ (Chỉ hiển thị với Admin) -->
+            <li class="nav-tab-item" id="nav-item-dossier-split" style="display: none;">
+              <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split">
+                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Phân loại hồ sơ</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nút mở lưới toàn bộ chức năng (Mobile Menu Button) -->
+        <button type="button" class="mobile-nav-toggle-btn" id="mobile-nav-toggle-btn" aria-label="Xem tất cả menu" title="Mở danh mục menu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+          <span class="mobile-nav-toggle-text">Menu</span>
+        </button>
+      </div>
+
+      <!-- POPUP / BOTTOM SHEET TOÀN BỘ MENU TRÊN ĐIỆN THOẠI -->
+      <div id="mobile-menu-drawer" class="mobile-nav-drawer-backdrop" style="display: none;">
+        <div class="mobile-nav-drawer-card">
+          <div class="mobile-nav-drawer-header">
+            <div class="mobile-nav-drawer-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
               </svg>
-              <span>Đường dẫn các cổng</span>
-            </button>
-          </li>
-          <li class="nav-tab-item">
-            <button class="nav-tab-btn" id="tab-btn-provinces" data-tab="tab-content-provinces">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                <path d="M4 22h16"></path>
-                <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
-                <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
-                <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
-              </svg>
-              <span>Xếp hạng 766 các tỉnh</span>
-            </button>
-          </li>
-          <li class="nav-tab-item">
-            <button class="nav-tab-btn" id="tab-btn-766" data-tab="tab-content-766">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 3v18h18"></path>
-                <path d="M18 17V9"></path>
-                <path d="M13 17V5"></path>
-                <path d="M8 17v-3"></path>
-              </svg>
-              <span>Bộ chỉ số 766</span>
-            </button>
-          </li>
-          <li class="nav-tab-item">
-            <button class="nav-tab-btn" id="tab-btn-formula" data-tab="tab-content-formula">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-                <line x1="8" y1="6" x2="16" y2="6"></line>
-                <line x1="16" y1="14" x2="16" y2="18"></line>
-                <path d="M16 10h.01"></path>
-                <path d="M12 10h.01"></path>
-                <path d="M8 10h.01"></path>
-                <path d="M12 14h.01"></path>
-                <path d="M8 14h.01"></path>
-                <path d="M12 18h.01"></path>
-                <path d="M8 18h.01"></path>
-              </svg>
-              <span>Công thức tính 766 <span class="tab-wip-badge">(Đang hoàn thiện)</span></span>
-            </button>
-          </li>
-          <li class="nav-tab-item">
-            <button class="nav-tab-btn" id="tab-btn-qr" data-tab="tab-content-qr">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-                <path d="M14 14h3v3h-3z"></path>
-                <path d="M21 14v3"></path>
-                <path d="M14 21v-3"></path>
-                <path d="M17 21h4"></path>
-              </svg>
-              <span>Mã QR TTHC</span>
-            </button>
-          </li>
-          <li class="nav-tab-item" id="nav-item-quick-report" style="display: none;">
-            <button class="nav-tab-btn" id="tab-btn-quick-report" data-tab="tab-content-quick-report">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
-                <polyline points="13 13 16 13 16 16"></polyline>
-              </svg>
-              <span>Báo cáo nhanh <span class="tab-admin-badge" style="background:#e0f2fe; color:#0284c7; border: 1px solid #bae6fd;">Nội bộ</span></span>
-            </button>
-          </li>
-          <li class="nav-tab-item">
-            <button class="nav-tab-btn" id="tab-btn-tools" data-tab="tab-content-tools">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-              </svg>
-              <span>Tiện ích</span>
-            </button>
-          </li>
-          <!-- Tab Bóc tách hồ sơ (Chỉ hiển thị với Admin) -->
-          <li class="nav-tab-item" id="nav-item-dossier-split" style="display: none;">
-            <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split">
-              <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              <span>Bóc tách hồ sơ <span class="tab-admin-badge">Admin</span></span>
-            </button>
-          </li>
-        </ul>
+              <span>Danh mục Chức năng Hệ thống</span>
+            </div>
+            <button type="button" id="mobile-nav-drawer-close" class="mobile-nav-drawer-close" aria-label="Đóng">&times;</button>
+          </div>
+          <div class="mobile-nav-drawer-body">
+            <div class="mobile-nav-grid" id="mobile-nav-grid">
+              <div class="mobile-grid-item active" data-tab="tab-content-portals">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Đường dẫn các cổng</span>
+              </div>
+
+              <div class="mobile-grid-item" data-tab="tab-content-provinces">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                    <path d="M4 22h16"></path>
+                    <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+                    <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Xếp hạng 766 các tỉnh</span>
+              </div>
+
+              <div class="mobile-grid-item" data-tab="tab-content-766">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M18 17V9"></path>
+                    <path d="M13 17V5"></path>
+                    <path d="M8 17v-3"></path>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Bộ chỉ số 766</span>
+              </div>
+
+              <div class="mobile-grid-item" data-tab="tab-content-formula">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                    <line x1="8" y1="6" x2="16" y2="6"></line>
+                    <line x1="16" y1="14" x2="16" y2="18"></line>
+                    <path d="M16 10h.01"></path>
+                    <path d="M12 10h.01"></path>
+                    <path d="M8 10h.01"></path>
+                    <path d="M12 14h.01"></path>
+                    <path d="M8 14h.01"></path>
+                    <path d="M12 18h.01"></path>
+                    <path d="M8 18h.01"></path>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Công thức tính 766</span>
+              </div>
+
+              <div class="mobile-grid-item" data-tab="tab-content-qr">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <path d="M14 14h3v3h-3z"></path>
+                    <path d="M21 14v3"></path>
+                    <path d="M14 21v-3"></path>
+                    <path d="M17 21h4"></path>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Mã QR TTHC</span>
+              </div>
+
+              <div class="mobile-grid-item" id="mobile-grid-item-quick-report" data-tab="tab-content-quick-report" style="display: none;">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
+                    <polyline points="13 13 16 13 16 16"></polyline>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Báo cáo nhanh</span>
+              </div>
+
+              <div class="mobile-grid-item" data-tab="tab-content-tools">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Tiện ích</span>
+              </div>
+
+              <div class="mobile-grid-item" id="mobile-grid-item-dossier-split" data-tab="tab-content-dossier-split" style="display: none;">
+                <div class="mobile-grid-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                </div>
+                <span class="mobile-grid-title">Phân loại hồ sơ</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -3096,57 +3235,47 @@
     </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-tools -->
 
-  <!-- TAB 6: BÓC TÁCH HỒ SƠ (CHỈ DÀNH CHO ADMIN) -->
+  <!-- TAB 6: PHÂN LOẠI HỒ SƠ (CHỈ DÀNH CHO ADMIN) -->
   <div id="tab-content-dossier-split" class="tab-pane" style="display: none;">
-    <div class="split-container">
-      <!-- UNIFIED ENTERPRISE CARD -->
-      <div class="split-unified-card">
+    <div class="tools-container">
+      <!-- UNIFIED ENTERPRISE CARD (MỘT CARD DUY NHẤT ĐỒNG BỘ PHONG CÁCH) -->
+      <div class="tools-unified-card">
         
-        <!-- Card Header -->
-        <div class="split-card-header">
-          <div class="split-header-top">
-            <div class="split-title-row">
-              <div class="split-title-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="split-header-icon">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
+        <!-- Phần trên: Card Header (Tiêu đề, Badge, Thông tin) -->
+        <div class="tools-card-header">
+          <div class="tools-header-top">
+            <div class="tools-title-row">
+              <h2 class="tools-clean-title">Phân loại hồ sơ Thủ tục Hành chính</h2>
+              <div class="tools-badge-offline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tools-badge-icon">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
                 </svg>
+                <span>Xử lý Offline 100% (An toàn bảo mật)</span>
               </div>
-              <div class="split-title-text-wrap">
-                <div class="split-badge-row">
-                  <span class="split-admin-tag">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    CHỈ DÀNH CHO QUẢN TRỊ VIÊN
-                  </span>
-                  <span class="split-format-tag">Định dạng chuẩn: Cổng Tỉnh (4 số) • Cổng Bộ (6-7 số)</span>
-                </div>
-                <h2 class="split-clean-title">Bóc tách hồ sơ TTHC theo Cổng Tỉnh và các Bộ</h2>
-                <p class="split-clean-subtitle">
-                  Tải lên file danh sách hồ sơ (.xlsx, .xls). Hệ thống tự động bóc tách thành các Sheet độc lập: 
-                  <strong>1 Sheet Cổng Tỉnh</strong> và <strong>mỗi Bộ 1 Sheet riêng</strong> (Bộ Nội vụ, Y Tế, GD&ĐT, NN&MT, Xây dựng, Công Thương, KH&CN, Tư Pháp, VHTTDL...) kèm <strong>1 Sheet Tổng hợp thống kê</strong>.
-                </p>
-              </div>
+            </div>
+            <div class="portals-stats-strip">
+              <span class="portal-stat-chip"><strong>Cổng Tỉnh</strong> Dãy số 4 ký tự</span>
+              <span class="portal-stat-chip"><strong>Cổng Bộ</strong> Định danh 6-7 ký tự</span>
+              <span class="portal-stat-chip"><strong>Đa Sheet</strong> 1 Sheet/Bộ + Sheet Tổng hợp</span>
             </div>
           </div>
         </div>
 
-        <!-- Card Body -->
-        <div class="split-card-body">
+        <!-- Phần thân (Card Body) -->
+        <div class="tools-card-body">
           
           <!-- Khối cảnh báo nếu chưa đăng nhập quyền Admin -->
-          <div id="split-auth-lock-card" class="split-lock-box" style="display: none;">
-            <div class="split-lock-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div id="split-auth-lock-card" class="tools-auth-lock-box" style="display: none;">
+            <div class="tools-lock-icon-badge">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
             </div>
-            <h3 class="split-lock-title">Yêu cầu quyền Quản trị viên (Admin)</h3>
-            <p class="split-lock-desc">Tính năng bóc tách và phân loại hồ sơ TTHC theo Cổng Tỉnh & Bộ - Ngành chỉ phục vụ tài khoản Quản trị viên của hệ thống.</p>
-            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Quản trị viên để sử dụng công cụ Bóc tách hồ sơ.')">
+            <h3 class="tools-lock-title">Yêu cầu quyền Quản trị viên (Admin)</h3>
+            <p class="tools-lock-desc">Tính năng phân loại hồ sơ TTHC theo Cổng Tỉnh & Bộ - Ngành chỉ phục vụ tài khoản Quản trị viên của hệ thống.</p>
+            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Quản trị viên để sử dụng công cụ Phân loại hồ sơ.')">
               Đăng nhập Quản trị viên
             </button>
           </div>
@@ -3154,116 +3283,130 @@
           <!-- Khối làm việc chính (Khi đã xác thực Admin) -->
           <div id="split-workspace-wrap">
             
-            <!-- BƯỚC 1: KHU VỰC TẢI LÊN FILE EXCEL -->
-            <div class="split-section-card">
-              <div class="split-section-head">
-                <span class="split-step-badge">BƯỚC 1</span>
-                <h3 class="split-section-title">Tải lên file danh sách hồ sơ (.xlsx, .xls)</h3>
-              </div>
-
-              <div class="split-dropzone-wrapper" id="split-dropzone">
-                <input type="file" id="split-file-input" accept=".xlsx, .xls" style="display: none;" />
-                <div class="split-dropzone-inner" id="split-dropzone-inner">
-                  <div class="split-dz-icon-wrap">
-                    <svg class="split-dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <path d="M8 13h8"></path>
-                      <path d="M8 17h8"></path>
-                      <path d="M10 9h1"></path>
-                    </svg>
-                  </div>
-                  <h4 class="split-dz-title">Kéo & thả file Excel vào đây, hoặc bấm để duyệt file</h4>
-                  <p class="split-dz-sub">Hỗ trợ các file báo cáo kết xuất từ Cổng DVC Quốc gia, Cổng DVC tỉnh (.xlsx, .xls)</p>
-                  <button type="button" class="btn btn-primary split-btn-browse" id="btn-browse-split-file">
+            <!-- KHU VỰC TẢI LÊN FILE EXCEL (DROPZONE CHUẨN GOV-TECH) -->
+            <div class="dropzone-wrapper" id="split-dropzone">
+              <input type="file" id="split-file-input" accept=".xlsx, .xls" style="display: none;" />
+              <div class="dropzone-dashed-box" id="split-dropzone-inner">
+                <div class="dropzone-icon-badge">
+                  <svg class="dropzone-lucide-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                    <path d="M12 12v9"></path>
+                    <path d="m16 16-4-4-4 4"></path>
+                  </svg>
+                </div>
+                <h3 class="dropzone-title">Kéo & thả file Excel vào đây, hoặc bấm để chọn từ máy</h3>
+                <p class="dropzone-subtitle">
+                  Hỗ trợ file danh sách hồ sơ (.xlsx, .xls). Hệ thống tự động phân loại Cổng Tỉnh và các Bộ.
+                </p>
+                <div class="dropzone-actions">
+                  <button type="button" class="btn btn-primary btn-dz-primary" id="btn-browse-split-file">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                       <polyline points="17 8 12 3 7 8"></polyline>
                       <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    <span>Chọn file Excel từ máy</span>
+                    <span>Chọn file Excel tải lên</span>
                   </button>
-                </div>
-
-                <!-- File Details Card (Khi đã chọn file) -->
-                <div class="split-file-selected-box" id="split-file-selected-box" style="display: none;">
-                  <div class="split-file-info-left">
-                    <div class="split-file-excel-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    </div>
-                    <div class="split-file-details">
-                      <h4 class="split-file-name" id="split-file-name">danh-sach-ho-so.xlsx</h4>
-                      <div class="split-file-meta-row">
-                        <span class="split-file-meta" id="split-file-size">0 KB</span>
-                        <span class="split-meta-dot">•</span>
-                        <span class="split-file-meta" id="split-file-sheets">1 Sheet</span>
-                        <span class="split-meta-dot">•</span>
-                        <span class="split-file-meta num-emerald" id="split-file-rows">0 dòng</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="split-file-actions-right">
-                    <button type="button" class="btn btn-secondary btn-sm" id="btn-reselect-split-file">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                      <span>Chọn file khác</span>
-                    </button>
-                  </div>
                 </div>
               </div>
 
-              <!-- Tùy chọn cấu hình cột phân tích (Tự động hoặc chỉnh tay) -->
-              <div class="split-config-row" id="split-config-row" style="display: none;">
-                <div class="split-config-field">
-                  <label class="split-field-label" for="split-sheet-select">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    Sheet cần xử lý:
-                  </label>
-                  <select id="split-sheet-select" class="split-select-input"></select>
+              <!-- File đã chọn (hiển thị khi nạp file thành công) -->
+              <div class="split-file-selected-box" id="split-file-selected-box" style="display: none; margin-bottom: 20px;">
+                <div class="split-file-info-left">
+                  <div class="split-file-excel-icon">XLS</div>
+                  <div>
+                    <div class="split-file-name" id="split-file-name">danh-sach-ho-so.xlsx</div>
+                    <div class="split-file-meta-row">
+                      <span id="split-file-size">0 KB</span> • 
+                      <span id="split-file-sheets">1 Sheet</span> • 
+                      <span id="split-file-rows" style="color:#059669; font-weight:600;">0 dòng</span>
+                    </div>
+                  </div>
                 </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-reselect-split-file">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Chọn file khác
+                </button>
+              </div>
 
-                <div class="split-config-field">
-                  <label class="split-field-label" for="split-header-row-select">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                    Dòng tiêu đề (Header):
-                  </label>
-                  <select id="split-header-row-select" class="split-select-input"></select>
-                </div>
-
-                <div class="split-config-field split-col-field">
-                  <label class="split-field-label" for="split-code-col-select">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    Cột chứa Mã/Số hồ sơ:
-                  </label>
-                  <select id="split-code-col-select" class="split-select-input"></select>
-                </div>
-
-                <div class="split-config-action">
-                  <button type="button" class="btn btn-primary" id="btn-process-split">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    <span>Bắt đầu bóc tách</span>
-                  </button>
-                </div>
+              <!-- Security Notice Box -->
+              <div class="dropzone-security-footer" onclick="event.stopPropagation()">
+                <svg class="security-shield-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Toàn bộ file được xử lý trực tiếp trên máy của bạn (Client-side), không truyền tải lên server, an toàn dữ liệu 100%.</span>
               </div>
             </div>
 
-            <!-- BƯỚC 2: TIẾN TRÌNH & KẾT QUẢ PHÂN TÍCH -->
-            <div class="split-loading-box" id="split-loading-box" style="display: none;">
+            <!-- CẤU HÌNH CỘT VÀ THÔNG SỐ PHÂN LOẠI (XUẤT HIỆN KHI CÓ FILE) -->
+            <div class="qr-config-card-box" id="split-config-row" style="display: none;">
+              <div class="qr-config-card-head">
+                <h4 class="qr-config-card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                  <span>Cấu hình Cột & Thông số Phân loại</span>
+                </h4>
+                <span style="font-size: 12.5px; color: #64748b;">Hệ thống tự động phát hiện Cột chứa Mã/Số hồ sơ và dòng tiêu đề</span>
+              </div>
+
+              <div class="qr-config-fields-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="qr-field-item">
+                  <label class="qr-field-label" for="split-sheet-select">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    <span>Sheet danh sách hồ sơ:</span>
+                  </label>
+                  <select id="split-sheet-select" class="qr-select-control"></select>
+                </div>
+
+                <div class="qr-field-item">
+                  <label class="qr-field-label" for="split-header-row-select">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    <span>Dòng Tiêu đề (Header):</span>
+                  </label>
+                  <select id="split-header-row-select" class="qr-select-control"></select>
+                </div>
+
+                <div class="qr-field-item">
+                  <label class="qr-field-label" for="split-code-col-select">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span>Cột chứa Mã/Số hồ sơ:</span>
+                  </label>
+                  <select id="split-code-col-select" class="qr-select-control"></select>
+                </div>
+              </div>
+
+              <div class="qr-config-footer-row">
+                <div style="font-size: 13px; color: #64748b; display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                  <span>Tự động nhận diện cấu trúc Cổng Tỉnh (4 số) và Cổng các Bộ (6-7 số)</span>
+                </div>
+                <button type="button" class="btn btn-primary" id="btn-process-split" style="height: 40px; padding: 0 24px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Bắt đầu phân loại</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- TIẾN TRÌNH XỬ LÝ -->
+            <div class="split-loading-box" id="split-loading-box" style="display: none; margin-top: 24px;">
               <div class="split-spinner"></div>
               <h4 class="split-loading-title">Đang phân tích cấu trúc mã số hồ sơ...</h4>
               <p class="split-loading-subtitle" id="split-loading-status">Đang đọc các dòng và phân loại theo Cổng Tỉnh / Cổng Bộ</p>
             </div>
 
             <!-- KẾT QUẢ ĐÃ PHÂN TÍCH XONG -->
-            <div id="split-result-section" style="display: none;">
+            <div id="split-result-section" style="display: none; margin-top: 24px;">
               
               <!-- BANNER TỔNG KẾT VÀ NÚT TẢI VỀ -->
-              <div class="split-summary-banner">
+              <div class="split-summary-banner" style="background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); box-shadow: 0 8px 24px -4px rgba(6, 95, 70, 0.35);">
                 <div class="split-summary-left">
                   <div class="split-summary-badge">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    BÓC TÁCH THÀNH CÔNG
+                    PHÂN LOẠI THÀNH CÔNG
                   </div>
                   <h3 class="split-summary-title" id="split-summary-title">Đã phân loại thành công 0 hồ sơ</h3>
                   <p class="split-summary-desc" id="split-summary-desc">
@@ -3277,7 +3420,7 @@
                       <polyline points="7 10 12 15 17 10"></polyline>
                       <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    <span>Tải về file Excel đã bóc tách (.xlsx)</span>
+                    <span>Tải về file Excel đã phân loại (.xlsx)</span>
                   </button>
                 </div>
               </div>
@@ -3365,9 +3508,9 @@
 
           </div> <!-- end #split-workspace-wrap -->
 
-        </div> <!-- end .split-card-body -->
-      </div> <!-- end .split-unified-card -->
-    </div> <!-- end .split-container -->
+        </div> <!-- end .tools-card-body -->
+      </div> <!-- end .tools-unified-card -->
+    </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-dossier-split -->
 </div>
 </main>

@@ -240,6 +240,7 @@ body::before {
   top: 64px;
   z-index: 40;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  width: 100%;
 }
 
 .sub-nav-inner {
@@ -247,6 +248,23 @@ body::before {
   width: 100%;
   margin: 0 auto;
   padding: 0 16px; /* px-4 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.nav-tabs-scroll-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-tabs-scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -2274,6 +2292,273 @@ body.is-logged-in .btn-detail-link {
   background: #fffbeb;
   color: #92400e;
   border-color: #fcd34d;
+}
+
+/* Mobile Menu Toggle Button (ẩn trên desktop, hiện trên điện thoại) */
+.mobile-nav-toggle-btn {
+  display: none;
+}
+
+/* Mobile Drawer (ẩn mặc định) */
+.mobile-nav-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: flex-end;
+  justify-content: center;
+  animation: drawerFadeIn 0.2s ease;
+}
+
+.mobile-nav-drawer-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: drawerSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-nav-drawer-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+}
+
+.mobile-nav-drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.mobile-nav-drawer-title svg {
+  color: #2563eb;
+}
+
+.mobile-nav-drawer-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  transition: all 0.15s ease;
+}
+
+.mobile-nav-drawer-close:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+.mobile-nav-drawer-body {
+  padding: 14px;
+  overflow-y: auto;
+  max-height: calc(85vh - 60px);
+}
+
+.mobile-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.mobile-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.mobile-grid-item:hover,
+.mobile-grid-item:active {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.mobile-grid-item.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb, 0 2px 6px rgba(37, 99, 235, 0.12);
+}
+
+.mobile-grid-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  transition: all 0.2s ease;
+}
+
+.mobile-grid-item.active .mobile-grid-icon-wrap {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.mobile-grid-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.35;
+}
+
+.mobile-grid-item.active .mobile-grid-title {
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+@keyframes drawerSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   RESPONSIVE CHO THANH MENU TRÊN ĐIỆN THOẠI (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .sub-nav-bar {
+    top: 0;
+    position: sticky;
+    z-index: 45;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  }
+
+  .sub-nav-inner {
+    padding: 6px 10px;
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  /* Vùng cuộn ngang mượt mà, hỗ trợ touch swipe và fade ở mép */
+  .nav-tabs-scroll-container {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 12px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 12px), transparent 100%);
+  }
+
+  .nav-tabs-list {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 4px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .nav-tab-item {
+    flex-shrink: 0;
+  }
+
+  /* Phong cách Chip Pill bo tròn hiện đại trên điện thoại */
+  .nav-tab-btn {
+    padding: 7px 13px;
+    font-size: 12.5px;
+    font-weight: 500;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .nav-tab-btn:hover:not(.active) {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #cbd5e1;
+  }
+
+  .nav-tab-btn.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  }
+
+  .nav-tab-btn.active .nav-tab-icon {
+    stroke: #ffffff;
+    color: #ffffff;
+  }
+
+  .nav-tab-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Nút Menu dạng grid trên điện thoại */
+  .mobile-nav-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 11px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .mobile-nav-toggle-btn:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+  }
+
+  .mobile-nav-toggle-btn svg {
+    color: #2563eb;
+  }
 }
 
 /* Tab pane container */
@@ -6700,34 +6985,39 @@ body.is-logged-in .btn-detail-link {
 }
 
 /* Auth Lock Box */
+.tools-auth-lock-box,
 .split-lock-box {
   background: #ffffff;
-  border: 1px solid #fecaca;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 40px 24px;
   text-align: center;
   max-width: 520px;
-  margin: 40px auto;
-  box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.1);
+  margin: 30px auto;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
 }
 
+.tools-lock-icon-badge,
 .split-lock-icon {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   margin: 0 auto 16px;
   border-radius: 50%;
-  background: #fee2e2;
-  color: #dc2626;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.tools-lock-icon-badge svg,
 .split-lock-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 
+.tools-lock-title,
 .split-lock-title {
   font-size: 18px;
   font-weight: 700;
@@ -6735,10 +7025,11 @@ body.is-logged-in .btn-detail-link {
   margin-bottom: 8px;
 }
 
+.tools-lock-desc,
 .split-lock-desc {
   font-size: 13.5px;
   color: #64748b;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   line-height: 1.5;
 }
 
