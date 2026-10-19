@@ -3064,7 +3064,7 @@ body.is-logged-in .btn-detail-link {
    TAB TIỆN ÍCH & CÔNG CỤ TÁCH NỀN CHỮ KÝ (SIGNATURE BACKGROUND REMOVER)
    ========================================================================== */
 .tools-container {
-  padding: 0 0 50px;
+  padding: 24px 0 50px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -7390,6 +7390,11 @@ body.is-logged-in .btn-detail-link {
 .split-stat-icon.icon-amber {
   background: #fef3c7;
   color: #d97706;
+}
+
+.split-stat-icon.icon-orange {
+  background: #ffedd5;
+  color: #ea580c;
 }
 
 .split-stat-info {

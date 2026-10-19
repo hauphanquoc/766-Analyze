@@ -16,12 +16,20 @@ const MINISTRY_PREFIX_MAP = {
   '16': 'Bộ Văn hóa, thể thao và du lịch'
 };
 
+const BUSINESS_HOUSEHOLD_PROCEDURE_CODES = [
+  '1.001266',
+  '1.001570',
+  '1.001612',
+  '2.000720'
+];
+
 /**
  * Phân tích mã số hồ sơ TTHC
  * @param {string} dossierCode - Mã số hồ sơ (ví dụ: H15.50.05.13-261008-0975)
+ * @param {string} [procedureCode] - Mã thủ tục hành chính nếu có (ví dụ: 1.001266)
  * @returns {object|null} Kết quả phân tích chi tiết
  */
-function parseDossierCode(dossierCode) {
+function parseDossierCode(dossierCode, procedureCode = null) {
   if (!dossierCode || typeof dossierCode !== 'string') return null;
 
   const parts = dossierCode.trim().split('-');
@@ -46,10 +54,18 @@ function parseDossierCode(dossierCode) {
   let portalType = 'UNKNOWN';
   let ministryName = null;
   let ministryCode = null;
+  let isBusinessHousehold = false;
+
+  const cleanProcedureCode = procedureCode ? String(procedureCode).trim() : '';
 
   if (isDigits) {
     if (seqLength === 4) {
-      portalType = 'PROVINCE'; // Cổng tỉnh
+      if (cleanProcedureCode && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(cleanProcedureCode)) {
+        portalType = 'BUSINESS_HOUSEHOLD'; // Hộ kinh doanh
+        isBusinessHousehold = true;
+      } else {
+        portalType = 'PROVINCE'; // Cổng tỉnh
+      }
     } else if (seqLength === 6 || seqLength === 7) {
       portalType = 'MINISTRY'; // Cổng bộ
       const prefix2 = seqStr.slice(0, 2);
@@ -64,8 +80,10 @@ function parseDossierCode(dossierCode) {
     dateStr,
     dateFormatted,
     sequence: seqStr,
-    portalType, // 'PROVINCE' | 'MINISTRY' | 'UNKNOWN'
-    portalTypeLabel: portalType === 'PROVINCE' ? 'Cổng Tỉnh' : (portalType === 'MINISTRY' ? 'Cổng Bộ' : 'Chưa xác định'),
+    procedureCode: cleanProcedureCode || null,
+    portalType, // 'PROVINCE' | 'BUSINESS_HOUSEHOLD' | 'MINISTRY' | 'UNKNOWN'
+    portalTypeLabel: portalType === 'PROVINCE' ? 'Cổng Tỉnh' : (portalType === 'BUSINESS_HOUSEHOLD' ? 'Hộ kinh doanh' : (portalType === 'MINISTRY' ? 'Cổng Bộ' : 'Chưa xác định')),
+    isBusinessHousehold,
     ministryCode,
     ministryName
   };
@@ -73,5 +91,6 @@ function parseDossierCode(dossierCode) {
 
 module.exports = {
   MINISTRY_PREFIX_MAP,
+  BUSINESS_HOUSEHOLD_PROCEDURE_CODES,
   parseDossierCode
 };

@@ -299,6 +299,21 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Khi người dùng chưa đăng nhập quyền Admin, giao diện hiển thị hộp thông báo khóa với biểu tượng ổ khóa màu xanh dương dịu mắt, nút kêu gọi đăng nhập màu xanh Royal Blue thay cho viền đỏ gắt cũ.
   - **Trải nghiệm cuộn mượt:** Khắc phục triệt để hiện tượng giật trang khi chuyển tab sang Phân loại hồ sơ trên cả desktop lẫn điện thoại.
 
+### 23. Bổ sung Quy tắc Phân loại "Hộ kinh doanh" cho Module Phân loại hồ sơ (19/10/2026)
+* **Yêu cầu:** Ở chức năng *Phân loại hồ sơ*, bổ sung thêm trường hợp đặc biệt: Các hồ sơ có phần đuôi 4 số nhưng thuộc các thủ tục hành chính có mã: `1.001266`, `1.001570`, `1.001612`, `2.000720` thì được phân vào nhóm **Hộ kinh doanh** (Cột mã TTHC nằm ở Cột C trong file Excel). Cập nhật tri thức vào rule hệ thống và điều chỉnh chức năng phân loại.
+* **Xử lý toàn diện:**
+  - **Lưu trữ tri thức nghiệp vụ:**
+    * Cập nhật quy tắc nhận diện tại [`.agents/rules/dossier-code-rules.md`](file:///f:/DVC%20QG%20C12/766-Analyze/.agents/rules/dossier-code-rules.md): Hồ sơ đuôi 4 số nếu khớp 1 trong 4 mã TTHC (`1.001266`, `1.001570`, `1.001612`, `2.000720`) ở Cột C sẽ được chuyển vào nhóm `Hộ kinh doanh` (không tính vào `Cổng Tỉnh`).
+    * Nâng cấp module phân tích [`src/dossierParser.js`](file:///f:/DVC%20QG%20C12/766-Analyze/src/dossierParser.js): Bổ sung hằng số `BUSINESS_HOUSEHOLD_PROCEDURE_CODES` và tham số `procedureCode` vào hàm `parseDossierCode(dossierCode, procedureCode)` trả về `portalType: 'BUSINESS_HOUSEHOLD'`, `isBusinessHousehold: true`.
+  - **Nâng cấp Giao diện & Động cơ Phân loại (`public/app.js` & `public/index.html`):**
+    * **Thêm Cột cấu hình TTHC (`split-tthc-col-select`):** Hệ thống tự động quét và mặc định nhận diện **Cột C (Cột 3)** hoặc cột có tiêu đề liên quan đến mã TTHC; cho phép người dùng tùy chọn nếu file có cấu trúc khác.
+    * **Động cơ phân loại (`classifyCode(codeStr, tthcCodeStr)`):** Tự động đối chiếu mã số hồ sơ và mã TTHC tương ứng. Hồ sơ đuôi 4 số có mã TTHC thuộc 4 mã chỉ định sẽ được đưa vào nhóm `Hộ kinh doanh` (màu sắc nhận diện `#ea580c` cam nổi bật, tag `HỘ KINH DOANH`).
+    * **Dải thẻ thống kê tổng quan:** Bổ sung thẻ đếm riêng **"Hộ kinh doanh"** (`split-stat-business`) bên cạnh *Tổng số hồ sơ*, *Cổng Tỉnh*, *Cổng các Bộ* và *Tổng số Sheet*.
+    * **Xem trước đa tab & Tab kết quả:** Nhóm `Hộ kinh doanh` được xếp ưu tiên ngay sau `Cổng Tỉnh`, hỗ trợ xem trước 20 dòng đầu dữ liệu và hiển thị đầy đủ tổng số lượng hồ sơ.
+    * **Xuất file Excel chuyên nghiệp (`generateAndDownloadSplitExcel`):** 
+      - Xuất Sheet riêng biệt: **`Hộ kinh doanh`** với tiêu đề bảng màu cam `#d97706` nổi bật, chứa đầy đủ các cột dữ liệu gốc.
+      - Sheet **`Tổng hợp thống kê`** ghi nhận rõ ràng dòng nhóm `Hộ kinh doanh` với cơ quan là *Lĩnh vực Hộ kinh doanh*, quy cách nhận diện: *Đuôi 4 số & Mã TTHC (1.001266, 1.001570, 1.001612, 2.000720)*.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

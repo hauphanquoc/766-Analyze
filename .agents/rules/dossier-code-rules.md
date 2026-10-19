@@ -32,3 +32,21 @@ Mã số hồ sơ thủ tục hành chính (TTHC) có dạng:
 | `06` | **Bộ Khoa học và Công nghệ** (`06xxxx`) |
 | `15` | **Bộ Tư pháp** (`15xxxx`) |
 | `16` | **Bộ Văn hóa, Thể thao và Du lịch** (`16xxxx`) |
+
+---
+
+## 3. Quy tắc phân loại đặc biệt: Nhóm "Hộ kinh doanh"
+Các hồ sơ có phần đuôi số thứ tự gồm **4 chữ số** (thông thường phân vào Cổng Tỉnh) nhưng thuộc một trong các **Mã Thủ tục Hành chính (TTHC)** sau đây sẽ được phân loại riêng vào nhóm **Hộ kinh doanh** (xuất thành Sheet riêng `Hộ kinh doanh`):
+
+| Mã TTHC | Tên phân loại nhóm | Cột nhận diện trên file Excel |
+| :---: | :--- | :--- |
+| `1.001266` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
+| `1.001570` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
+| `1.001612` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
+| `2.000720` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
+
+*Ghi chú:*
+- Trong file Excel danh sách hồ sơ tải lên, cột mã TTHC mặc định nằm ở **Cột C**.
+- Nếu một hồ sơ có đuôi 4 số nhưng mã TTHC ở Cột C thuộc 1 trong 4 mã trên thì chuyển nhóm sang `Hộ kinh doanh` (không tính vào `Cổng Tỉnh`).
+- Các hồ sơ đuôi 4 số còn lại vẫn giữ nguyên là `Cổng Tỉnh`.
+

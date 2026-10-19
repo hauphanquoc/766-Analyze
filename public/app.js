@@ -4454,10 +4454,11 @@ function initDossierSplitModule() {
   const fileSelectedBox = document.getElementById('split-file-selected-box');
   const btnBrowse = document.getElementById('btn-browse-split-file');
   const btnReselect = document.getElementById('btn-reselect-split-file');
-  const configRow = document.getElementById('split-config-row');
+  const configCard = document.getElementById('split-config-card') || document.getElementById('split-config-row');
   const sheetSelect = document.getElementById('split-sheet-select');
   const headerRowSelect = document.getElementById('split-header-row-select');
   const codeColSelect = document.getElementById('split-code-col-select');
+  const tthcColSelect = document.getElementById('split-tthc-col-select');
   const btnProcess = document.getElementById('btn-process-split');
   const loadingBox = document.getElementById('split-loading-box');
   const loadingStatus = document.getElementById('split-loading-status');
@@ -4474,13 +4475,23 @@ function initDossierSplitModule() {
     selectedWorksheet: null,
     detectedHeaderRow: 1,
     detectedCodeColIndex: 1,
+    detectedTthcColIndex: 3, // Mặc định Cột C
     headers: [],
     headerValues: [],
     totalDossiers: 0,
     provinceCount: 0,
+    businessCount: 0,
     ministryCount: 0,
     groups: {}
   };
+
+  // Danh sách các mã TTHC thuộc nhóm Hộ kinh doanh khi hồ sơ có đuôi 4 số (Cột C)
+  const BUSINESS_HOUSEHOLD_PROCEDURE_CODES = [
+    '1.001266',
+    '1.001570',
+    '1.001612',
+    '2.000720'
+  ];
 
   // Bảng tra cứu quy chuẩn Cổng Bộ theo 2 số đầu của dãy số thứ tự 6-7 số
   const MINISTRY_RULES = {
@@ -4539,6 +4550,11 @@ function initDossierSplitModule() {
     btnReselect.addEventListener('click', (e) => {
       e.stopPropagation();
       fileInput.value = '';
+      splitModuleState.file = null;
+      if (fileSelectedBox) fileSelectedBox.style.display = 'none';
+      if (dropzoneInner) dropzoneInner.style.display = 'block';
+      if (configCard) configCard.style.display = 'none';
+      if (resultSection) resultSection.style.display = 'none';
       fileInput.click();
     });
   }
@@ -4625,7 +4641,7 @@ function initDossierSplitModule() {
 
       if (dropzoneInner) dropzoneInner.style.display = 'none';
       if (fileSelectedBox) fileSelectedBox.style.display = 'flex';
-      if (configRow) configRow.style.display = 'flex';
+      if (configCard) configCard.style.display = 'block';
       if (loadingBox) loadingBox.style.display = 'none';
 
       showToast(`Đã nạp file "${file.name}" thành công!`, 'success');
@@ -4653,9 +4669,11 @@ function initDossierSplitModule() {
 
     let bestHeaderRow = 1;
     let bestCodeCol = 1;
+    let bestTthcCol = 3; // Mặc định Cột C trong file Excel (Cột 3)
     let highestHeaderScore = -1;
 
-    const keywords = ['mã hồ sơ', 'số hồ sơ', 'mã số hồ sơ', 'mã đb', 'mã đồng bộ', 'số biên nhận', 'mã tiếp nhận', 'ma ho so', 'so ho so', 'sohoso', 'dossier'];
+    const codeKeywords = ['mã hồ sơ', 'số hồ sơ', 'mã số hồ sơ', 'mã đb', 'mã đồng bộ', 'số biên nhận', 'mã tiếp nhận', 'ma ho so', 'so ho so', 'sohoso', 'dossier'];
+    const tthcKeywords = ['mã tthc', 'mã thủ tục', 'ma tthc', 'ma thu tuc', 'mã tthc/dvc', 'thủ tục hành chính', 'thủ tục'];
 
     const maxScanRow = Math.min(worksheet.rowCount, 15);
     for (let r = 1; r <= maxScanRow; r++) {
@@ -4666,10 +4684,16 @@ function initDossierSplitModule() {
       row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
         nonBlankCols++;
         const str = cellToString(cell.value).toLowerCase();
-        for (const kw of keywords) {
+        for (const kw of codeKeywords) {
           if (str.includes(kw)) {
             rowScore += 10;
             bestCodeCol = colNumber;
+            break;
+          }
+        }
+        for (const tkw of tthcKeywords) {
+          if (str.includes(tkw)) {
+            bestTthcCol = colNumber;
             break;
           }
         }
@@ -4696,6 +4720,7 @@ function initDossierSplitModule() {
 
     splitModuleState.detectedHeaderRow = bestHeaderRow;
     splitModuleState.detectedCodeColIndex = bestCodeCol;
+    splitModuleState.detectedTthcColIndex = bestTthcCol;
 
     if (headerRowSelect) {
       headerRowSelect.innerHTML = '';
@@ -4708,12 +4733,11 @@ function initDossierSplitModule() {
       }
     }
 
-    populateCodeColSelect(worksheet, bestHeaderRow, bestCodeCol);
+    populateCodeColSelect(worksheet, bestHeaderRow, bestCodeCol, bestTthcCol);
   }
 
-  function populateCodeColSelect(worksheet, headerRowIndex, selectedColIndex) {
-    if (!codeColSelect || !worksheet) return;
-    codeColSelect.innerHTML = '';
+  function populateCodeColSelect(worksheet, headerRowIndex, selectedColIndex, selectedTthcColIndex) {
+    if (!worksheet) return;
 
     const headerRow = worksheet.getRow(headerRowIndex);
     const colCount = Math.max(headerRow.cellCount, worksheet.columnCount || 10);
@@ -4724,12 +4748,39 @@ function initDossierSplitModule() {
       let colName = cellToString(cell.value);
       if (!colName) colName = `Cột ${c}`;
       headers[c] = colName;
+    }
 
-      const opt = document.createElement('option');
-      opt.value = String(c);
-      opt.textContent = `Cột ${c}: ${colName} ${c === selectedColIndex ? '★ (Khớp mã)' : ''}`;
-      if (c === selectedColIndex) opt.selected = true;
-      codeColSelect.appendChild(opt);
+    // Nạp dropdown Cột Mã/Số hồ sơ
+    if (codeColSelect) {
+      codeColSelect.innerHTML = '';
+      for (let c = 1; c <= colCount; c++) {
+        const colName = headers[c];
+        const opt = document.createElement('option');
+        opt.value = String(c);
+        opt.textContent = `Cột ${c}: ${colName} ${c === selectedColIndex ? '★ (Khớp mã)' : ''}`;
+        if (c === selectedColIndex) opt.selected = true;
+        codeColSelect.appendChild(opt);
+      }
+    }
+
+    // Nạp dropdown Cột Mã TTHC (để lọc Hộ kinh doanh)
+    const effectiveTthcCol = selectedTthcColIndex || splitModuleState.detectedTthcColIndex || 3;
+    if (tthcColSelect) {
+      tthcColSelect.innerHTML = '';
+      for (let c = 1; c <= colCount; c++) {
+        const colName = headers[c];
+        const opt = document.createElement('option');
+        opt.value = String(c);
+        let note = '';
+        if (c === effectiveTthcCol) {
+          note = c === 3 ? '★ (Cột C - Khuyên dùng)' : '★ (Khớp Mã TTHC)';
+        } else if (c === 3) {
+          note = '(Cột C)';
+        }
+        opt.textContent = `Cột ${c}: ${colName} ${note}`;
+        if (c === effectiveTthcCol) opt.selected = true;
+        tthcColSelect.appendChild(opt);
+      }
     }
 
     splitModuleState.headers = headers;
@@ -4739,7 +4790,7 @@ function initDossierSplitModule() {
     headerRowSelect.addEventListener('change', () => {
       const r = parseInt(headerRowSelect.value, 10) || 1;
       splitModuleState.detectedHeaderRow = r;
-      populateCodeColSelect(splitModuleState.selectedWorksheet, r, splitModuleState.detectedCodeColIndex);
+      populateCodeColSelect(splitModuleState.selectedWorksheet, r, splitModuleState.detectedCodeColIndex, splitModuleState.detectedTthcColIndex);
     });
   }
 
@@ -4749,7 +4800,7 @@ function initDossierSplitModule() {
     });
   }
 
-  function classifyCode(codeStr) {
+  function classifyCode(codeStr, tthcCodeStr) {
     if (!codeStr || typeof codeStr !== 'string') {
       return {
         key: 'UNKNOWN',
@@ -4758,17 +4809,31 @@ function initDossierSplitModule() {
         tag: 'CHƯA XÁC ĐỊNH',
         color: '#64748b',
         seq: '',
-        isProvince: false
+        isProvince: false,
+        isBusinessHousehold: false
       };
     }
 
     const clean = codeStr.trim();
+    const cleanTthc = tthcCodeStr ? String(tthcCodeStr).trim() : '';
     const parts = clean.split('-');
 
     if (parts.length >= 3) {
       const seq = parts[parts.length - 1].trim();
-      // 4 chữ số: Cổng Tỉnh
+      // 4 chữ số: Cổng Tỉnh HOẶC Hộ kinh doanh (nếu thuộc 4 mã TTHC chỉ định)
       if (/^\d{4}$/.test(seq)) {
+        if (cleanTthc && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(cleanTthc)) {
+          return {
+            key: 'BUSINESS_HOUSEHOLD',
+            name: 'Hộ kinh doanh',
+            sheet: 'Hộ kinh doanh',
+            tag: 'HỘ KINH DOANH',
+            color: '#ea580c',
+            seq,
+            isProvince: false,
+            isBusinessHousehold: true
+          };
+        }
         return {
           key: 'PROVINCE',
           name: 'Cổng Tỉnh',
@@ -4776,7 +4841,8 @@ function initDossierSplitModule() {
           tag: 'CỔNG TỈNH',
           color: '#059669',
           seq,
-          isProvince: true
+          isProvince: true,
+          isBusinessHousehold: false
         };
       }
       // 6 hoặc 7 chữ số: Cổng Bộ
@@ -4792,7 +4858,8 @@ function initDossierSplitModule() {
             color: ministry.color,
             prefix,
             seq,
-            isProvince: false
+            isProvince: false,
+            isBusinessHousehold: false
           };
         }
         return {
@@ -4803,7 +4870,8 @@ function initDossierSplitModule() {
           color: '#475569',
           prefix,
           seq,
-          isProvince: false
+          isProvince: false,
+          isBusinessHousehold: false
         };
       }
     }
@@ -4813,6 +4881,18 @@ function initDossierSplitModule() {
     if (match) {
       const seq = match[1];
       if (seq.length === 4) {
+        if (cleanTthc && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(cleanTthc)) {
+          return {
+            key: 'BUSINESS_HOUSEHOLD',
+            name: 'Hộ kinh doanh',
+            sheet: 'Hộ kinh doanh',
+            tag: 'HỘ KINH DOANH',
+            color: '#ea580c',
+            seq,
+            isProvince: false,
+            isBusinessHousehold: true
+          };
+        }
         return {
           key: 'PROVINCE',
           name: 'Cổng Tỉnh',
@@ -4820,7 +4900,8 @@ function initDossierSplitModule() {
           tag: 'CỔNG TỈNH',
           color: '#059669',
           seq,
-          isProvince: true
+          isProvince: true,
+          isBusinessHousehold: false
         };
       } else {
         const prefix = seq.slice(0, 2);
@@ -4834,7 +4915,8 @@ function initDossierSplitModule() {
             color: ministry.color,
             prefix,
             seq,
-            isProvince: false
+            isProvince: false,
+            isBusinessHousehold: false
           };
         }
         return {
@@ -4845,7 +4927,8 @@ function initDossierSplitModule() {
           color: '#475569',
           prefix,
           seq,
-          isProvince: false
+          isProvince: false,
+          isBusinessHousehold: false
         };
       }
     }
@@ -4857,7 +4940,8 @@ function initDossierSplitModule() {
       tag: 'CHƯA XÁC ĐỊNH',
       color: '#64748b',
       seq: '',
-      isProvince: false
+      isProvince: false,
+      isBusinessHousehold: false
     };
   }
 
@@ -4870,10 +4954,11 @@ function initDossierSplitModule() {
 
     const headerRowIdx = parseInt(headerRowSelect?.value, 10) || splitModuleState.detectedHeaderRow || 1;
     const codeColIdx = parseInt(codeColSelect?.value, 10) || splitModuleState.detectedCodeColIndex || 1;
+    const tthcColIdx = parseInt(tthcColSelect?.value, 10) || splitModuleState.detectedTthcColIndex || 3;
 
     if (loadingBox) {
       loadingBox.style.display = 'block';
-      if (loadingStatus) loadingStatus.textContent = 'Đang bóc tách từng dòng hồ sơ theo Cổng Tỉnh và các Bộ...';
+      if (loadingStatus) loadingStatus.textContent = 'Đang bóc tách từng dòng hồ sơ theo Cổng Tỉnh, Hộ kinh doanh và các Bộ...';
     }
     if (resultSection) resultSection.style.display = 'none';
 
@@ -4890,6 +4975,7 @@ function initDossierSplitModule() {
         const groups = {};
         let totalDossiers = 0;
         let provinceCount = 0;
+        let businessCount = 0;
         let ministryCount = 0;
 
         for (let r = headerRowIdx + 1; r <= ws.rowCount; r++) {
@@ -4907,10 +4993,13 @@ function initDossierSplitModule() {
 
           totalDossiers++;
           const codeVal = cellToString(row.getCell(codeColIdx).value);
-          const classification = classifyCode(codeVal);
+          const tthcVal = cellToString(row.getCell(tthcColIdx).value);
+          const classification = classifyCode(codeVal, tthcVal);
 
           if (classification.isProvince) {
             provinceCount++;
+          } else if (classification.isBusinessHousehold) {
+            businessCount++;
           } else if (classification.key.startsWith('MINISTRY_')) {
             ministryCount++;
           }
@@ -4923,6 +5012,7 @@ function initDossierSplitModule() {
               tag: classification.tag,
               color: classification.color,
               isProvince: classification.isProvince,
+              isBusinessHousehold: classification.isBusinessHousehold || false,
               prefix: classification.prefix || '',
               rows: []
             };
@@ -4931,6 +5021,7 @@ function initDossierSplitModule() {
           groups[classification.key].rows.push({
             rowNumber: r,
             code: codeVal,
+            tthcCode: tthcVal,
             values: rowValues
           });
         }
@@ -4939,9 +5030,10 @@ function initDossierSplitModule() {
         splitModuleState.headerValues = headerValues;
         splitModuleState.totalDossiers = totalDossiers;
         splitModuleState.provinceCount = provinceCount;
+        splitModuleState.businessCount = businessCount;
         splitModuleState.ministryCount = ministryCount;
 
-        renderSplitResults(groups, totalDossiers, provinceCount, ministryCount, headerValues);
+        renderSplitResults(groups, totalDossiers, provinceCount, businessCount, ministryCount, headerValues);
 
         if (loadingBox) loadingBox.style.display = 'none';
         if (resultSection) {
@@ -4958,10 +5050,14 @@ function initDossierSplitModule() {
     }, 60);
   }
 
-  function renderSplitResults(groups, total, provinceCount, ministryCount, headers) {
+  function renderSplitResults(groups, total, provinceCount, businessCount, ministryCount, headers) {
     document.getElementById('split-summary-title').textContent = `Đã phân loại thành công ${total.toLocaleString()} hồ sơ`;
     document.getElementById('split-stat-total').textContent = total.toLocaleString();
     document.getElementById('split-stat-province').textContent = provinceCount.toLocaleString();
+
+    const businessStatEl = document.getElementById('split-stat-business');
+    if (businessStatEl) businessStatEl.textContent = (businessCount || 0).toLocaleString();
+
     document.getElementById('split-stat-ministry').textContent = ministryCount.toLocaleString();
 
     const groupKeys = Object.keys(groups);
@@ -4974,6 +5070,8 @@ function initDossierSplitModule() {
       const sortedKeys = [...groupKeys].sort((a, b) => {
         if (a === 'PROVINCE') return -1;
         if (b === 'PROVINCE') return 1;
+        if (a === 'BUSINESS_HOUSEHOLD') return -1;
+        if (b === 'BUSINESS_HOUSEHOLD') return 1;
         return groups[b].rows.length - groups[a].rows.length;
       });
 
@@ -5007,6 +5105,8 @@ function initDossierSplitModule() {
       const sortedKeys = [...groupKeys].sort((a, b) => {
         if (a === 'PROVINCE') return -1;
         if (b === 'PROVINCE') return 1;
+        if (a === 'BUSINESS_HOUSEHOLD') return -1;
+        if (b === 'BUSINESS_HOUSEHOLD') return 1;
         return groups[b].rows.length - groups[a].rows.length;
       });
 
@@ -5169,6 +5269,8 @@ function initDossierSplitModule() {
       const sortedKeys = Object.keys(groups).sort((a, b) => {
         if (a === 'PROVINCE') return -1;
         if (b === 'PROVINCE') return 1;
+        if (a === 'BUSINESS_HOUSEHOLD') return -1;
+        if (b === 'BUSINESS_HOUSEHOLD') return 1;
         return groups[b].rows.length - groups[a].rows.length;
       });
 
@@ -5177,12 +5279,21 @@ function initDossierSplitModule() {
         const g = groups[k];
         const count = g.rows.length;
         const pct = total > 0 ? (count / total) * 100 : 0;
-        const ruleText = g.isProvince ? 'Số thứ tự 4 chữ số' : (g.prefix ? `Mã tiền tố ${g.prefix}xxxx (6-7 số)` : 'Khác');
+        const ruleText = g.isProvince
+          ? 'Số thứ tự 4 chữ số'
+          : (g.isBusinessHousehold
+              ? 'Đuôi 4 số & Mã TTHC (1.001266, 1.001570, 1.001612, 2.000720)'
+              : (g.prefix ? `Mã tiền tố ${g.prefix}xxxx (6-7 số)` : 'Khác'));
+        const agencyText = g.isProvince
+          ? 'Cổng DVC Tỉnh Đắk Lắk'
+          : (g.isBusinessHousehold
+              ? 'Lĩnh vực Hộ kinh doanh'
+              : 'Cổng Bộ - Ngành liên thông');
 
         const row = wsSummary.addRow([
           stt++,
           g.name,
-          g.isProvince ? 'Cổng DVC Tỉnh Đắk Lắk' : 'Cổng Bộ - Ngành liên thông',
+          agencyText,
           ruleText,
           count,
           Number(pct.toFixed(2)),
@@ -5244,14 +5355,14 @@ function initDossierSplitModule() {
         { width: 8 },
         { width: 32 },
         { width: 28 },
-        { width: 26 },
+        { width: 36 },
         { width: 16 },
         { width: 14 },
         { width: 22 }
       ];
 
       // ==========================================
-      // CÁC SHEET DỮ LIỆU RIÊNG TỪNG BỘ VÀ CỔNG TỈNH
+      // CÁC SHEET DỮ LIỆU RIÊNG TỪNG BỘ VÀ CỔNG TỈNH / HỘ KINH DOANH
       // ==========================================
       sortedKeys.forEach(k => {
         const g = groups[k];
@@ -5275,7 +5386,7 @@ function initDossierSplitModule() {
         wsTitleCell.fill = {
           type: 'pattern',
           pattern: 'solid',
-          fgColor: { argb: g.isProvince ? 'FF059669' : 'FF1E3A8A' }
+          fgColor: { argb: g.isProvince ? 'FF059669' : (g.isBusinessHousehold ? 'FFD97706' : 'FF1E3A8A') }
         };
         ws.getRow(1).height = 30;
 
