@@ -168,7 +168,7 @@
                 <span>Tiện ích</span>
               </button>
             </li>
-            <!-- Tab Phân loại hồ sơ (Chỉ hiển thị với Admin) -->
+            <!-- Tab Phân loại hồ sơ (Cán bộ & Quản trị viên) -->
             <li class="nav-tab-item" id="nav-item-dossier-split" style="display: none;">
               <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split">
                 <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -3266,7 +3266,7 @@
         <!-- Phần thân (Card Body) -->
         <div class="tools-card-body">
           
-          <!-- Khối cảnh báo nếu chưa đăng nhập quyền Admin -->
+          <!-- Khối cảnh báo nếu chưa đăng nhập quyền Cán bộ / Admin -->
           <div id="split-auth-lock-card" class="tools-auth-lock-box" style="display: none;">
             <div class="tools-lock-icon-badge">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3274,14 +3274,14 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
             </div>
-            <h3 class="tools-lock-title">Yêu cầu quyền Quản trị viên (Admin)</h3>
-            <p class="tools-lock-desc">Tính năng phân loại hồ sơ TTHC theo Cổng Tỉnh & Bộ - Ngành chỉ phục vụ tài khoản Quản trị viên của hệ thống.</p>
-            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Quản trị viên để sử dụng công cụ Phân loại hồ sơ.')">
-              Đăng nhập Quản trị viên
+            <h3 class="tools-lock-title">Yêu cầu đăng nhập Cán bộ hoặc Quản trị viên</h3>
+            <p class="tools-lock-desc">Tính năng phân loại hồ sơ TTHC theo Cổng Tỉnh, Hộ kinh doanh & Bộ - Ngành phục vụ tài khoản Cán bộ và Quản trị viên của hệ thống.</p>
+            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Cán bộ hoặc Quản trị viên để sử dụng công cụ Phân loại hồ sơ.')">
+              Đăng nhập Hệ thống
             </button>
           </div>
 
-          <!-- Khối làm việc chính (Khi đã xác thực Admin) -->
+          <!-- Khối làm việc chính (Khi đã xác thực Cán bộ hoặc Admin) -->
           <div id="split-workspace-wrap">
             
             <!-- KHU VỰC TẢI LÊN FILE EXCEL (DROPZONE CHUẨN GOV-TECH) -->

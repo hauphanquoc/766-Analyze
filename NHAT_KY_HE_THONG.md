@@ -314,6 +314,17 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
       - Xuất Sheet riêng biệt: **`Hộ kinh doanh`** với tiêu đề bảng màu cam `#d97706` nổi bật, chứa đầy đủ các cột dữ liệu gốc.
       - Sheet **`Tổng hợp thống kê`** ghi nhận rõ ràng dòng nhóm `Hộ kinh doanh` với cơ quan là *Lĩnh vực Hộ kinh doanh*, quy cách nhận diện: *Đuôi 4 số & Mã TTHC (1.001266, 1.001570, 1.001612, 2.000720)*.
 
+### 24. Mở rộng Phân quyền Sử dụng Module "Phân loại hồ sơ" (20/10/2026)
+* **Yêu cầu:** Cho phép cả tài khoản Cán bộ (`officer`/`canbo`) và Quản trị viên (`admin`) đều sử dụng được chức năng Phân loại hồ sơ (trước đây chỉ dành riêng cho Admin).
+* **Xử lý toàn diện:**
+  - **Logic Client (`public/app.js`):** 
+    - Cập nhật hàm `updateAuthUI()`: Chuyển điều kiện kiểm tra hiển thị từ `isAdmin` sang `isStaffOrAdmin` (`Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'))`).
+    - Cả thanh điều hướng Desktop (`#nav-item-dossier-split`), menu ngăn kéo Di động (`#mobile-grid-item-dossier-split`) và khối làm việc (`#split-workspace-wrap`) đều mở cho cả Cán bộ và Admin.
+    - Điều hướng bảo vệ: Nếu chưa đăng nhập một trong hai quyền trên mà cố tình vào tab sẽ được chuyển an toàn về tab mặc định.
+  - **Giao diện & Cảnh báo (`public/index.html`):**
+    - Điều chỉnh tiêu đề tab và ghi chú thành *Phân loại hồ sơ (Cán bộ & Quản trị viên)*.
+    - Tinh chỉnh nội dung khối khóa (`#split-auth-lock-card`): Đổi thành *Yêu cầu đăng nhập Cán bộ hoặc Quản trị viên* và nút *Đăng nhập Hệ thống* thân thiện, trực quan.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

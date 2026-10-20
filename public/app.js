@@ -4218,27 +4218,30 @@ function updateAuthUI() {
     if (dom.userProfileHeader) dom.userProfileHeader.style.display = 'none';
   }
 
-  // Quản lý hiển thị Menu Phân loại hồ sơ (CHỈ DÀNH RIÊNG QUẢN TRỊ VIÊN)
+  // Quyền truy cập: Quản trị viên (Admin) hoặc Cán bộ nghiệp vụ (Officer/Canbo)
+  const isStaffOrAdmin = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
+
+  // Quản lý hiển thị Menu Phân loại hồ sơ (DÀNH CHO CÁN BỘ VÀ QUẢN TRỊ VIÊN)
   const navSplitItem = document.getElementById('nav-item-dossier-split');
   const mobileGridSplit = document.getElementById('mobile-grid-item-dossier-split');
   const splitAuthLock = document.getElementById('split-auth-lock-card');
   const splitWorkspace = document.getElementById('split-workspace-wrap');
 
   if (navSplitItem) {
-    navSplitItem.style.display = isAdmin ? 'inline-block' : 'none';
+    navSplitItem.style.display = isStaffOrAdmin ? 'inline-block' : 'none';
   }
   if (mobileGridSplit) {
-    mobileGridSplit.style.display = isAdmin ? 'flex' : 'none';
+    mobileGridSplit.style.display = isStaffOrAdmin ? 'flex' : 'none';
   }
   if (splitAuthLock) {
-    splitAuthLock.style.display = isAdmin ? 'none' : 'block';
+    splitAuthLock.style.display = isStaffOrAdmin ? 'none' : 'block';
   }
   if (splitWorkspace) {
-    splitWorkspace.style.display = isAdmin ? 'block' : 'none';
+    splitWorkspace.style.display = isStaffOrAdmin ? 'block' : 'none';
   }
 
-  // Nếu người dùng không phải Admin nhưng đang ở trên tab Phân loại hồ sơ thì chuyển về tab Cổng thông tin
-  if (!isAdmin) {
+  // Nếu người dùng chưa đăng nhập quyền Cán bộ/Admin nhưng đang ở trên tab Phân loại hồ sơ thì chuyển về tab Cổng thông tin
+  if (!isStaffOrAdmin) {
     const splitTabPane = document.getElementById('tab-content-dossier-split');
     if (splitTabPane && splitTabPane.classList.contains('active')) {
       const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
@@ -4247,7 +4250,6 @@ function updateAuthUI() {
   }
 
   // Quản lý hiển thị Menu Báo cáo nhanh (CHỈ DÀNH CHO CÁN BỘ HOẶC QUẢN TRỊ VIÊN ĐĂNG NHẬP)
-  const isStaffOrAdmin = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
   const navQuickReportItem = document.getElementById('nav-item-quick-report');
   const mobileGridQuickReport = document.getElementById('mobile-grid-item-quick-report');
   const qrptAuthLock = document.getElementById('qrpt-auth-lock-card');
