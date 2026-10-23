@@ -22,6 +22,7 @@ const dataHandler = require('./api/data');
 const exportHandler = require('./api/export');
 const provincesHandler = require('./api/provinces');
 const authHandler = require('./api/auth');
+const unit766Handler = require('./api/766donvi');
 
 app.all('/api/cron', (req, res) => cronHandler(req, res));
 app.all('/api/crawl', (req, res) => crawlHandler(req, res));
@@ -30,6 +31,12 @@ app.all('/api/export', (req, res) => exportHandler(req, res));
 app.all('/api/provinces', (req, res) => provincesHandler(req, res));
 app.all('/api/auth', (req, res) => authHandler(req, res));
 app.all('/api/auth/:action', (req, res) => authHandler(req, res));
+
+// Zalo Bot API: Tra cứu điểm 766 theo đơn vị
+app.all('/766donvi', (req, res) => unit766Handler(req, res));
+app.all('/766donvi/:code', (req, res) => unit766Handler(req, res));
+app.all('/api/766donvi', (req, res) => unit766Handler(req, res));
+app.all('/api/766donvi/:code', (req, res) => unit766Handler(req, res));
 
 // Fallback to index.html for SPA
 app.use((req, res) => {

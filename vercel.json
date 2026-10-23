@@ -46,6 +46,22 @@
       "dest": "/api/auth.js?action=$1"
     },
     {
+      "src": "/766donvi",
+      "dest": "/api/766donvi.js"
+    },
+    {
+      "src": "/766donvi/(.*)",
+      "dest": "/api/766donvi.js?code=$1"
+    },
+    {
+      "src": "/api/766donvi",
+      "dest": "/api/766donvi.js"
+    },
+    {
+      "src": "/api/766donvi/(.*)",
+      "dest": "/api/766donvi.js?code=$1"
+    },
+    {
       "handle": "filesystem"
     },
     {

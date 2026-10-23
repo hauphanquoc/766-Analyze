@@ -1,8 +1,8 @@
 {
   "year": 2026,
   "date": "2026-10-20",
-  "updatedAt": "2026-10-19T23:00:09.946Z",
-  "updatedAtVN": "06:00 20/10/2026 (giờ Việt Nam)",
+  "updatedAt": "2026-10-20T08:34:51.317Z",
+  "updatedAtVN": "15:34 20/10/2026 (giờ Việt Nam)",
   "totalCount": 34,
   "overview": {
     "departmentName": "Cả nước",
@@ -856,5 +856,5 @@
       "rank_TTTT": 34
     }
   ],
-  "durationMs": 280
+  "durationMs": 294
 }

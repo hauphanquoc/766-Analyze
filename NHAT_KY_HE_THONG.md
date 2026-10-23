@@ -378,10 +378,34 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 | `api/auth.js` | API Serverless phục vụ đăng nhập (`/login`), kiểm tra phiên (`/me`), đăng xuất (`/logout`). |
 | `api/provinces.js` | API Serverless cung cấp dữ liệu bảng xếp hạng 766 các tỉnh. |
 | `api/data.js` | API Serverless cung cấp dữ liệu snapshot điểm 766 của tỉnh Đắk Lắk. |
+| `api/766donvi.js` | API tra cứu điểm 766 theo đơn vị phục vụ Bot Zalo/Chatbot (`/766donvi`, `/api/766donvi`). |
 | `public/` | Mã nguồn giao diện Web Frontend (HTML, CSS, JS). |
 | `data/snapshots/` | Thư mục lưu snapshot dữ liệu lịch sử từng ngày của tỉnh Đắk Lắk. |
 | `data/provinces/` | Thư mục lưu lịch sử xếp hạng 766 các tỉnh theo ngày. |
 | `data/users.json` | File lưu danh sách tài khoản đã mã hóa mật khẩu. |
 | `.env` | File cấu hình biến môi trường kết nối Upstash Redis và mật khẩu. |
 | `vercel.json` | Cấu hình định tuyến và triển khai Serverless Functions trên Vercel. |
+
+---
+
+## V. TÀI LIỆU API CHO BOT ZALO / CHATBOT
+
+### 1. API Tra cứu điểm 766 theo đơn vị (`/766donvi`)
+
+* **Endpoint:**
+  - `GET /766donvi?ma=H15.100` hoặc `GET /api/766donvi?code=H15.100`
+  - `GET /766donvi/:code` (ví dụ `/766donvi/H15.100`)
+  - `POST /766donvi` với body JSON: `{"code": "H15.100"}` hoặc `{"ma": "H15.100"}`
+* **Tham số đầu vào:**
+  - `ma` / `code` / `madonvi`: Mã đơn vị (ví dụ `H15.100`, `H15.15`) hoặc `H15` (toàn tỉnh), hoặc tên đơn vị (`Buôn Ma Thuột`, `Sở Tư pháp`).
+  - `format`: (tùy chọn) `json` (mặc định) hoặc `text` (trả về văn bản thuần).
+  - `date`: (tùy chọn) Ngày cần xem dạng `YYYY-MM-DD`. Nếu không truyền sẽ lấy **ngày mới nhất** trong database.
+* **Dữ liệu trả về:**
+  - `success`: `true/false`
+  - `data.date`: Ngày dữ liệu (ví dụ `2026-10-23`)
+  - `data.unit`: Thông tin đơn vị, mã, tên, cấp bậc, thứ hạng toàn tỉnh, thứ hạng khối, tổng điểm, xếp loại
+  - `data.summary`: Tóm tắt điểm 6 nhóm chỉ số
+  - `data.indicators`: Chi tiết 6 nhóm chỉ số kèm đầy đủ **tất cả các tiêu chí con** (tên, mã, tử số/mẫu số, tỷ lệ %, điểm đạt được, điểm tối đa)
+  - `data.chatMessage`: Chuỗi tin nhắn văn bản format sẵn với icon/emoji chuyên nghiệp dành riêng cho Bot Zalo gửi trực tiếp vào khung chat.
+
 
