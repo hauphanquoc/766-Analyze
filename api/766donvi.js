@@ -23,187 +23,43 @@ function removeVietnameseTones(str) {
 }
 
 /**
- * Format numbers with comma separator (e.g. 10000 -> 10,000)
+ * 6 Main Criteria of Decision 766
  */
-function formatNumber(num) {
-  if (num === null || num === undefined || isNaN(num)) return '0';
-  return Number(num).toLocaleString('vi-VN');
+const CRITERIA_DEFINITIONS = [
+  { key: 'transparency', name: 'Công khai, minh bạch', maxScore: 18 },
+  { key: 'progress', name: 'Tiến độ giải quyết', maxScore: 20 },
+  { key: 'onlineService', name: 'Dịch vụ công trực tuyến', maxScore: 12 },
+  { key: 'digitized', name: 'Số hóa hồ sơ', maxScore: 22 },
+  { key: 'payment', name: 'Thanh toán trực tuyến', maxScore: 10 },
+  { key: 'satisfaction', name: 'Mức độ hài lòng', maxScore: 18 }
+];
+
+/**
+ * Extract only the 6 main criteria (without smaller sub-metrics)
+ */
+function extractMainIndicators(scores = {}, indicatorDetails = {}) {
+  return CRITERIA_DEFINITIONS.map((def) => {
+    const detail = indicatorDetails[def.key] || {};
+    const score = scores[def.key] != null
+      ? Number(Number(scores[def.key]).toFixed(2))
+      : (detail.score != null ? Number(Number(detail.score).toFixed(2)) : 0);
+    const maxScore = detail.maxScore || def.maxScore;
+    const ratio = detail.ratio != null
+      ? Number(Number(detail.ratio).toFixed(2))
+      : (maxScore > 0 ? Number(((score / maxScore) * 100).toFixed(2)) : 0);
+
+    return {
+      key: def.key,
+      name: def.name,
+      score,
+      maxScore,
+      ratio
+    };
+  });
 }
 
 /**
- * Normalize and extract all 6 indicators and sub-criteria
- */
-function extractNormalizedIndicators(indicatorDetailsOrIndicators, isProvince = false) {
-  const result = [];
-  const src = indicatorDetailsOrIndicators || {};
-
-  // 1. Công khai, minh bạch
-  const trans = src.transparency || {};
-  const transMetrics = (trans.metrics || []).map((m) => ({
-    code: m.code || '',
-    name: m.name || '',
-    ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
-    score: m.score != null ? Number(m.score.toFixed(2)) : 0,
-    maxScore: m.maxScore ?? null,
-    numerator: m.numerator ?? null,
-    denominator: m.denominator ?? null,
-    displayCount: m.numerator != null && m.denominator != null ? `${formatNumber(m.numerator)}/${formatNumber(m.denominator)}` : null
-  }));
-  result.push({
-    key: 'transparency',
-    name: 'Công khai, minh bạch',
-    score: trans.score != null ? Number(trans.score.toFixed(2)) : 0,
-    maxScore: trans.maxScore || 18,
-    ratio: trans.ratio != null ? Number(trans.ratio.toFixed(2)) : 0,
-    subCriteria: transMetrics
-  });
-
-  // 2. Tiến độ giải quyết
-  const prog = src.progress || {};
-  const progMetrics = [];
-  const totalReceived = prog.totalReceived ?? (prog.metrics?.totalReceived ?? 0);
-  const avgDays = prog.avgProcessingDays ?? (prog.metrics?.avgProcessingDays ?? 0);
-
-  const onTime = prog.onTime || prog.metrics?.onTime;
-  if (onTime) {
-    progMetrics.push({
-      code: 'ON_TIME',
-      name: onTime.name || 'Hồ sơ giải quyết đúng hạn',
-      ratio: onTime.ratio != null ? Number(onTime.ratio.toFixed(2)) : 0,
-      score: onTime.score != null ? Number(onTime.score.toFixed(2)) : (prog.score != null ? Number(prog.score.toFixed(2)) : 0),
-      maxScore: onTime.maxScore || 20,
-      numerator: onTime.numerator ?? null,
-      denominator: onTime.denominator ?? null,
-      displayCount: onTime.numerator != null && onTime.denominator != null ? `${formatNumber(onTime.numerator)}/${formatNumber(onTime.denominator)}` : null
-    });
-  }
-
-  const overdue = prog.overdue || prog.metrics?.overdue;
-  if (overdue) {
-    progMetrics.push({
-      code: 'OVERDUE',
-      name: overdue.name || 'Hồ sơ giải quyết quá hạn',
-      ratio: overdue.ratio != null ? Number(overdue.ratio.toFixed(2)) : 0,
-      score: null,
-      maxScore: null,
-      numerator: overdue.numerator ?? null,
-      denominator: overdue.denominator ?? null,
-      displayCount: overdue.numerator != null && overdue.denominator != null ? `${formatNumber(overdue.numerator)}/${formatNumber(overdue.denominator)}` : null
-    });
-  }
-
-  result.push({
-    key: 'progress',
-    name: 'Tiến độ giải quyết',
-    score: prog.score != null ? Number(prog.score.toFixed(2)) : 0,
-    maxScore: prog.maxScore || 20,
-    ratio: prog.ratio != null ? Number(prog.ratio.toFixed(2)) : 0,
-    totalReceived: totalReceived,
-    avgProcessingDays: avgDays,
-    subCriteria: progMetrics
-  });
-
-  // 3. Dịch vụ công trực tuyến
-  const online = src.onlineService || {};
-  const onlineMetrics = (online.metrics && online.metrics.length > 0)
-    ? online.metrics.map((m) => ({
-        code: 'ONLINE_SERVICE_RATIO',
-        name: m.name || 'Tỷ lệ cung cấp dịch vụ công trực tuyến & nộp hồ sơ trực tuyến',
-        ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : (online.ratio != null ? Number(online.ratio.toFixed(2)) : 0),
-        score: m.score != null ? Number(m.score.toFixed(2)) : (online.score != null ? Number(online.score.toFixed(2)) : 0),
-        maxScore: m.maxScore || 12,
-        numerator: m.numerator ?? null,
-        denominator: m.denominator ?? null,
-        displayCount: null
-      }))
-    : [{
-        code: 'ONLINE_SERVICE_RATIO',
-        name: 'Tỷ lệ cung cấp dịch vụ công trực tuyến & nộp hồ sơ trực tuyến',
-        ratio: online.ratio != null ? Number(online.ratio.toFixed(2)) : 0,
-        score: online.score != null ? Number(online.score.toFixed(2)) : 0,
-        maxScore: 12,
-        numerator: null,
-        denominator: null,
-        displayCount: null
-      }];
-
-  result.push({
-    key: 'onlineService',
-    name: 'Dịch vụ công trực tuyến',
-    score: online.score != null ? Number(online.score.toFixed(2)) : 0,
-    maxScore: online.maxScore || 12,
-    ratio: online.ratio != null ? Number(online.ratio.toFixed(2)) : 0,
-    subCriteria: onlineMetrics
-  });
-
-  // 4. Số hóa hồ sơ
-  const digi = src.digitized || {};
-  const digiMetrics = (digi.metrics || []).map((m) => ({
-    code: m.code || '',
-    name: m.name || '',
-    ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
-    score: m.score != null ? Number(m.score.toFixed(2)) : 0,
-    maxScore: m.maxScore ?? null,
-    numerator: m.numerator ?? null,
-    denominator: m.denominator ?? null,
-    displayCount: m.numerator != null && m.denominator != null ? `${formatNumber(m.numerator)}/${formatNumber(m.denominator)}` : null
-  }));
-  result.push({
-    key: 'digitized',
-    name: 'Số hóa hồ sơ',
-    score: digi.score != null ? Number(digi.score.toFixed(2)) : 0,
-    maxScore: digi.maxScore || 22,
-    ratio: digi.ratio != null ? Number(digi.ratio.toFixed(2)) : 0,
-    subCriteria: digiMetrics
-  });
-
-  // 5. Thanh toán trực tuyến
-  const pay = src.payment || {};
-  const payMetrics = (pay.metrics || []).map((m) => ({
-    code: m.code || '',
-    name: m.name || '',
-    ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
-    score: m.score != null ? Number(m.score.toFixed(2)) : null,
-    maxScore: m.maxScore ?? null,
-    numerator: m.numerator ?? null,
-    denominator: m.denominator ?? null,
-    displayCount: m.numerator != null && m.denominator != null ? `${formatNumber(m.numerator)}/${formatNumber(m.denominator)}` : null
-  }));
-  result.push({
-    key: 'payment',
-    name: 'Thanh toán trực tuyến',
-    score: pay.score != null ? Number(pay.score.toFixed(2)) : 0,
-    maxScore: pay.maxScore || 10,
-    ratio: pay.ratio != null ? Number(pay.ratio.toFixed(2)) : 0,
-    subCriteria: payMetrics
-  });
-
-  // 6. Mức độ hài lòng
-  const sat = src.satisfaction || {};
-  const satMetrics = (sat.metrics || []).map((m) => ({
-    code: m.code || '',
-    name: m.name || '',
-    ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
-    score: m.score != null ? Number(m.score.toFixed(2)) : 0,
-    maxScore: m.maxScore ?? null,
-    numerator: m.numerator ?? null,
-    denominator: m.denominator ?? null,
-    displayCount: m.numerator != null && m.denominator != null ? `${formatNumber(m.numerator)}/${formatNumber(m.denominator)}` : null
-  }));
-  result.push({
-    key: 'satisfaction',
-    name: 'Mức độ hài lòng',
-    score: sat.score != null ? Number(sat.score.toFixed(2)) : 0,
-    maxScore: sat.maxScore || 18,
-    ratio: sat.ratio != null ? Number(sat.ratio.toFixed(2)) : 0,
-    subCriteria: satMetrics
-  });
-
-  return result;
-}
-
-/**
- * Format a beautiful plain text message optimized for Zalo chat
+ * Format a beautiful and concise plain text message optimized for Zalo chat
  */
 function buildZaloChatMessage(data) {
   const { unit, date, indicators } = data;
@@ -231,29 +87,10 @@ function buildZaloChatMessage(data) {
 
   indicators.forEach((ind, idx) => {
     const numIcon = icons[idx] || `[${idx + 1}]`;
-    lines.push(`${numIcon} ${ind.name.toUpperCase()}: ${ind.score}/${ind.maxScore} điểm (${ind.ratio}%)`);
-
-    if (ind.key === 'progress' && ind.totalReceived) {
-      lines.push(`   • Tiếp nhận: ${formatNumber(ind.totalReceived)} HS (Xử lý TB: ${ind.avgProcessingDays} ngày)`);
-    }
-
-    if (Array.isArray(ind.subCriteria) && ind.subCriteria.length > 0) {
-      ind.subCriteria.forEach((sub) => {
-        let subText = `   • ${sub.name}: ${sub.ratio}%`;
-        if (sub.score != null && sub.maxScore != null) {
-          subText += ` (${sub.score}/${sub.maxScore} đ)`;
-        } else if (sub.score != null) {
-          subText += ` (${sub.score} đ)`;
-        }
-        if (sub.displayCount) {
-          subText += ` [${sub.displayCount}]`;
-        }
-        lines.push(subText);
-      });
-    }
-    lines.push('');
+    lines.push(`${numIcon} ${ind.name}: ${ind.score} / ${ind.maxScore} đ (${ind.ratio}%)`);
   });
 
+  lines.push('──────────────────────────────');
   lines.push('💡 Tra cứu thêm: Gửi mã đơn vị (ví dụ: H15.100, H15.15, H15)');
   return lines.join('\n').trim();
 }
@@ -328,7 +165,7 @@ module.exports = async function handler(req, res) {
 
       return res.status(200).json({
         success: true,
-        message: 'API Tra cứu Điểm 766 Bộ Chỉ số DVCQG',
+        message: 'API Tra cứu Điểm 766 Bộ Chỉ số DVCQG (6 tiêu chí)',
         usage: {
           endpoint: '/766donvi?ma=MÃ_ĐƠN_VỊ',
           method: 'GET hoặc POST',
@@ -358,7 +195,15 @@ module.exports = async function handler(req, res) {
       searchWithoutAccents === 'toan tinh'
     ) {
       const provOverview = snapshot.overview || {};
-      const indicators = extractNormalizedIndicators(snapshot.indicators, true);
+      const provScores = {
+        transparency: snapshot.indicators?.transparency?.score ?? 0,
+        progress: snapshot.indicators?.progress?.score ?? 0,
+        onlineService: snapshot.indicators?.onlineService?.score ?? 0,
+        digitized: snapshot.indicators?.digitized?.score ?? 0,
+        payment: snapshot.indicators?.payment?.score ?? 0,
+        satisfaction: snapshot.indicators?.satisfaction?.score ?? 0
+      };
+      const indicators = extractMainIndicators(provScores, snapshot.indicators);
 
       const responseData = {
         date,
@@ -372,14 +217,7 @@ module.exports = async function handler(req, res) {
           rank: null,
           totalUnits: availableUnits.length
         },
-        summary: {
-          transparency: snapshot.indicators?.transparency?.score ?? 0,
-          progress: snapshot.indicators?.progress?.score ?? 0,
-          onlineService: snapshot.indicators?.onlineService?.score ?? 0,
-          digitized: snapshot.indicators?.digitized?.score ?? 0,
-          payment: snapshot.indicators?.payment?.score ?? 0,
-          satisfaction: snapshot.indicators?.satisfaction?.score ?? 0
-        },
+        summary: provScores,
         indicators
       };
 
@@ -444,7 +282,6 @@ module.exports = async function handler(req, res) {
 
     // 6. If still not found, return helpful error with close matches
     if (!matchedUnit) {
-      // Find possible suggestions
       const suggestions = availableUnits
         .filter((u) => {
           const c = (u.departmentCode || '').toLowerCase();
@@ -470,8 +307,8 @@ module.exports = async function handler(req, res) {
     const groupUnits = availableUnits.filter((u) => u.group === matchedUnit.group);
     const groupTotal = groupUnits.length;
 
-    // 8. Extract normalized indicators and sub-criteria
-    const indicators = extractNormalizedIndicators(matchedUnit.indicatorDetails, false);
+    // 8. Extract only 6 main indicators (clean, concise)
+    const indicators = extractMainIndicators(matchedUnit.scores, matchedUnit.indicatorDetails);
 
     const responseData = {
       date,
