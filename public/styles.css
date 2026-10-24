@@ -64,29 +64,29 @@ body::before {
   content: '';
   position: fixed;
   top: -120px;
-  right: -240px;
+  right: -220px;
   width: 1250px;
   height: 1250px;
   max-width: 95vw;
   max-height: 95vw;
-  background-image: url('/bg-trong-dong.png');
+  background-image: url('bg-trong-dong.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
-  opacity: 0.12;
+  opacity: 0.15;
   pointer-events: none;
   z-index: 0;
-  filter: saturate(1.1);
+  filter: saturate(1.15) contrast(1.05);
   transition: opacity 0.3s ease;
 }
 
 @media (max-width: 768px) {
   body::before {
     top: -80px;
-    right: -150px;
+    right: -140px;
     width: 650px;
     height: 650px;
-    opacity: 0.09;
+    opacity: 0.11;
   }
 }
 
@@ -97,7 +97,7 @@ body::before {
   flex-direction: row;
   position: relative;
   z-index: 1;
-  background-color: #f8fafc;
+  background: transparent;
 }
 
 /* ==========================================================================
@@ -412,13 +412,16 @@ body::before {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background-color: #f8fafc;
+  background: transparent;
   min-height: 100vh;
+  position: relative;
 }
 
 .app-topbar {
   height: 64px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
