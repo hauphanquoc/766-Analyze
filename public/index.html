@@ -27,28 +27,190 @@
 
   <!-- Main Container -->
   <div class="app-layout">
-    <!-- TẦNG 1: BRAND HEADER (Nền trắng, h-16, border-b border-slate-200) -->
-    <header class="brand-header">
-      <div class="brand-header-inner">
-        <!-- Cụm nhận diện bên trái (Branding) -->
-        <div class="brand-block">
-          <div class="brand-logo-wrap">
-            <img src="logo-cchc.png" alt="Logo Cải cách hành chính" class="brand-logo-img">
+    <!-- SIDEBAR (Menu dọc bên trái) -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <!-- Sidebar Header / Brand -->
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-logo-wrap">
+            <img src="logo-cchc.png" alt="Logo Cải cách hành chính" class="sidebar-logo-img">
           </div>
-          <div class="brand-text">
-            <h1 class="brand-title">HỆ THỐNG HỖ TRỢ DỊCH VỤ CÔNG</h1>
-            <p class="brand-subtitle">Ủy ban Nhân dân tỉnh Đắk Lắk <span class="dept-code">(Mã cơ quan: H15)</span></p>
+          <div class="sidebar-brand-text">
+            <h1 class="sidebar-brand-title">DVC ĐẮK LẮK</h1>
+            <p class="sidebar-brand-subtitle">UBND tỉnh Đắk Lắk (H15)</p>
+          </div>
+        </div>
+        <!-- Nút thu gọn / mở rộng sidebar trên Desktop -->
+        <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" title="Thu gọn / Mở rộng menu" aria-label="Thu gọn menu">
+          <svg class="icon-collapse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Sidebar Navigation Body -->
+      <nav class="sidebar-body" aria-label="Main Navigation">
+        <!-- Nhóm 1: TỔNG QUAN & ĐIỀU HÀNH -->
+        <div class="sidebar-nav-group">
+          <div class="sidebar-group-title">TỔNG QUAN & ĐIỀU HÀNH</div>
+          <ul class="sidebar-menu-list">
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn active" id="tab-btn-portals" data-tab="tab-content-portals" title="Đường dẫn các cổng">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span class="nav-tab-label">Đường dẫn các cổng</span>
+              </button>
+            </li>
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn" id="tab-btn-provinces" data-tab="tab-content-provinces" title="Xếp hạng 766 các tỉnh">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+                  <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+                </svg>
+                <span class="nav-tab-label">Xếp hạng 766 các tỉnh</span>
+              </button>
+            </li>
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn" id="tab-btn-766" data-tab="tab-content-766" title="Bộ chỉ số 766">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M18 17V9"></path>
+                  <path d="M13 17V5"></path>
+                  <path d="M8 17v-3"></path>
+                </svg>
+                <span class="nav-tab-label">Bộ chỉ số 766</span>
+              </button>
+            </li>
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn" id="tab-btn-formula" data-tab="tab-content-formula" title="Công thức tính 766">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="16" y1="14" x2="16" y2="18"></line>
+                  <path d="M16 10h.01"></path>
+                  <path d="M12 10h.01"></path>
+                  <path d="M8 10h.01"></path>
+                  <path d="M12 14h.01"></path>
+                  <path d="M8 14h.01"></path>
+                  <path d="M12 18h.01"></path>
+                  <path d="M8 18h.01"></path>
+                </svg>
+                <span class="nav-tab-label">Công thức tính 766</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nhóm 2: NGHIỆP VỤ & TÁC NGHIỆP -->
+        <div class="sidebar-nav-group">
+          <div class="sidebar-group-title">NGHIỆP VỤ & TÁC NGHIỆP</div>
+          <ul class="sidebar-menu-list">
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn" id="tab-btn-qr" data-tab="tab-content-qr" title="Tạo Mã QR TTHC">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                  <path d="M14 14h3v3h-3z"></path>
+                  <path d="M21 14v3"></path>
+                  <path d="M14 21v-3"></path>
+                  <path d="M17 21h4"></path>
+                </svg>
+                <span class="nav-tab-label">Tạo Mã QR TTHC</span>
+              </button>
+            </li>
+            <li class="sidebar-menu-item" id="nav-item-quick-report" style="display: none;">
+              <button class="nav-tab-btn" id="tab-btn-quick-report" data-tab="tab-content-quick-report" title="Báo cáo nhanh 766">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
+                  <polyline points="13 13 16 13 16 16"></polyline>
+                </svg>
+                <span class="nav-tab-label">Báo cáo nhanh</span>
+                <span class="sidebar-lock-badge" title="Chức năng cho Cán bộ / Admin">🔒</span>
+              </button>
+            </li>
+            <li class="sidebar-menu-item" id="nav-item-dossier-split" style="display: none;">
+              <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split" title="Phân loại hồ sơ">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span class="nav-tab-label">Phân loại hồ sơ</span>
+                <span class="sidebar-lock-badge" title="Chức năng cho Cán bộ / Admin">🔒</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nhóm 3: CÔNG CỤ & TIỆN ÍCH -->
+        <div class="sidebar-nav-group">
+          <div class="sidebar-group-title">CÔNG CỤ TIỆN ÍCH</div>
+          <ul class="sidebar-menu-list">
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn" id="tab-btn-tools" data-tab="tab-content-tools" title="Tiện ích văn phòng">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                <span class="nav-tab-label">Tiện ích văn phòng</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-status-pill">
+          <span class="pulse-dot"></span>
+          <span class="sidebar-status-text">Trực tuyến</span>
+        </div>
+        <div class="sidebar-version-text">v2.5 • DVC 766</div>
+      </div>
+    </aside>
+
+    <!-- Backdrop khi mở menu trên điện thoại -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- MAIN WRAPPER (Phần nội dung chính bên phải) -->
+    <div class="app-main-wrapper">
+      <!-- TOPBAR (Header ngang tinh gọn) -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button type="button" class="sidebar-mobile-toggle" id="sidebar-mobile-toggle" aria-label="Mở menu điều hướng" title="Mở danh mục menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="topbar-breadcrumb">
+            <span class="topbar-crumb-org">UBND tỉnh Đắk Lắk</span>
+            <span class="topbar-crumb-sep">/</span>
+            <span class="topbar-crumb-active" id="topbar-active-title">Đường dẫn các cổng</span>
           </div>
         </div>
 
-        <!-- Thông tin phụ trợ bên phải -->
-        <div class="header-meta-group">
+        <div class="topbar-right">
+          <!-- Trạng thái trực tuyến -->
           <div class="system-status-badge">
             <span class="pulse-dot"></span>
             <span class="status-text">Trực tuyến</span>
           </div>
 
-          <!-- Nút đăng nhập (Hiển thị khi chưa đăng nhập) -->
+          <!-- Nút đăng nhập -->
           <button id="btn-open-login" class="btn-login-header" type="button" onclick="openLoginModal()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -58,7 +220,7 @@
             <span>Đăng nhập</span>
           </button>
 
-          <!-- Hồ sơ người dùng (Hiển thị khi đã đăng nhập) -->
+          <!-- Hồ sơ người dùng khi đã đăng nhập -->
           <div id="user-profile-header" class="user-profile-header" style="display: none;">
             <div class="user-avatar-circle" id="user-avatar-initial">A</div>
             <div class="user-info-text">
@@ -75,252 +237,7 @@
             </button>
           </div>
         </div>
-      </div>
-    </header>
-
-    <!-- TẦNG 2: NAVIGATION BAR (Thanh menu riêng biệt nằm ngay phía dưới) -->
-    <nav class="sub-nav-bar" aria-label="Main Navigation">
-      <div class="sub-nav-inner">
-        <!-- Vùng cuộn ngang các Tab menu (Swipeable Chip Bar) -->
-        <div class="nav-tabs-scroll-container" id="nav-tabs-scroll-container">
-          <ul class="nav-tabs-list" id="main-nav-tabs-list">
-            <li class="nav-tab-item">
-              <button class="nav-tab-btn active" id="tab-btn-portals" data-tab="tab-content-portals">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-                <span>Đường dẫn các cổng</span>
-              </button>
-            </li>
-            <li class="nav-tab-item">
-              <button class="nav-tab-btn" id="tab-btn-provinces" data-tab="tab-content-provinces">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                  <path d="M4 22h16"></path>
-                  <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
-                  <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
-                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
-                </svg>
-                <span>Xếp hạng 766 các tỉnh</span>
-              </button>
-            </li>
-            <li class="nav-tab-item">
-              <button class="nav-tab-btn" id="tab-btn-766" data-tab="tab-content-766">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 3v18h18"></path>
-                  <path d="M18 17V9"></path>
-                  <path d="M13 17V5"></path>
-                  <path d="M8 17v-3"></path>
-                </svg>
-                <span>Bộ chỉ số 766</span>
-              </button>
-            </li>
-            <li class="nav-tab-item">
-              <button class="nav-tab-btn" id="tab-btn-formula" data-tab="tab-content-formula">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-                  <line x1="8" y1="6" x2="16" y2="6"></line>
-                  <line x1="16" y1="14" x2="16" y2="18"></line>
-                  <path d="M16 10h.01"></path>
-                  <path d="M12 10h.01"></path>
-                  <path d="M8 10h.01"></path>
-                  <path d="M12 14h.01"></path>
-                  <path d="M8 14h.01"></path>
-                  <path d="M12 18h.01"></path>
-                  <path d="M8 18h.01"></path>
-                </svg>
-                <span>Công thức tính 766</span>
-              </button>
-            </li>
-            <li class="nav-tab-item">
-              <button class="nav-tab-btn" id="tab-btn-qr" data-tab="tab-content-qr">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="3" width="7" height="7"></rect>
-                  <rect x="3" y="14" width="7" height="7"></rect>
-                  <path d="M14 14h3v3h-3z"></path>
-                  <path d="M21 14v3"></path>
-                  <path d="M14 21v-3"></path>
-                  <path d="M17 21h4"></path>
-                </svg>
-                <span>Mã QR TTHC</span>
-              </button>
-            </li>
-            <li class="nav-tab-item" id="nav-item-quick-report" style="display: none;">
-              <button class="nav-tab-btn" id="tab-btn-quick-report" data-tab="tab-content-quick-report">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
-                  <polyline points="13 13 16 13 16 16"></polyline>
-                </svg>
-                <span>Báo cáo nhanh</span>
-              </button>
-            </li>
-            <li class="nav-tab-item">
-              <button class="nav-tab-btn" id="tab-btn-tools" data-tab="tab-content-tools">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                </svg>
-                <span>Tiện ích</span>
-              </button>
-            </li>
-            <!-- Tab Phân loại hồ sơ (Cán bộ & Quản trị viên) -->
-            <li class="nav-tab-item" id="nav-item-dossier-split" style="display: none;">
-              <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split">
-                <svg class="nav-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span>Phân loại hồ sơ</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Nút mở lưới toàn bộ chức năng (Mobile Menu Button) -->
-        <button type="button" class="mobile-nav-toggle-btn" id="mobile-nav-toggle-btn" aria-label="Xem tất cả menu" title="Mở danh mục menu">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-          </svg>
-          <span class="mobile-nav-toggle-text">Menu</span>
-        </button>
-      </div>
-
-      <!-- POPUP / BOTTOM SHEET TOÀN BỘ MENU TRÊN ĐIỆN THOẠI -->
-      <div id="mobile-menu-drawer" class="mobile-nav-drawer-backdrop" style="display: none;">
-        <div class="mobile-nav-drawer-card">
-          <div class="mobile-nav-drawer-header">
-            <div class="mobile-nav-drawer-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-              </svg>
-              <span>Danh mục Chức năng Hệ thống</span>
-            </div>
-            <button type="button" id="mobile-nav-drawer-close" class="mobile-nav-drawer-close" aria-label="Đóng">&times;</button>
-          </div>
-          <div class="mobile-nav-drawer-body">
-            <div class="mobile-nav-grid" id="mobile-nav-grid">
-              <div class="mobile-grid-item active" data-tab="tab-content-portals">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Đường dẫn các cổng</span>
-              </div>
-
-              <div class="mobile-grid-item" data-tab="tab-content-provinces">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                    <path d="M4 22h16"></path>
-                    <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
-                    <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
-                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Xếp hạng 766 các tỉnh</span>
-              </div>
-
-              <div class="mobile-grid-item" data-tab="tab-content-766">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 3v18h18"></path>
-                    <path d="M18 17V9"></path>
-                    <path d="M13 17V5"></path>
-                    <path d="M8 17v-3"></path>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Bộ chỉ số 766</span>
-              </div>
-
-              <div class="mobile-grid-item" data-tab="tab-content-formula">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-                    <line x1="8" y1="6" x2="16" y2="6"></line>
-                    <line x1="16" y1="14" x2="16" y2="18"></line>
-                    <path d="M16 10h.01"></path>
-                    <path d="M12 10h.01"></path>
-                    <path d="M8 10h.01"></path>
-                    <path d="M12 14h.01"></path>
-                    <path d="M8 14h.01"></path>
-                    <path d="M12 18h.01"></path>
-                    <path d="M8 18h.01"></path>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Công thức tính 766</span>
-              </div>
-
-              <div class="mobile-grid-item" data-tab="tab-content-qr">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                    <path d="M14 14h3v3h-3z"></path>
-                    <path d="M21 14v3"></path>
-                    <path d="M14 21v-3"></path>
-                    <path d="M17 21h4"></path>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Mã QR TTHC</span>
-              </div>
-
-              <div class="mobile-grid-item" id="mobile-grid-item-quick-report" data-tab="tab-content-quick-report" style="display: none;">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <path d="M16 13l-3.5 3.5-2-2L8 17"></path>
-                    <polyline points="13 13 16 13 16 16"></polyline>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Báo cáo nhanh</span>
-              </div>
-
-              <div class="mobile-grid-item" data-tab="tab-content-tools">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Tiện ích</span>
-              </div>
-
-              <div class="mobile-grid-item" id="mobile-grid-item-dossier-split" data-tab="tab-content-dossier-split" style="display: none;">
-                <div class="mobile-grid-icon-wrap">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                  </svg>
-                </div>
-                <span class="mobile-grid-title">Phân loại hồ sơ</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+      </header>
 
     <!-- Main Content Area -->
     <main class="app-main">
@@ -3844,7 +3761,8 @@
         <p class="footer-title">HỆ THỐNG HỖ TRỢ DỊCH VỤ CÔNG</p>
       </div>
     </footer>
-  </div>
+    </div> <!-- app-main-wrapper -->
+  </div> <!-- app-layout -->
 
   <!-- PDF & Excel Processing Libraries (100% Local Offline) -->
   <script src="libs/pdf.min.js"></script>

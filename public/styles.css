@@ -94,101 +94,401 @@ body::before {
 .app-layout {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   position: relative;
   z-index: 1;
+  background-color: #f8fafc;
 }
 
 /* ==========================================================================
-   TẦNG 1: BRAND HEADER (Nền trắng, h-16, border-b border-slate-200)
+   VERTICAL SIDEBAR (MENU DỌC DOANH NGHIỆP)
    ========================================================================== */
-.brand-header {
+.app-sidebar {
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
   background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
   position: sticky;
   top: 0;
+  height: 100vh;
   z-index: 50;
-  height: 64px; /* h-16 */
-  display: flex;
-  align-items: center;
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.02);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
+  user-select: none;
 }
 
-.brand-header-inner {
-  max-width: 80rem; /* max-w-7xl */
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 16px; /* px-4 */
+/* Sidebar Header */
+.sidebar-header {
+  height: 64px;
+  padding: 0 16px;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  gap: 16px;
+  background: #ffffff;
+  flex-shrink: 0;
 }
 
-.brand-block {
+.sidebar-brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  text-decoration: none;
+  min-width: 0;
 }
 
-.brand-logo-wrap {
-  width: 44px;
-  height: 44px;
+.sidebar-logo-wrap {
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.brand-logo-img {
-  width: 44px;
-  height: 44px;
+.sidebar-logo-img {
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
-  transition: transform 0.2s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
-.brand-logo-img:hover {
-  transform: scale(1.05);
+.sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.brand-text {
+.sidebar-brand-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e3a8a;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.sidebar-brand-subtitle {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Nút thu gọn / mở rộng sidebar trên Desktop */
+.sidebar-collapse-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sidebar-collapse-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.sidebar-collapse-btn .icon-collapse {
+  transition: transform 0.25s ease;
+}
+
+/* Sidebar Body & Navigation */
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.sidebar-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.sidebar-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-group-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  padding: 6px 12px 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sidebar-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.brand-title {
-  font-family: var(--font-display);
-  font-size: 16px; /* text-base */
-  font-weight: 700; /* font-bold */
-  letter-spacing: -0.025em; /* tracking-tight */
-  color: #0f172a; /* text-slate-900 */
-  margin: 0;
-  line-height: 1.25;
+.sidebar-menu-item {
+  display: block;
+  width: 100%;
 }
 
-.brand-subtitle {
-  font-size: 12px; /* text-xs */
-  color: #64748b; /* text-slate-500 */
-  font-weight: 500;
-  margin: 0;
-  line-height: 1.2;
+.sidebar-menu-item[style*="inline-block"] {
+  display: block !important;
 }
 
-.dept-code {
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* Thông tin phụ trợ bên phải Tầng 1 */
-.header-meta-group {
+/* Nav Tab Button trong menu dọc */
+.sidebar-menu-list .nav-tab-btn {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #475569;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  outline: none;
+  box-sizing: border-box;
+  position: relative;
 }
 
+.sidebar-menu-list .nav-tab-btn:hover:not(.active) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sidebar-menu-list .nav-tab-btn.active {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+
+.sidebar-menu-list .nav-tab-btn .nav-tab-icon {
+  width: 18px;
+  height: 18px;
+  color: #64748b;
+  stroke: currentColor;
+  flex-shrink: 0;
+  transition: color 0.18s ease;
+}
+
+.sidebar-menu-list .nav-tab-btn:hover:not(.active) .nav-tab-icon {
+  color: #0f172a;
+}
+
+.sidebar-menu-list .nav-tab-btn.active .nav-tab-icon {
+  color: #2563eb;
+}
+
+.nav-tab-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-lock-badge {
+  font-size: 11px;
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.sidebar-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #166534;
+}
+
+.sidebar-version-text {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   CHẾ ĐỘ THU GỌN SIDEBAR (DESKTOP COLLAPSED)
+   ========================================================================== */
+.app-layout.sidebar-collapsed .app-sidebar {
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
+}
+
+.app-layout.sidebar-collapsed .sidebar-header {
+  padding: 0 10px;
+  justify-content: center;
+}
+
+.app-layout.sidebar-collapsed .sidebar-brand-text,
+.app-layout.sidebar-collapsed .sidebar-group-title,
+.app-layout.sidebar-collapsed .nav-tab-label,
+.app-layout.sidebar-collapsed .sidebar-lock-badge,
+.app-layout.sidebar-collapsed .sidebar-version-text,
+.app-layout.sidebar-collapsed .sidebar-status-text {
+  display: none !important;
+}
+
+.app-layout.sidebar-collapsed .sidebar-menu-list .nav-tab-btn {
+  justify-content: center;
+  padding: 11px 0;
+  gap: 0;
+}
+
+.app-layout.sidebar-collapsed .sidebar-collapse-btn {
+  position: absolute;
+  top: 18px;
+  right: -14px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 60;
+}
+
+.app-layout.sidebar-collapsed .sidebar-collapse-btn .icon-collapse {
+  transform: rotate(180deg);
+}
+
+.app-layout.sidebar-collapsed .sidebar-footer {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+/* ==========================================================================
+   MAIN CONTENT WRAPPER & TOPBAR
+   ========================================================================== */
+.app-main-wrapper {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.app-topbar {
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sidebar-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px;
+  color: #475569;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.sidebar-mobile-toggle:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.topbar-crumb-org {
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.topbar-crumb-sep {
+  color: #cbd5e1;
+}
+
+.topbar-crumb-active {
+  color: #0f172a;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Badge trạng thái trực tuyến */
 .system-status-badge {
   display: inline-flex;
   align-items: center;
@@ -212,86 +512,136 @@ body::before {
   animation: pulse-green 2s infinite;
 }
 
-.system-sync-pill {
+/* Nút đăng nhập trên Header */
+.btn-login-header {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 5px 11px;
+  gap: 7px;
+  padding: 6px 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
   border-radius: 6px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.system-sync-pill svg {
-  color: #94a3b8;
-  flex-shrink: 0;
+.btn-login-header:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
 }
 
-/* ==========================================================================
-   TẦNG 2: NAVIGATION BAR (Thanh menu riêng biệt nằm ngay phía dưới)
-   ========================================================================== */
-.sub-nav-bar {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  position: sticky;
-  top: 64px;
-  z-index: 40;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
-  width: 100%;
-}
-
-.sub-nav-inner {
-  max-width: 80rem; /* max-w-7xl */
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 16px; /* px-4 */
-  display: flex;
+.user-profile-header {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 
-.nav-tabs-scroll-container {
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  justify-content: center;
 }
 
-.nav-tabs-scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .brand-header {
-    height: auto;
-    padding: 10px 0;
-  }
-  .brand-header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .header-meta-group {
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .sub-nav-bar {
-    top: auto;
-  }
-}
-
-/* Header Actions */
-.header-actions {
+.user-info-text {
   display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-display-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.user-role-badge {
+  font-size: 10.5px;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.btn-logout-header {
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px 10px;
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout-header:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (MOBILE & TABLET)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+  }
+
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile-toggle {
+    display: inline-flex;
+  }
+
+  .sidebar-collapse-btn {
+    display: none;
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-backdrop.active {
+    display: block;
+    opacity: 1;
+  }
+
+  .app-topbar {
+    padding: 0 16px;
+  }
+
+  .topbar-crumb-org,
+  .topbar-crumb-sep {
+    display: none;
+  }
 }
 
 .cron-status-pill {
@@ -417,15 +767,14 @@ body::before {
   border-color: #94a3b8;
 }
 
-/* Main Content (Aligned with 2-tier header container max-w-7xl px-4 mt-6) */
+/* Main Content */
 .app-main {
   flex: 1;
-  max-width: 80rem; /* max-w-7xl */
+  max-width: 1540px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 16px; /* px-4 */
-  margin-top: 24px; /* mt-6 */
-  margin-bottom: 48px;
+  padding: 24px 24px 48px;
+  box-sizing: border-box;
 }
 
 /* Loader */
@@ -2218,47 +2567,49 @@ body.is-logged-in .btn-detail-link {
 }
 
 .nav-tab-btn {
-  display: inline-flex;
+  width: 100%;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: 12px;
+  padding: 10px 14px;
   background: transparent;
   color: #475569;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
+  border: none;
+  border-radius: 8px;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
   white-space: nowrap;
   outline: none;
+  box-sizing: border-box;
 }
 
 .nav-tab-btn:hover:not(.active) {
   color: #0f172a;
-  border-bottom-color: #cbd5e1;
-  background-color: transparent;
+  background-color: #f1f5f9;
 }
 
 .nav-tab-btn.active {
-  background: rgba(239, 246, 255, 0.45);
+  background: #eff6ff;
   color: #1d4ed8;
   font-weight: 600;
-  border-bottom: 2px solid #2563eb;
+  box-shadow: inset 3px 0 0 #2563eb;
 }
 
 .nav-tab-icon {
-  width: 16px;
-  height: 16px;
-  color: currentColor;
+  width: 18px;
+  height: 18px;
+  color: #64748b;
   stroke: currentColor;
   flex-shrink: 0;
-  transition: color 0.15s ease;
+  transition: color 0.18s ease;
+}
+
+.nav-tab-btn.active .nav-tab-icon {
+  color: #2563eb;
 }
 
 .nav-pill-badge {

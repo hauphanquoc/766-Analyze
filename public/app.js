@@ -121,65 +121,69 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Navigation tabs (Đường dẫn các cổng / Xếp hạng các tỉnh / Bộ chỉ số 766 / ...)
+ * Navigation tabs & Sidebar (Đường dẫn các cổng / Xếp hạng các tỉnh / Bộ chỉ số 766 / ...)
  */
 function initNavigationTabs() {
   const tabButtons = document.querySelectorAll('.nav-tab-btn[data-tab]');
-  const mobileGridItems = document.querySelectorAll('.mobile-grid-item[data-tab]');
   const tabPanes = document.querySelectorAll('.tab-pane');
-  const mobileNavToggleBtn = document.getElementById('mobile-nav-toggle-btn');
-  const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
-  const mobileDrawerClose = document.getElementById('mobile-nav-drawer-close');
+  const sidebar = document.getElementById('app-sidebar');
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+  const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn');
+  const sidebarMobileToggle = document.getElementById('sidebar-mobile-toggle');
+  const topbarActiveTitle = document.getElementById('topbar-active-title');
+  const appLayout = document.querySelector('.app-layout');
 
-  function openMobileMenu() {
-    if (mobileMenuDrawer) {
-      mobileMenuDrawer.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-  }
-
-  function closeMobileMenu() {
-    if (mobileMenuDrawer) {
-      mobileMenuDrawer.style.display = 'none';
-      document.body.style.overflow = '';
-    }
+  // Khôi phục trạng thái thu gọn sidebar từ localStorage (Desktop)
+  const isCollapsed = localStorage.getItem('dvc766_sidebar_collapsed') === 'true';
+  if (isCollapsed && appLayout && window.innerWidth >= 1024) {
+    appLayout.classList.add('sidebar-collapsed');
   }
 
-  if (mobileNavToggleBtn) {
-    mobileNavToggleBtn.addEventListener('click', openMobileMenu);
-  }
-  if (mobileDrawerClose) {
-    mobileDrawerClose.addEventListener('click', closeMobileMenu);
-  }
-  if (mobileMenuDrawer) {
-    mobileMenuDrawer.addEventListener('click', (e) => {
-      if (e.target === mobileMenuDrawer) {
-        closeMobileMenu();
-      }
+  // Thu gọn / Mở rộng Sidebar trên Desktop
+  if (sidebarCollapseBtn && appLayout) {
+    sidebarCollapseBtn.addEventListener('click', () => {
+      appLayout.classList.toggle('sidebar-collapsed');
+      const nowCollapsed = appLayout.classList.contains('sidebar-collapsed');
+      localStorage.setItem('dvc766_sidebar_collapsed', nowCollapsed ? 'true' : 'false');
     });
   }
 
+  // Đóng / Mở Sidebar trên Mobile
+  function openMobileSidebar() {
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileSidebar() {
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (sidebarMobileToggle) {
+    sidebarMobileToggle.addEventListener('click', openMobileSidebar);
+  }
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+  }
+
   function switchTab(targetTabId) {
+    let activeName = '';
     tabButtons.forEach(b => {
       const isActive = b.getAttribute('data-tab') === targetTabId;
       b.classList.toggle('active', isActive);
       if (isActive) {
-        // Tự động cuộn tab đang chọn vào chính giữa thanh trượt ngang mà không làm giật vị trí cuộn dọc trang
-        const scrollContainer = document.getElementById('nav-tabs-scroll-container');
-        if (scrollContainer) {
-          const containerRect = scrollContainer.getBoundingClientRect();
-          const btnRect = b.getBoundingClientRect();
-          const offset = (btnRect.left - containerRect.left) + scrollContainer.scrollLeft - (containerRect.width / 2) + (btnRect.width / 2);
-          scrollContainer.scrollTo({ left: offset, behavior: 'smooth' });
-        }
+        const labelEl = b.querySelector('.nav-tab-label') || b.querySelector('span');
+        if (labelEl) activeName = labelEl.textContent.trim();
       }
     });
 
-    mobileGridItems.forEach(item => {
-      item.classList.toggle('active', item.getAttribute('data-tab') === targetTabId);
-    });
+    if (topbarActiveTitle && activeName) {
+      topbarActiveTitle.textContent = activeName;
+    }
 
-    closeMobileMenu();
+    closeMobileSidebar();
 
     tabPanes.forEach(pane => {
       if (pane.id === targetTabId) {
@@ -217,13 +221,6 @@ function initNavigationTabs() {
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetTabId = btn.getAttribute('data-tab');
-      switchTab(targetTabId);
-    });
-  });
-
-  mobileGridItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const targetTabId = item.getAttribute('data-tab');
       switchTab(targetTabId);
     });
   });
