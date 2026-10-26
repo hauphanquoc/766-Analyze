@@ -3490,152 +3490,133 @@
       </button>
     </div>
 
-    <!-- Khu vực làm việc Quản lý người dùng -->
+    <!-- Khu vực làm việc Quản lý người dùng: UNIFIED ENTERPRISE CARD (MỘT CARD DUY NHẤT) -->
     <div id="users-workspace-wrap" class="users-workspace-wrap">
-      <div class="users-mgmt-container">
-        <!-- Banner tiêu đề và thao tác chính -->
-        <div class="users-header-banner">
-          <div class="users-header-content">
-            <div class="users-header-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <span>KHU VỰC QUẢN TRỊ HỆ THỐNG</span>
-            </div>
-            <h2 class="users-header-title">Quản lý tài khoản cán bộ đơn vị</h2>
-            <p class="users-header-desc">Khởi tạo tài khoản phân quyền cán bộ nghiệp vụ, quản lý liên kết đơn vị xã/phường/sở ngành, sửa đổi thông tin và cấp lại mật khẩu.</p>
-          </div>
-          <div class="users-header-actions">
-            <button type="button" class="btn btn-outline" id="btn-refresh-users" onclick="loadUsersList()" title="Tải lại danh sách">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-              </svg>
-              <span>Làm mới</span>
-            </button>
-            <button type="button" class="btn btn-primary" id="btn-create-user-modal" onclick="openCreateUserModal()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Thêm tài khoản mới</span>
-            </button>
-          </div>
-        </div>
+      <div class="users-container">
+        <!-- ENTERPRISE UNIFIED CARD -->
+        <div class="users-unified-card">
+          
+          <!-- Phần trên: Card Header (Tiêu đề, Badge, Dải Chip Thống kê, Nút Thao tác) -->
+          <div class="users-card-header">
+            <div class="users-header-top">
+              <div class="users-header-left">
+                <!-- Tiêu đề + Huy hiệu GovTech -->
+                <div class="users-title-row">
+                  <h2 class="users-clean-title">Quản lý tài khoản cán bộ đơn vị</h2>
+                  <div class="users-badge-gov">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="users-badge-icon">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>Phân quyền & Quản trị Hệ thống</span>
+                  </div>
+                </div>
 
-        <!-- Thẻ thống kê tổng quan -->
-        <div class="users-stats-grid">
-          <div class="users-stat-card stat-card-total">
-            <div class="stat-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            </div>
-            <div class="stat-card-info">
-              <span class="stat-card-label">Tổng số tài khoản</span>
-              <strong class="stat-card-value" id="stat-users-total">--</strong>
-            </div>
-          </div>
+                <!-- Mô tả ngắn gọn -->
+                <p class="users-clean-desc">Khởi tạo tài khoản phân quyền cán bộ nghiệp vụ, quản lý liên kết đơn vị xã/phường/sở ngành, sửa đổi thông tin và cấp lại mật khẩu.</p>
 
-          <div class="users-stat-card stat-card-officers">
-            <div class="stat-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
-            <div class="stat-card-info">
-              <span class="stat-card-label">Tài khoản Cán bộ</span>
-              <strong class="stat-card-value" id="stat-users-officers">--</strong>
-            </div>
-          </div>
+                <!-- Dải chip thống kê thanh lịch dạng chip -->
+                <div class="users-stats-strip">
+                  <span class="user-stat-chip"><strong id="stat-users-total">--</strong> Tổng tài khoản</span>
+                  <span class="user-stat-chip"><strong id="stat-users-officers">--</strong> Cán bộ nghiệp vụ</span>
+                  <span class="user-stat-chip"><strong id="stat-users-admins">--</strong> Quản trị viên</span>
+                  <span class="user-stat-chip"><strong id="stat-users-linked-units">-- / 115</strong> Đơn vị liên kết</span>
+                </div>
+              </div>
 
-          <div class="users-stat-card stat-card-admins">
-            <div class="stat-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            </div>
-            <div class="stat-card-info">
-              <span class="stat-card-label">Quản trị viên (Admin)</span>
-              <strong class="stat-card-value" id="stat-users-admins">--</strong>
+              <!-- Nút thao tác góc phải Header -->
+              <div class="users-header-actions">
+                <button type="button" class="btn btn-secondary" id="btn-refresh-users" onclick="loadUsersList()" title="Tải lại danh sách">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  <span>Làm mới</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-create-user-modal" onclick="openCreateUserModal()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="btn-icon">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Thêm tài khoản mới</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="users-stat-card stat-card-units">
-            <div class="stat-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path><path d="M9 9h1"></path><path d="M9 13h1"></path><path d="M9 17h1"></path><path d="M14 9h1"></path><path d="M14 13h1"></path><path d="M14 17h1"></path></svg>
-            </div>
-            <div class="stat-card-info">
-              <span class="stat-card-label">Đơn vị liên kết</span>
-              <strong class="stat-card-value" id="stat-users-linked-units">-- / 115</strong>
-            </div>
-          </div>
-        </div>
+          <!-- Phần thân: Card Body (Bộ lọc, Tìm kiếm & Bảng dữ liệu) -->
+          <div class="users-card-body">
+            
+            <!-- Toolbar Tìm kiếm & Lọc (shadcn/ui style đồng bộ) -->
+            <div class="users-toolbar-wrap">
+              <div class="users-search-box">
+                <svg class="users-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="users-search-input" class="users-search-input" placeholder="Tìm theo tên đăng nhập, họ tên cán bộ, mã đơn vị (H15...), tên đơn vị..." oninput="handleUsersFilterChange()" />
+                <button type="button" class="users-search-clear" id="users-search-clear" onclick="clearUsersSearch()" style="display: none;" title="Xóa tìm kiếm">✕</button>
+              </div>
 
-        <!-- Thanh tìm kiếm & lọc -->
-        <div class="users-filter-card">
-          <div class="users-search-box">
-            <svg class="users-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="users-search-input" class="users-search-input" placeholder="Tìm theo tên đăng nhập, họ tên cán bộ, mã đơn vị (H15...), tên đơn vị..." oninput="handleUsersFilterChange()" />
-            <button type="button" class="users-search-clear" id="users-search-clear" onclick="clearUsersSearch()" style="display: none;">✕</button>
-          </div>
+              <div class="users-filter-group">
+                <div class="users-filter-item">
+                  <label for="users-filter-role" class="users-filter-label">Vai trò:</label>
+                  <select id="users-filter-role" class="users-filter-select" onchange="handleUsersFilterChange()">
+                    <option value="all">Tất cả vai trò</option>
+                    <option value="officer">Cán bộ nghiệp vụ</option>
+                    <option value="admin">Quản trị viên</option>
+                  </select>
+                </div>
 
-          <div class="users-filter-group">
-            <div class="users-filter-item">
-              <label for="users-filter-role" class="users-filter-label">Vai trò:</label>
-              <select id="users-filter-role" class="users-filter-select" onchange="handleUsersFilterChange()">
-                <option value="all">Tất cả vai trò</option>
-                <option value="officer">Cán bộ nghiệp vụ</option>
-                <option value="admin">Quản trị viên</option>
-              </select>
+                <div class="users-filter-item">
+                  <label for="users-filter-level" class="users-filter-label">Cấp đơn vị:</label>
+                  <select id="users-filter-level" class="users-filter-select" onchange="handleUsersFilterChange()">
+                    <option value="all">Tất cả các cấp</option>
+                    <option value="COMMUNE">Cấp Xã / Phường / Thị trấn (102 đơn vị)</option>
+                    <option value="DISTRICT">Cấp Huyện / Thị xã / TP</option>
+                    <option value="PROVINCE">Cấp Tỉnh / Sở ban ngành</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <div class="users-filter-item">
-              <label for="users-filter-level" class="users-filter-label">Cấp đơn vị:</label>
-              <select id="users-filter-level" class="users-filter-select" onchange="handleUsersFilterChange()">
-                <option value="all">Tất cả các cấp</option>
-                <option value="COMMUNE">Cấp Xã / Phường / Thị trấn (102 đơn vị)</option>
-                <option value="DISTRICT">Cấp Huyện / Thị xã / TP</option>
-                <option value="PROVINCE">Cấp Tỉnh / Sở ban ngành</option>
-              </select>
+            <!-- Bảng dữ liệu người dùng phẳng, tinh gọn, liền mạch -->
+            <div class="users-table-header-strip">
+              <div class="users-table-title-wrap">
+                <span class="users-table-title">Danh sách tài khoản trong hệ thống</span>
+                <span class="users-table-badge" id="users-count-badge">0 tài khoản</span>
+              </div>
+              <span class="users-table-hint">* Tài khoản tạo mới mặc định có quyền <strong>Cán bộ nghiệp vụ</strong> để tra cứu và khai thác dữ liệu.</span>
             </div>
-          </div>
-        </div>
 
-        <!-- Danh sách tài khoản người dùng -->
-        <div class="users-table-card">
-          <div class="users-table-header">
-            <div class="users-table-title-wrap">
-              <h3 class="users-table-title">Danh sách tài khoản trong hệ thống</h3>
-              <span class="users-table-badge" id="users-count-badge">0 tài khoản</span>
+            <div class="users-table-container">
+              <table class="users-data-table" id="users-data-table">
+                <thead>
+                  <tr>
+                    <th class="col-stt">STT</th>
+                    <th class="col-account">Tài khoản & Cán bộ</th>
+                    <th class="col-unit">Đơn vị phụ trách</th>
+                    <th class="col-role">Vai trò</th>
+                    <th class="col-contact">Liên hệ / Ghi chú</th>
+                    <th class="col-date">Ngày tạo</th>
+                    <th class="col-actions">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-tbody">
+                  <!-- Rendered dynamically by JS -->
+                  <tr>
+                    <td colspan="7" class="users-loading-cell">
+                      <div class="users-spinner"></div>
+                      <span>Đang tải danh sách tài khoản...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div class="users-table-hint">
-              <span>* Tài khoản tạo mới sẽ mặc định có quyền <strong>Cán bộ nghiệp vụ</strong> để tra cứu và khai thác dữ liệu.</span>
-            </div>
-          </div>
 
-          <div class="users-table-container">
-            <table class="users-data-table" id="users-data-table">
-              <thead>
-                <tr>
-                  <th class="col-stt">STT</th>
-                  <th class="col-account">Tài khoản & Cán bộ</th>
-                  <th class="col-unit">Đơn vị phụ trách</th>
-                  <th class="col-role">Vai trò</th>
-                  <th class="col-contact">Liên hệ / Ghi chú</th>
-                  <th class="col-date">Ngày tạo</th>
-                  <th class="col-actions">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody id="users-table-tbody">
-                <!-- Rendered dynamically by JS -->
-                <tr>
-                  <td colspan="7" class="users-loading-cell">
-                    <div class="users-spinner"></div>
-                    <span>Đang tải danh sách tài khoản...</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+          </div> <!-- end .users-card-body -->
 
-      </div> <!-- end .users-mgmt-container -->
+        </div> <!-- end .users-unified-card -->
+      </div> <!-- end .users-container -->
     </div> <!-- end #users-workspace-wrap -->
   </div> <!-- end #tab-content-users-mgmt -->
 </main>

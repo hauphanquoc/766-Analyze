@@ -9294,20 +9294,23 @@ body.is-logged-in .btn-detail-link {
 }
 
 /* ==========================================================================
-   ADMIN USER MANAGEMENT MODULE STYLES
+   ADMIN USER MANAGEMENT MODULE STYLES (ENTERPRISE UNIFIED CARD STYLE)
    ========================================================================== */
 .users-workspace-wrap {
-  padding: 24px;
   width: 100%;
   box-sizing: border-box;
+  padding: 24px 0;
 }
 
-.users-mgmt-container {
-  max-width: 1440px;
-  margin: 0 auto;
+.users-container {
+  padding: 0 0 50px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  animation: fadeIn 0.3s ease-out;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Khóa truy cập khi không phải Admin */
@@ -9315,10 +9318,10 @@ body.is-logged-in .btn-detail-link {
   max-width: 580px;
   margin: 60px auto;
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 40px 32px;
   text-align: center;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
 }
 
@@ -9353,221 +9356,177 @@ body.is-logged-in .btn-detail-link {
   margin-bottom: 24px;
 }
 
-/* Banner tiêu đề trang quản trị */
-.users-header-banner {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  color: #ffffff;
-  border-radius: 16px;
-  padding: 28px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
-  position: relative;
+/* ==========================================================================
+   UNIFIED ENTERPRISE CARD (MỘT CARD DUY NHẤT)
+   ========================================================================== */
+.users-unified-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
-.users-header-banner::before {
-  content: '';
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(234, 88, 12, 0.25) 0%, transparent 70%);
-  pointer-events: none;
+/* Phần trên: Card Header (Tiêu đề, Badge, Stats Strip, Actions) */
+.users-card-header {
+  padding: 24px 28px 20px 28px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #ffffff;
 }
 
-.users-header-content {
-  position: relative;
-  z-index: 1;
+.users-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.users-header-badge {
+.users-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.users-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.users-clean-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.users-badge-gov {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(234, 88, 12, 0.2);
-  color: #fb923c;
-  border: 1px solid rgba(234, 88, 12, 0.35);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 10px;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.users-header-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 6px;
-  letter-spacing: -0.01em;
+.users-badge-icon {
+  width: 14px;
+  height: 14px;
+  color: #2563eb;
 }
 
-.users-header-desc {
+.users-clean-desc {
   font-size: 13.5px;
-  color: #94a3b8;
-  max-width: 680px;
-  line-height: 1.5;
+  color: #64748b;
   margin: 0;
+  line-height: 1.5;
+  max-width: 860px;
+}
+
+.users-stats-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.user-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.user-stat-chip strong {
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .users-header-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.users-header-actions .btn-outline {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #f1f5f9;
-}
-
-.users-header-actions .btn-outline:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.35);
-}
-
-/* Thẻ thống kê 4 ô */
-.users-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-.users-stat-card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.users-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.08);
-}
-
-.users-stat-card .stat-card-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.users-stat-card .stat-card-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.stat-card-total .stat-card-icon {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.stat-card-officers .stat-card-icon {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-.stat-card-admins .stat-card-icon {
-  background: #fff7ed;
-  color: #ea580c;
-}
-
-.stat-card-units .stat-card-icon {
-  background: #f5f3ff;
-  color: #7c3aed;
-}
-
-.users-stat-card .stat-card-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.users-stat-card .stat-card-label {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.users-stat-card .stat-card-value {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
-  line-height: 1.2;
   margin-top: 2px;
 }
 
-/* Thanh tìm kiếm & lọc */
-.users-filter-card {
+/* Phần thân: Card Body */
+.users-card-body {
+  padding: 24px 28px 36px 28px;
   background: #ffffff;
-  border-radius: 14px;
-  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Toolbar Tìm kiếm & Lọc (Modern Shadcn/UI Style) */
+.users-toolbar-wrap {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 12px 16px;
 }
 
 .users-search-box {
   position: relative;
   flex: 1;
-  min-width: 280px;
+  min-width: 260px;
 }
 
 .users-search-icon {
   position: absolute;
-  left: 14px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   color: #94a3b8;
   pointer-events: none;
 }
 
 .users-search-input {
   width: 100%;
-  padding: 10px 36px 10px 40px;
-  border-radius: 10px;
+  padding: 8px 32px 8px 36px;
+  border-radius: 8px;
   border: 1px solid #cbd5e1;
-  font-size: 14px;
+  font-size: 13.5px;
   color: #1e293b;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .users-search-input:focus {
-  background-color: #ffffff;
   border-color: #ea580c;
   box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
 }
 
 .users-search-clear {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
@@ -9575,12 +9534,12 @@ body.is-logged-in .btn-detail-link {
   color: #94a3b8;
   cursor: pointer;
   font-size: 14px;
-  padding: 4px;
+  padding: 2px 4px;
 }
 
 .users-filter-group {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -9593,17 +9552,17 @@ body.is-logged-in .btn-detail-link {
 
 .users-filter-label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: #475569;
   white-space: nowrap;
 }
 
 .users-filter-select {
-  padding: 9px 14px;
-  border-radius: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
   border: 1px solid #cbd5e1;
   background-color: #ffffff;
-  font-size: 13.5px;
+  font-size: 13px;
   color: #1e293b;
   outline: none;
   cursor: pointer;
@@ -9614,45 +9573,35 @@ body.is-logged-in .btn-detail-link {
   border-color: #ea580c;
 }
 
-/* Thẻ bảng dữ liệu tài khoản */
-.users-table-card {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
-  overflow: hidden;
-}
-
-.users-table-header {
-  padding: 18px 24px;
-  border-bottom: 1px solid #f1f5f9;
+/* Header dải thông tin trên bảng */
+.users-table-header-strip {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  background: #fafafa;
+  gap: 10px;
+  padding-bottom: 2px;
 }
 
 .users-table-title-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .users-table-title {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 600;
   color: #0f172a;
-  margin: 0;
 }
 
 .users-table-badge {
-  background: #e2e8f0;
+  background: #f1f5f9;
   color: #475569;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 1px 8px;
   border-radius: 12px;
 }
 
@@ -9664,6 +9613,8 @@ body.is-logged-in .btn-detail-link {
 .users-table-container {
   overflow-x: auto;
   width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
 }
 
 .users-data-table {
