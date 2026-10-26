@@ -12,5 +12,17 @@
     "role": "officer",
     "passwordHash": "dvc766_salt_canbo_daklak:ca23c445d6670095fb35e8ef1781b4bd603dcc5e776b7b52ae6d9fa2cdf005b8ee72c67942ca5c6b814f087e35a9e41f957c18bb9531392641963e239af1bad8",
     "createdAt": "2026-10-05T09:05:09.535Z"
+  },
+  {
+    "username": "ubnd_eaknuec",
+    "name": "Can bo tiep nhan - UBND xa Ea Knuec",
+    "departmentCode": "H15.100",
+    "departmentName": "UBND xa Ea Knuec",
+    "role": "officer",
+    "phone": "",
+    "note": "",
+    "passwordHash": "fb8f5c623fcfa3ddf1459a5ef8e457e9:158598b48a5ab92fb90771b484c89295b07aad3aba78a68b89cc837ea12e624d66e1c5e6434d9a21a228bee83f05af85188980e1da68b7d25f1e6a051df247de",
+    "createdAt": "2026-10-26T08:05:54.475Z",
+    "updatedAt": "2026-10-26T08:05:54.475Z"
   }
 ]

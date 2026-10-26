@@ -1,24 +1,24 @@
 {
   "year": 2026,
-  "date": "2026-10-24",
-  "updatedAt": "2026-10-23T23:00:09.711Z",
-  "updatedAtVN": "06:00 24/10/2026 (giờ Việt Nam)",
+  "date": "2026-10-26",
+  "updatedAt": "2026-10-25T23:00:09.531Z",
+  "updatedAtVN": "06:00 26/10/2026 (giờ Việt Nam)",
   "totalCount": 34,
   "overview": {
     "departmentName": "Cả nước",
     "departmentCode": null,
-    "totalScore": 64.41,
+    "totalScore": 64.42,
     "totalMaxScore": 100,
-    "ratio": 64.41
+    "ratio": 64.42
   },
-  "growthPercent": 30.41,
+  "growthPercent": 30.38,
   "radar": [
     {
       "code": "CKMB",
       "name": "Công khai, minh bạch",
-      "score": 10.47,
+      "score": 10.5,
       "maxScore": 18,
-      "ratio": 58.18
+      "ratio": 58.33
     },
     {
       "code": "TDGQ",
@@ -30,46 +30,46 @@
     {
       "code": "ONLINE_SERVICE",
       "name": "Dịch vụ trực tuyến",
-      "score": 15.05,
+      "score": 15.04,
       "maxScore": 22,
-      "ratio": 68.22
+      "ratio": 68.18
     },
     {
       "code": "MDHL",
       "name": "Mức độ hài lòng",
-      "score": 10.72,
+      "score": 10.7,
       "maxScore": 18,
-      "ratio": 59.55
+      "ratio": 59.47
     },
     {
       "code": "MDSH",
       "name": "Số hóa hồ sơ",
-      "score": 10.43,
+      "score": 10.44,
       "maxScore": 22,
-      "ratio": 47.43
+      "ratio": 47.46
     }
   ],
   "dakLak": {
     "departmentId": "019d2be3-6a85-74ec-a33c-a7c04919ba00",
     "departmentName": "UBND tỉnh Đắk Lắk",
     "departmentCode": "H15",
-    "totalScore": 66.65,
-    "scoreDelta": 18.58,
+    "totalScore": 66.62,
+    "scoreDelta": 18.55,
     "scores": {
       "CKMB": 11.85,
-      "TDGQ": 17.81,
+      "TDGQ": 17.8,
       "CLGQ": 9.01,
       "MDSH": 9.78,
-      "MDHL": 11.4,
+      "MDHL": 11.38,
       "TTTT": 6.8
     },
     "isDakLak": true,
     "rank": 8,
     "rank_CKMB": 10,
     "rank_TDGQ": 20,
-    "rank_CLGQ": 11,
+    "rank_CLGQ": 10,
     "rank_MDSH": 28,
-    "rank_MDHL": 12,
+    "rank_MDHL": 13,
     "rank_TTTT": 12
   },
   "provinces": [
@@ -77,21 +77,21 @@
       "departmentId": "019d2be3-6a85-74ec-a337-73acd0627180",
       "departmentName": "UBND tỉnh Cà Mau",
       "departmentCode": "H12",
-      "totalScore": 70.34,
-      "scoreDelta": 22.17,
+      "totalScore": 70.35,
+      "scoreDelta": 22.18,
       "scores": {
         "CKMB": 13.87,
         "TDGQ": 18.17,
         "CLGQ": 8.89,
         "MDSH": 10.37,
         "MDHL": 12.52,
-        "TTTT": 6.52
+        "TTTT": 6.53
       },
       "isDakLak": false,
       "rank": 1,
       "rank_CKMB": 3,
       "rank_TDGQ": 10,
-      "rank_CLGQ": 13,
+      "rank_CLGQ": 12,
       "rank_MDSH": 19,
       "rank_MDHL": 3,
       "rank_TTTT": 20
@@ -100,22 +100,22 @@
       "departmentId": "019d2be3-6a85-74ec-a344-751a7a0bbdb5",
       "departmentName": "UBND tỉnh Đồng Tháp",
       "departmentCode": "H20",
-      "totalScore": 69.66,
-      "scoreDelta": 19.98,
+      "totalScore": 69.61,
+      "scoreDelta": 19.93,
       "scores": {
         "CKMB": 11.46,
         "TDGQ": 17.86,
         "CLGQ": 8.89,
         "MDSH": 10.35,
-        "MDHL": 14.59,
+        "MDHL": 14.54,
         "TTTT": 6.51
       },
       "isDakLak": false,
       "rank": 2,
       "rank_CKMB": 15,
       "rank_TDGQ": 18,
-      "rank_CLGQ": 13,
-      "rank_MDSH": 20,
+      "rank_CLGQ": 12,
+      "rank_MDSH": 22,
       "rank_MDHL": 1,
       "rank_TTTT": 22
     },
@@ -123,14 +123,14 @@
       "departmentId": "019d2be3-6a85-74ec-a342-8635701ddf34",
       "departmentName": "UBND Thành phố Đồng Nai",
       "departmentCode": "H19",
-      "totalScore": 69.43,
-      "scoreDelta": 7.99,
+      "totalScore": 69.49,
+      "scoreDelta": 8.05,
       "scores": {
         "CKMB": 12.31,
-        "TDGQ": 16.58,
+        "TDGQ": 16.59,
         "CLGQ": 9.33,
-        "MDSH": 10.79,
-        "MDHL": 12.87,
+        "MDSH": 10.82,
+        "MDHL": 12.89,
         "TTTT": 7.55
       },
       "isDakLak": false,
@@ -151,16 +151,16 @@
       "scores": {
         "CKMB": 11.08,
         "TDGQ": 17.99,
-        "CLGQ": 9.25,
-        "MDSH": 11.65,
-        "MDHL": 12.03,
+        "CLGQ": 9.26,
+        "MDSH": 11.69,
+        "MDHL": 11.98,
         "TTTT": 7.02
       },
       "isDakLak": false,
       "rank": 4,
       "rank_CKMB": 18,
       "rank_TDGQ": 14,
-      "rank_CLGQ": 8,
+      "rank_CLGQ": 7,
       "rank_MDSH": 3,
       "rank_MDHL": 7,
       "rank_TTTT": 6
@@ -169,21 +169,21 @@
       "departmentId": "019d2be3-6a88-732b-8b23-f5575505c632",
       "departmentName": "UBND tỉnh Tây Ninh",
       "departmentCode": "H53",
-      "totalScore": 68.8,
-      "scoreDelta": 18.79,
+      "totalScore": 68.74,
+      "scoreDelta": 18.73,
       "scores": {
         "CKMB": 11.95,
-        "TDGQ": 16.64,
+        "TDGQ": 16.63,
         "CLGQ": 9.18,
-        "MDSH": 12.63,
-        "MDHL": 11.48,
+        "MDSH": 12.64,
+        "MDHL": 11.42,
         "TTTT": 6.92
       },
       "isDakLak": false,
       "rank": 5,
       "rank_CKMB": 8,
       "rank_TDGQ": 29,
-      "rank_CLGQ": 9,
+      "rank_CLGQ": 8,
       "rank_MDSH": 1,
       "rank_MDHL": 11,
       "rank_TTTT": 9
@@ -215,59 +215,59 @@
       "departmentId": "019d2be3-6a88-732b-8b1c-46b23e7f2084",
       "departmentName": "UBND thành phố Quảng Ninh",
       "departmentCode": "H49",
-      "totalScore": 66.75,
-      "scoreDelta": 26.03,
+      "totalScore": 66.73,
+      "scoreDelta": 26.01,
       "scores": {
         "CKMB": 11.35,
-        "TDGQ": 17.55,
-        "CLGQ": 8.81,
+        "TDGQ": 17.54,
+        "CLGQ": 8.82,
         "MDSH": 10.24,
-        "MDHL": 12.3,
-        "TTTT": 6.5
+        "MDHL": 12.27,
+        "TTTT": 6.51
       },
       "isDakLak": false,
       "rank": 7,
       "rank_CKMB": 16,
       "rank_TDGQ": 22,
-      "rank_CLGQ": 15,
+      "rank_CLGQ": 14,
       "rank_MDSH": 23,
       "rank_MDHL": 5,
-      "rank_TTTT": 23
+      "rank_TTTT": 22
     },
     {
       "departmentId": "019d2be3-6a85-74ec-a33c-a7c04919ba00",
       "departmentName": "UBND tỉnh Đắk Lắk",
       "departmentCode": "H15",
-      "totalScore": 66.65,
-      "scoreDelta": 18.58,
+      "totalScore": 66.62,
+      "scoreDelta": 18.55,
       "scores": {
         "CKMB": 11.85,
-        "TDGQ": 17.81,
+        "TDGQ": 17.8,
         "CLGQ": 9.01,
         "MDSH": 9.78,
-        "MDHL": 11.4,
+        "MDHL": 11.38,
         "TTTT": 6.8
       },
       "isDakLak": true,
       "rank": 8,
       "rank_CKMB": 10,
       "rank_TDGQ": 20,
-      "rank_CLGQ": 11,
+      "rank_CLGQ": 10,
       "rank_MDSH": 28,
-      "rank_MDHL": 12,
+      "rank_MDHL": 13,
       "rank_TTTT": 12
     },
     {
       "departmentId": "019d2be3-6a81-771b-b671-9078297c4a7b",
       "departmentName": "UBND tỉnh Lạng Sơn",
       "departmentCode": "H37",
-      "totalScore": 66.29,
-      "scoreDelta": 50.29,
+      "totalScore": 66.32,
+      "scoreDelta": 50.32,
       "scores": {
         "CKMB": 11.92,
         "TDGQ": 18.52,
         "CLGQ": 8.79,
-        "MDSH": 10.7,
+        "MDSH": 10.73,
         "MDHL": 10.29,
         "TTTT": 6.07
       },
@@ -275,8 +275,8 @@
       "rank": 9,
       "rank_CKMB": 9,
       "rank_TDGQ": 8,
-      "rank_CLGQ": 16,
-      "rank_MDSH": 11,
+      "rank_CLGQ": 15,
+      "rank_MDSH": 9,
       "rank_MDHL": 24,
       "rank_TTTT": 32
     },
@@ -284,14 +284,14 @@
       "departmentId": "019d2be3-6a89-70fe-8e60-6458eb08bfe1",
       "departmentName": "UBND tỉnh Tuyên Quang",
       "departmentCode": "H60",
-      "totalScore": 66.1,
-      "scoreDelta": 12.81,
+      "totalScore": 66.26,
+      "scoreDelta": 12.97,
       "scores": {
         "CKMB": 10.86,
         "TDGQ": 19.04,
         "CLGQ": 8.43,
         "MDSH": 10.21,
-        "MDHL": 11.17,
+        "MDHL": 11.33,
         "TTTT": 6.39
       },
       "isDakLak": false,
@@ -300,51 +300,74 @@
       "rank_TDGQ": 4,
       "rank_CLGQ": 23,
       "rank_MDSH": 24,
-      "rank_MDHL": 16,
+      "rank_MDHL": 15,
       "rank_TTTT": 27
     },
     {
       "departmentId": "019d2be3-6a89-70fe-8e5d-edfb72e6be7f",
       "departmentName": "UBND Thành phố Huế",
       "departmentCode": "H57",
-      "totalScore": 65.77,
-      "scoreDelta": 14.58,
+      "totalScore": 65.82,
+      "scoreDelta": 14.63,
       "scores": {
         "CKMB": 12.42,
         "TDGQ": 17.98,
         "CLGQ": 8.77,
-        "MDSH": 9.49,
+        "MDSH": 9.51,
         "MDHL": 11.01,
-        "TTTT": 6.1
+        "TTTT": 6.13
       },
       "isDakLak": false,
       "rank": 11,
       "rank_CKMB": 5,
       "rank_TDGQ": 15,
-      "rank_CLGQ": 17,
+      "rank_CLGQ": 16,
       "rank_MDSH": 31,
-      "rank_MDHL": 19,
+      "rank_MDHL": 18,
       "rank_TTTT": 30
+    },
+    {
+      "departmentId": "019d2be3-6a85-74ec-a33d-803cf2496575",
+      "departmentName": "UBND Thành phố Đà Nẵng",
+      "departmentCode": "H17",
+      "totalScore": 65.5,
+      "scoreDelta": 10.26,
+      "scores": {
+        "CKMB": 10.09,
+        "TDGQ": 18.11,
+        "CLGQ": 8.76,
+        "MDSH": 10.73,
+        "MDHL": 10.85,
+        "TTTT": 6.96
+      },
+      "isDakLak": false,
+      "rank": 12,
+      "rank_CKMB": 21,
+      "rank_TDGQ": 11,
+      "rank_CLGQ": 17,
+      "rank_MDSH": 9,
+      "rank_MDHL": 20,
+      "rank_TTTT": 8
     },
     {
       "departmentId": "019d2be3-6a89-70fe-8e61-5ec4a2701203",
       "departmentName": "UBND tỉnh Vĩnh Long",
       "departmentCode": "H61",
-      "totalScore": 65.4,
-      "scoreDelta": 12.37,
+      "totalScore": 65.36,
+      "scoreDelta": 11.81,
       "scores": {
         "CKMB": 12.09,
         "TDGQ": 16.8,
         "CLGQ": 9.09,
         "MDSH": 12.16,
-        "MDHL": 8.6,
+        "MDHL": 8.56,
         "TTTT": 6.66
       },
       "isDakLak": false,
-      "rank": 12,
+      "rank": 13,
       "rank_CKMB": 7,
       "rank_TDGQ": 28,
-      "rank_CLGQ": 10,
+      "rank_CLGQ": 9,
       "rank_MDSH": 2,
       "rank_MDHL": 30,
       "rank_TTTT": 16
@@ -353,18 +376,18 @@
       "departmentId": "019d2be3-6a88-732b-8b15-828ae2e74c00",
       "departmentName": "UBND tỉnh Ninh Bình",
       "departmentCode": "H42",
-      "totalScore": 65.13,
-      "scoreDelta": 16.45,
+      "totalScore": 65.14,
+      "scoreDelta": 16.46,
       "scores": {
         "CKMB": 12.77,
         "TDGQ": 19.26,
         "CLGQ": 7.56,
-        "MDSH": 11.16,
-        "MDHL": 7.39,
-        "TTTT": 6.99
+        "MDSH": 11.17,
+        "MDHL": 7.38,
+        "TTTT": 7
       },
       "isDakLak": false,
-      "rank": 13,
+      "rank": 14,
       "rank_CKMB": 4,
       "rank_TDGQ": 1,
       "rank_CLGQ": 26,
@@ -373,41 +396,18 @@
       "rank_TTTT": 7
     },
     {
-      "departmentId": "019d2be3-6a85-74ec-a33d-803cf2496575",
-      "departmentName": "UBND Thành phố Đà Nẵng",
-      "departmentCode": "H17",
-      "totalScore": 65.12,
-      "scoreDelta": 9.88,
-      "scores": {
-        "CKMB": 9.14,
-        "TDGQ": 18.11,
-        "CLGQ": 9.3,
-        "MDSH": 10.74,
-        "MDHL": 10.87,
-        "TTTT": 6.96
-      },
-      "isDakLak": false,
-      "rank": 14,
-      "rank_CKMB": 21,
-      "rank_TDGQ": 11,
-      "rank_CLGQ": 7,
-      "rank_MDSH": 9,
-      "rank_MDHL": 20,
-      "rank_TTTT": 8
-    },
-    {
       "departmentId": "019d2be3-6a87-7317-855a-9a81af57b106",
       "departmentName": "UBND Thành phố Hồ Chí Minh",
       "departmentCode": "H29",
-      "totalScore": 65.04,
-      "scoreDelta": 16,
+      "totalScore": 65.05,
+      "scoreDelta": 16.01,
       "scores": {
         "CKMB": 8,
-        "TDGQ": 18,
+        "TDGQ": 18.01,
         "CLGQ": 9.76,
-        "MDSH": 11.1,
-        "MDHL": 10.77,
-        "TTTT": 7.41
+        "MDSH": 11.11,
+        "MDHL": 10.75,
+        "TTTT": 7.42
       },
       "isDakLak": false,
       "rank": 15,
@@ -419,17 +419,40 @@
       "rank_TTTT": 2
     },
     {
+      "departmentId": "019d2be3-6a84-779d-b3ed-9649c4f016cd",
+      "departmentName": "UBND thành phố Bắc Ninh",
+      "departmentCode": "H05",
+      "totalScore": 64.86,
+      "scoreDelta": 15.72,
+      "scores": {
+        "CKMB": 8.98,
+        "TDGQ": 16.27,
+        "CLGQ": 9.6,
+        "MDSH": 10.37,
+        "MDHL": 12.39,
+        "TTTT": 7.25
+      },
+      "isDakLak": false,
+      "rank": 16,
+      "rank_CKMB": 22,
+      "rank_TDGQ": 33,
+      "rank_CLGQ": 3,
+      "rank_MDSH": 19,
+      "rank_MDHL": 4,
+      "rank_TTTT": 4
+    },
+    {
       "departmentId": "019d2be3-6a88-732b-8b20-29251b1ac762",
       "departmentName": "UBND tỉnh Quảng Trị",
       "departmentCode": "H50",
-      "totalScore": 64.87,
-      "scoreDelta": 8.24,
+      "totalScore": 64.86,
+      "scoreDelta": 8.23,
       "scores": {
         "CKMB": 11.52,
         "TDGQ": 17.5,
         "CLGQ": 7.02,
-        "MDSH": 10.92,
-        "MDHL": 11.09,
+        "MDSH": 10.93,
+        "MDHL": 11.07,
         "TTTT": 6.82
       },
       "isDakLak": false,
@@ -440,29 +463,6 @@
       "rank_MDSH": 6,
       "rank_MDHL": 17,
       "rank_TTTT": 11
-    },
-    {
-      "departmentId": "019d2be3-6a84-779d-b3ed-9649c4f016cd",
-      "departmentName": "UBND thành phố Bắc Ninh",
-      "departmentCode": "H05",
-      "totalScore": 64.82,
-      "scoreDelta": 15.68,
-      "scores": {
-        "CKMB": 8.98,
-        "TDGQ": 16.26,
-        "CLGQ": 9.6,
-        "MDSH": 10.35,
-        "MDHL": 12.39,
-        "TTTT": 7.24
-      },
-      "isDakLak": false,
-      "rank": 17,
-      "rank_CKMB": 22,
-      "rank_TDGQ": 33,
-      "rank_CLGQ": 3,
-      "rank_MDSH": 20,
-      "rank_MDHL": 4,
-      "rank_TTTT": 4
     },
     {
       "departmentId": "019d2be3-6a88-732b-8b25-68dfdcdcff0e",
@@ -482,7 +482,7 @@
       "rank": 18,
       "rank_CKMB": 27,
       "rank_TDGQ": 3,
-      "rank_CLGQ": 12,
+      "rank_CLGQ": 11,
       "rank_MDSH": 17,
       "rank_MDHL": 10,
       "rank_TTTT": 26
@@ -491,15 +491,15 @@
       "departmentId": "019d2be3-6a88-732b-8b12-58410ba7b5df",
       "departmentName": "UBND tỉnh Lào Cai",
       "departmentCode": "H38",
-      "totalScore": 64.43,
-      "scoreDelta": 13.86,
+      "totalScore": 64.37,
+      "scoreDelta": 13.8,
       "scores": {
         "CKMB": 8.27,
         "TDGQ": 18.69,
         "CLGQ": 8.49,
         "MDSH": 10.13,
-        "MDHL": 12.29,
-        "TTTT": 6.56
+        "MDHL": 12.25,
+        "TTTT": 6.54
       },
       "isDakLak": false,
       "rank": 19,
@@ -514,11 +514,11 @@
       "departmentId": "019d2be3-6a88-732b-8b10-4fd42fc9139b",
       "departmentName": "UBND tỉnh Lai Châu",
       "departmentCode": "H35",
-      "totalScore": 64.17,
-      "scoreDelta": 12.04,
+      "totalScore": 64.16,
+      "scoreDelta": 12.03,
       "scores": {
         "CKMB": 13.95,
-        "TDGQ": 19.02,
+        "TDGQ": 19.01,
         "CLGQ": 8.61,
         "MDSH": 10.49,
         "MDHL": 6,
@@ -531,20 +531,20 @@
       "rank_CLGQ": 19,
       "rank_MDSH": 16,
       "rank_MDHL": 34,
-      "rank_TTTT": 30
+      "rank_TTTT": 31
     },
     {
       "departmentId": "019d2be3-6a88-732b-8b10-c1c15a42daee",
       "departmentName": "UBND tỉnh Lâm Đồng",
       "departmentCode": "H36",
-      "totalScore": 64.14,
-      "scoreDelta": 13.36,
+      "totalScore": 64.1,
+      "scoreDelta": 13.32,
       "scores": {
         "CKMB": 8,
-        "TDGQ": 17.04,
+        "TDGQ": 17.03,
         "CLGQ": 9.91,
-        "MDSH": 10.71,
-        "MDHL": 11.38,
+        "MDSH": 10.72,
+        "MDHL": 11.34,
         "TTTT": 7.1
       },
       "isDakLak": false,
@@ -552,7 +552,7 @@
       "rank_CKMB": 29,
       "rank_TDGQ": 26,
       "rank_CLGQ": 1,
-      "rank_MDSH": 10,
+      "rank_MDSH": 11,
       "rank_MDHL": 14,
       "rank_TTTT": 5
     },
@@ -560,13 +560,13 @@
       "departmentId": "019d2be3-6a85-74ec-a33b-e8250c0580ce",
       "departmentName": "UBND tỉnh Cao Bằng",
       "departmentCode": "H14",
-      "totalScore": 63.88,
-      "scoreDelta": 14.27,
+      "totalScore": 63.89,
+      "scoreDelta": 14.28,
       "scores": {
         "CKMB": 11.74,
         "TDGQ": 18.75,
         "CLGQ": 8.5,
-        "MDSH": 9.61,
+        "MDSH": 9.62,
         "MDHL": 9.52,
         "TTTT": 5.76
       },
@@ -583,15 +583,15 @@
       "departmentId": "019d2be3-6a88-732b-8b14-23b0bf40ce58",
       "departmentName": "UBND tỉnh Nghệ An",
       "departmentCode": "H41",
-      "totalScore": 63.77,
-      "scoreDelta": 11.78,
+      "totalScore": 63.72,
+      "scoreDelta": 11.73,
       "scores": {
         "CKMB": 10.17,
         "TDGQ": 18.07,
         "CLGQ": 7.04,
         "MDSH": 10.57,
-        "MDHL": 11.31,
-        "TTTT": 6.61
+        "MDHL": 11.25,
+        "TTTT": 6.62
       },
       "isDakLak": false,
       "rank": 23,
@@ -599,21 +599,21 @@
       "rank_TDGQ": 12,
       "rank_CLGQ": 29,
       "rank_MDSH": 13,
-      "rank_MDHL": 15,
+      "rank_MDHL": 16,
       "rank_TTTT": 17
     },
     {
       "departmentId": "019d2be3-6a88-732b-8b17-b68020c8553a",
       "departmentName": "UBND tỉnh Phú Thọ",
       "departmentCode": "H44",
-      "totalScore": 63.38,
-      "scoreDelta": 14.18,
+      "totalScore": 63.39,
+      "scoreDelta": 14.19,
       "scores": {
         "CKMB": 8.07,
         "TDGQ": 17.9,
         "CLGQ": 8.55,
         "MDSH": 10.56,
-        "MDHL": 11.39,
+        "MDHL": 11.4,
         "TTTT": 6.91
       },
       "isDakLak": false,
@@ -622,29 +622,29 @@
       "rank_TDGQ": 16,
       "rank_CLGQ": 20,
       "rank_MDSH": 14,
-      "rank_MDHL": 13,
+      "rank_MDHL": 12,
       "rank_TTTT": 10
     },
     {
       "departmentId": "019d2be3-6a88-732b-8b0b-eac587d5c164",
       "departmentName": "UBND tỉnh Khánh Hòa",
       "departmentCode": "H32",
-      "totalScore": 63.19,
-      "scoreDelta": 11.85,
+      "totalScore": 63.21,
+      "scoreDelta": 11.87,
       "scores": {
         "CKMB": 14,
         "TDGQ": 17.1,
-        "CLGQ": 6.93,
-        "MDSH": 10.35,
-        "MDHL": 8.22,
-        "TTTT": 6.59
+        "CLGQ": 6.94,
+        "MDSH": 10.37,
+        "MDHL": 8.2,
+        "TTTT": 6.6
       },
       "isDakLak": false,
       "rank": 25,
       "rank_CKMB": 1,
       "rank_TDGQ": 25,
       "rank_CLGQ": 33,
-      "rank_MDSH": 20,
+      "rank_MDSH": 19,
       "rank_MDHL": 31,
       "rank_TTTT": 18
     },
@@ -652,15 +652,15 @@
       "departmentId": "019d2be3-6a85-74ec-a339-9985e7aba649",
       "departmentName": "UBND Thành phố Cần Thơ",
       "departmentCode": "H13",
-      "totalScore": 63.13,
-      "scoreDelta": 15.46,
+      "totalScore": 63.12,
+      "scoreDelta": 15.45,
       "scores": {
         "CKMB": 11.83,
         "TDGQ": 16.89,
         "CLGQ": 7.07,
-        "MDSH": 10.06,
-        "MDHL": 10.61,
-        "TTTT": 6.67
+        "MDSH": 10.08,
+        "MDHL": 10.57,
+        "TTTT": 6.68
       },
       "isDakLak": false,
       "rank": 26,
@@ -681,8 +681,8 @@
         "CKMB": 8.45,
         "TDGQ": 17.82,
         "CLGQ": 8.43,
-        "MDSH": 8.86,
-        "MDHL": 11.74,
+        "MDSH": 8.88,
+        "MDHL": 11.72,
         "TTTT": 6.42
       },
       "isDakLak": false,
@@ -698,15 +698,15 @@
       "departmentId": "019d2be3-6a85-74ec-a341-16615c474af4",
       "departmentName": "UBND tỉnh Điện Biên",
       "departmentCode": "H18",
-      "totalScore": 61.57,
-      "scoreDelta": 20.99,
+      "totalScore": 61.58,
+      "scoreDelta": 21,
       "scores": {
         "CKMB": 8.14,
         "TDGQ": 19.17,
         "CLGQ": 6.74,
         "MDSH": 10.91,
         "MDHL": 10.36,
-        "TTTT": 6.25
+        "TTTT": 6.26
       },
       "isDakLak": false,
       "rank": 28,
@@ -721,14 +721,14 @@
       "departmentId": "019d2be3-6a88-732b-8b0b-a4fad4f39fbc",
       "departmentName": "UBND tỉnh Hưng Yên",
       "departmentCode": "H31",
-      "totalScore": 60.95,
-      "scoreDelta": 12.04,
+      "totalScore": 60.92,
+      "scoreDelta": 12.01,
       "scores": {
         "CKMB": 8,
-        "TDGQ": 17.64,
+        "TDGQ": 17.63,
         "CLGQ": 6.98,
         "MDSH": 10.55,
-        "MDHL": 11.02,
+        "MDHL": 11,
         "TTTT": 6.76
       },
       "isDakLak": false,
@@ -737,21 +737,21 @@
       "rank_TDGQ": 21,
       "rank_CLGQ": 32,
       "rank_MDSH": 15,
-      "rank_MDHL": 18,
+      "rank_MDHL": 19,
       "rank_TTTT": 13
     },
     {
       "departmentId": "019d2be3-6a88-732b-8b23-90f0216d78e2",
       "departmentName": "UBND tỉnh Sơn La",
       "departmentCode": "H52",
-      "totalScore": 60.51,
-      "scoreDelta": 9.44,
+      "totalScore": 60.43,
+      "scoreDelta": 9.36,
       "scores": {
         "CKMB": 8,
         "TDGQ": 17.9,
         "CLGQ": 7.59,
-        "MDSH": 10.65,
-        "MDHL": 9.85,
+        "MDSH": 10.66,
+        "MDHL": 9.76,
         "TTTT": 6.52
       },
       "isDakLak": false,
@@ -760,8 +760,8 @@
       "rank_TDGQ": 16,
       "rank_CLGQ": 25,
       "rank_MDSH": 12,
-      "rank_MDHL": 26,
-      "rank_TTTT": 20
+      "rank_MDHL": 27,
+      "rank_TTTT": 21
     },
     {
       "departmentId": "019d2be3-6a84-779d-b3e7-e214bdb86482",
@@ -773,8 +773,8 @@
         "CKMB": 8,
         "TDGQ": 18.44,
         "CLGQ": 7.02,
-        "MDSH": 9.96,
-        "MDHL": 9.85,
+        "MDSH": 9.97,
+        "MDHL": 9.84,
         "TTTT": 6.69
       },
       "isDakLak": false,
@@ -790,15 +790,15 @@
       "departmentId": "019d2be3-6a87-7317-8557-a2fade51b5ae",
       "departmentName": "UBND tỉnh Hà Tĩnh",
       "departmentCode": "H27",
-      "totalScore": 58.54,
-      "scoreDelta": 10.18,
+      "totalScore": 58.55,
+      "scoreDelta": 10.19,
       "scores": {
         "CKMB": 8.76,
         "TDGQ": 16.62,
         "CLGQ": 8.73,
         "MDSH": 9.45,
         "MDHL": 8.71,
-        "TTTT": 6.27
+        "TTTT": 6.28
       },
       "isDakLak": false,
       "rank": 32,
@@ -813,15 +813,15 @@
       "departmentId": "019d2be3-6a88-732b-8b1a-b8df51d5f6bf",
       "departmentName": "UBND tỉnh Quảng Ngãi",
       "departmentCode": "H48",
-      "totalScore": 57.54,
-      "scoreDelta": 3.46,
+      "totalScore": 57.55,
+      "scoreDelta": 3.47,
       "scores": {
         "CKMB": 8,
-        "TDGQ": 16.35,
+        "TDGQ": 16.34,
         "CLGQ": 7.06,
         "MDSH": 9.68,
-        "MDHL": 10.04,
-        "TTTT": 6.41
+        "MDHL": 10.05,
+        "TTTT": 6.42
       },
       "isDakLak": false,
       "rank": 33,
@@ -830,21 +830,21 @@
       "rank_CLGQ": 28,
       "rank_MDSH": 29,
       "rank_MDHL": 25,
-      "rank_TTTT": 25
+      "rank_TTTT": 24
     },
     {
       "departmentId": "019d2be3-6a86-70a8-a0af-76e986804225",
       "departmentName": "UBND Thành phố Hà Nội",
       "departmentCode": "H26",
-      "totalScore": 57.04,
-      "scoreDelta": 5.28,
+      "totalScore": 57.05,
+      "scoreDelta": 5.29,
       "scores": {
         "CKMB": 11.2,
-        "TDGQ": 15.09,
+        "TDGQ": 15.1,
         "CLGQ": 9.37,
-        "MDSH": 8.71,
-        "MDHL": 7.76,
-        "TTTT": 4.91
+        "MDSH": 8.72,
+        "MDHL": 7.74,
+        "TTTT": 4.92
       },
       "isDakLak": false,
       "rank": 34,
@@ -856,5 +856,5 @@
       "rank_TTTT": 34
     }
   ],
-  "durationMs": 297
+  "durationMs": 387
 }

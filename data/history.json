@@ -1,5 +1,41 @@
 [
   {
+    "timestamp": "2026-10-25T23:00:09.066Z",
+    "type": "SYNC",
+    "date": "2026-10-26",
+    "durationMs": 7039,
+    "totalScore": 66.6,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-10-25T23:00:07.941Z",
+    "type": "LOCAL_CRON_6AM",
+    "date": "2026-10-26",
+    "totalScore": 66.6,
+    "classification": "Trung bình",
+    "success": true
+  },
+  {
+    "timestamp": "2026-10-24T23:00:08.869Z",
+    "type": "SYNC",
+    "date": "2026-10-25",
+    "durationMs": 6790,
+    "totalScore": 66.62,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-10-24T23:00:08.073Z",
+    "type": "LOCAL_CRON_6AM",
+    "date": "2026-10-25",
+    "totalScore": 66.62,
+    "classification": "Trung bình",
+    "success": true
+  },
+  {
     "timestamp": "2026-10-23T23:00:09.352Z",
     "type": "SYNC",
     "date": "2026-10-24",
@@ -423,44 +459,6 @@
     "date": "2026-10-01",
     "durationMs": 5941,
     "totalScore": 64.77,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 118
-  },
-  {
-    "timestamp": "2026-09-30T23:00:06.530Z",
-    "type": "LOCAL_CRON_6AM",
-    "date": "2026-10-01",
-    "totalScore": 64.77,
-    "classification": "Trung bình",
-    "success": true
-  },
-  {
-    "timestamp": "2026-09-29T23:00:09.531Z",
-    "type": "LOCAL_SYNC_ONLY",
-    "date": "2026-09-30",
-    "durationMs": 7329,
-    "totalScore": 64.69,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 118
-  },
-  {
-    "timestamp": "2026-09-29T08:27:38.672Z",
-    "type": "LOCAL_SYNC_ONLY",
-    "date": "2026-09-29",
-    "durationMs": 6056,
-    "totalScore": 64.79,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 118
-  },
-  {
-    "timestamp": "2026-09-29T01:06:06.460Z",
-    "type": "LOCAL_SYNC_ONLY",
-    "date": "2026-09-29",
-    "durationMs": 6153,
-    "totalScore": 64.79,
     "classification": "Trung bình",
     "success": true,
     "unitsCount": 118

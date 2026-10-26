@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDossierSplitModule();
   initProcedureQrModule();
   initQuickReportModule();
+  initUsersManagementModule();
   loadInitialData();
 });
 
@@ -206,6 +207,13 @@ function initNavigationTabs() {
     if (targetTabId === 'tab-content-quick-report') {
       if (typeof activateQuickReportTab === 'function') {
         activateQuickReportTab();
+      }
+    }
+
+    // Tự động tải danh sách tài khoản khi mở tab Quản lý người dùng (Admin)
+    if (targetTabId === 'tab-content-users-mgmt') {
+      if (typeof activateUsersMgmtTab === 'function') {
+        activateUsersMgmtTab();
       }
     }
 
@@ -4274,6 +4282,34 @@ function updateAuthUI() {
     }
   }
 
+  // Quản lý hiển thị Menu Quản lý người dùng (CHỈ DÀNH RIÊNG CHO QUẢN TRỊ VIÊN ADMIN)
+  const adminGroup = document.getElementById('sidebar-group-admin');
+  const navUsersItem = document.getElementById('nav-item-users-mgmt');
+  const usersAuthLock = document.getElementById('users-auth-lock-card');
+  const usersWorkspace = document.getElementById('users-workspace-wrap');
+
+  if (adminGroup) {
+    adminGroup.style.display = isAdmin ? 'block' : 'none';
+  }
+  if (navUsersItem) {
+    navUsersItem.style.display = isAdmin ? 'inline-block' : 'none';
+  }
+  if (usersAuthLock) {
+    usersAuthLock.style.display = isAdmin ? 'none' : 'block';
+  }
+  if (usersWorkspace) {
+    usersWorkspace.style.display = isAdmin ? 'block' : 'none';
+  }
+
+  // Nếu người dùng không phải Quản trị viên nhưng đang ở tab Quản lý người dùng thì chuyển về tab Cổng thông tin
+  if (!isAdmin) {
+    const usersTabPane = document.getElementById('tab-content-users-mgmt');
+    if (usersTabPane && usersTabPane.classList.contains('active')) {
+      const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
+      if (defaultTabBtn) defaultTabBtn.click();
+    }
+  }
+
   // Re-render table if units exist, to toggle clickability of score cells
   if (appState.currentData && dom.unitsTableBody) {
     renderUnitsTable();
@@ -4440,6 +4476,867 @@ window.logoutUser = async function () {
  */
 window.handleLockedScoreClick = function (unitName) {
   openLoginModal(`Vui lòng đăng nhập để xem chi tiết các chỉ tiêu của đơn vị: ${unitName}.`);
+};
+
+/* ==========================================================================
+   MODULE QUẢN LÝ NGƯỜI DÙNG & TÀI KHOẢN CÁN BỘ ĐƠN VỊ (DÀNH CHO ADMIN)
+   ========================================================================== */
+
+const usersState = {
+  users: [],
+  units: [],
+  loaded: false,
+  loading: false,
+  searchQuery: '',
+  filterRole: 'all',
+  filterLevel: 'all',
+  editingUser: null,
+  deletingUser: null,
+  resetPassUser: null
+};
+
+/**
+ * Khởi tạo module Quản lý người dùng
+ */
+function initUsersManagementModule() {
+  // Đóng modal khi click ra ngoài backdrop
+  const userModal = document.getElementById('user-modal');
+  if (userModal) {
+    userModal.addEventListener('click', (e) => {
+      if (e.target === userModal) closeUserModal();
+    });
+  }
+
+  const passModal = document.getElementById('user-password-modal');
+  if (passModal) {
+    passModal.addEventListener('click', (e) => {
+      if (e.target === passModal) closeResetPasswordModal();
+    });
+  }
+
+  const delModal = document.getElementById('user-delete-modal');
+  if (delModal) {
+    delModal.addEventListener('click', (e) => {
+      if (e.target === delModal) closeDeleteUserModal();
+    });
+  }
+}
+
+/**
+ * Kích hoạt và tải dữ liệu khi Admin chuyển sang tab Quản lý người dùng
+ */
+async function activateUsersMgmtTab() {
+  const user = appState.currentUser;
+  if (!user || user.role !== 'admin') {
+    return;
+  }
+  if (!usersState.loaded) {
+    await Promise.all([loadUsersUnitsList(), loadUsersList()]);
+  } else {
+    renderUsersTable();
+  }
+}
+
+/**
+ * Tải danh mục 115 đơn vị tỉnh Đắk Lắk phục vụ liên kết tài khoản
+ */
+async function loadUsersUnitsList() {
+  if (usersState.units && usersState.units.length > 0) return;
+
+  // Lấy từ dữ liệu snapshot hiện tại nếu có
+  if (appState.currentData && Array.isArray(appState.currentData.units) && appState.currentData.units.length > 0) {
+    usersState.units = appState.currentData.units.map((u) => ({
+      code: u.departmentCode,
+      name: u.departmentName,
+      level: u.departmentLevel,
+      levelLabel: u.levelLabel,
+      group: u.group
+    }));
+    populateUnitSelectDropdown();
+    return;
+  }
+
+  // Nếu chưa có, gọi API /api/users?action=units
+  try {
+    const token = localStorage.getItem('dvc766_token');
+    const res = await fetch('/api/users?action=units', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.units)) {
+      usersState.units = data.units;
+      populateUnitSelectDropdown();
+    }
+  } catch (err) {
+    console.warn('[UsersMgmt] Lỗi tải danh mục đơn vị:', err);
+  }
+}
+
+/**
+ * Điền danh sách đơn vị vào dropdown modal
+ */
+function populateUnitSelectDropdown() {
+  const select = document.getElementById('user-form-unit-select');
+  if (!select) return;
+
+  const communes = [];
+  const districts = [];
+  const provincial = [];
+
+  usersState.units.forEach((u) => {
+    if (u.level === 'COMMUNE') communes.push(u);
+    else if (u.level === 'DISTRICT') districts.push(u);
+    else provincial.push(u);
+  });
+
+  let html = '<option value="">-- Chọn đơn vị trực thuộc để liên kết số liệu 766 --</option>';
+
+  if (communes.length > 0) {
+    html += '<optgroup label="CẤP XÃ / PHƯỜNG / THỊ TRẤN (102 đơn vị)">';
+    communes.forEach((u) => {
+      html += `<option value="${u.code}" data-name="${escapeHtml(u.name)}" data-level="${u.level}">[${u.code}] ${escapeHtml(u.name)}</option>`;
+    });
+    html += '</optgroup>';
+  }
+
+  if (districts.length > 0) {
+    html += '<optgroup label="CẤP HUYỆN / THỊ XÃ / THÀNH PHỐ">';
+    districts.forEach((u) => {
+      html += `<option value="${u.code}" data-name="${escapeHtml(u.name)}" data-level="${u.level}">[${u.code}] ${escapeHtml(u.name)}</option>`;
+    });
+    html += '</optgroup>';
+  }
+
+  if (provincial.length > 0) {
+    html += '<optgroup label="CẤP TỈNH / SỞ BAN NGÀNH">';
+    provincial.forEach((u) => {
+      html += `<option value="${u.code}" data-name="${escapeHtml(u.name)}" data-level="${u.level}">[${u.code}] ${escapeHtml(u.name)}</option>`;
+    });
+    html += '</optgroup>';
+  }
+
+  select.innerHTML = html;
+}
+
+/**
+ * Khi chọn đơn vị từ dropdown, tự động điền mã và tên vào form
+ */
+window.handleUnitSelectChange = function (selectEl) {
+  const selectedOption = selectEl.options[selectEl.selectedIndex];
+  const deptCodeInput = document.getElementById('user-form-dept-code');
+  const deptNameInput = document.getElementById('user-form-dept-name');
+  if (!deptCodeInput || !deptNameInput) return;
+
+  if (selectedOption && selectedOption.value) {
+    deptCodeInput.value = selectedOption.value;
+    deptNameInput.value = selectedOption.getAttribute('data-name') || '';
+  }
+};
+
+/**
+ * Tải danh sách người dùng từ API
+ */
+window.loadUsersList = async function () {
+  const token = localStorage.getItem('dvc766_token');
+  if (!token) return;
+
+  const tbody = document.getElementById('users-table-tbody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="users-loading-cell">
+          <div class="users-spinner"></div>
+          <span>Đang tải danh sách tài khoản...</span>
+        </td>
+      </tr>
+    `;
+  }
+
+  usersState.loading = true;
+  try {
+    const res = await fetch('/api/users', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.users)) {
+      usersState.users = data.users;
+      usersState.loaded = true;
+      renderUsersStats();
+      renderUsersTable();
+    } else {
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="users-empty-cell">
+              <span style="color: #dc2626;">Lỗi tải dữ liệu: ${escapeHtml(data.error || 'Không thể lấy danh sách')}</span>
+            </td>
+          </tr>
+        `;
+      }
+    }
+  } catch (err) {
+    console.error('[UsersMgmt] Lỗi khi gọi API users:', err);
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="users-empty-cell">
+            <span style="color: #dc2626;">Không thể kết nối đến máy chủ. Vui lòng thử lại.</span>
+          </td>
+        </tr>
+      `;
+    }
+  } finally {
+    usersState.loading = false;
+  }
+};
+
+/**
+ * Cập nhật các ô số liệu thống kê người dùng
+ */
+function renderUsersStats() {
+  const totalEl = document.getElementById('stat-users-total');
+  const officersEl = document.getElementById('stat-users-officers');
+  const adminsEl = document.getElementById('stat-users-admins');
+  const unitsEl = document.getElementById('stat-users-linked-units');
+
+  const total = usersState.users.length;
+  const officers = usersState.users.filter((u) => u.role === 'officer' || u.role === 'canbo').length;
+  const admins = usersState.users.filter((u) => u.role === 'admin').length;
+  const uniqueUnits = new Set(usersState.users.filter((u) => u.departmentCode).map((u) => u.departmentCode)).size;
+
+  if (totalEl) totalEl.textContent = total;
+  if (officersEl) officersEl.textContent = officers;
+  if (adminsEl) adminsEl.textContent = admins;
+  if (unitsEl) unitsEl.textContent = `${uniqueUnits} / 115`;
+}
+
+/**
+ * Xử lý khi gõ tìm kiếm hoặc thay đổi bộ lọc
+ */
+window.handleUsersFilterChange = function () {
+  const searchInput = document.getElementById('users-search-input');
+  const roleSelect = document.getElementById('users-filter-role');
+  const levelSelect = document.getElementById('users-filter-level');
+  const clearBtn = document.getElementById('users-search-clear');
+
+  usersState.searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  usersState.filterRole = roleSelect ? roleSelect.value : 'all';
+  usersState.filterLevel = levelSelect ? levelSelect.value : 'all';
+
+  if (clearBtn) {
+    clearBtn.style.display = usersState.searchQuery ? 'block' : 'none';
+  }
+
+  renderUsersTable();
+};
+
+/**
+ * Xóa nội dung tìm kiếm
+ */
+window.clearUsersSearch = function () {
+  const searchInput = document.getElementById('users-search-input');
+  if (searchInput) searchInput.value = '';
+  window.handleUsersFilterChange();
+};
+
+/**
+ * Lọc danh sách người dùng theo tiêu chí tìm kiếm và dropdown
+ */
+function getFilteredUsers() {
+  return usersState.users.filter((u) => {
+    // Lọc theo vai trò
+    if (usersState.filterRole !== 'all') {
+      if (usersState.filterRole === 'officer' && u.role !== 'officer' && u.role !== 'canbo') return false;
+      if (usersState.filterRole === 'admin' && u.role !== 'admin') return false;
+    }
+
+    // Lọc theo cấp đơn vị
+    if (usersState.filterLevel !== 'all') {
+      const unit = usersState.units.find((un) => un.code === u.departmentCode);
+      if (unit) {
+        if (unit.level !== usersState.filterLevel) return false;
+      } else {
+        // Fallback kiểm tra theo quy ước mã đơn vị (H15.100 - H15.201 là Cấp Xã)
+        if (usersState.filterLevel === 'COMMUNE' && !/^H15\.(1\d\d|20\d)/i.test(u.departmentCode || '')) {
+          return false;
+        }
+      }
+    }
+
+    // Lọc theo từ khóa tìm kiếm
+    if (usersState.searchQuery) {
+      const q = usersState.searchQuery;
+      const usernameMatch = (u.username || '').toLowerCase().includes(q);
+      const nameMatch = (u.name || '').toLowerCase().includes(q);
+      const codeMatch = (u.departmentCode || '').toLowerCase().includes(q);
+      const deptNameMatch = (u.departmentName || '').toLowerCase().includes(q);
+      const phoneMatch = (u.phone || '').toLowerCase().includes(q);
+      const noteMatch = (u.note || '').toLowerCase().includes(q);
+
+      if (!usernameMatch && !nameMatch && !codeMatch && !deptNameMatch && !phoneMatch && !noteMatch) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+/**
+ * Render bảng danh sách người dùng
+ */
+function renderUsersTable() {
+  const tbody = document.getElementById('users-table-tbody');
+  const countBadge = document.getElementById('users-count-badge');
+  if (!tbody) return;
+
+  const filtered = getFilteredUsers();
+  if (countBadge) {
+    countBadge.textContent = `${filtered.length} tài khoản`;
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="users-empty-cell">
+          <div style="font-size: 28px; margin-bottom: 8px;">🔍</div>
+          <strong>Không tìm thấy tài khoản phù hợp</strong>
+          <p style="margin: 4px 0 0 0; font-size: 13px;">Hãy thử thay đổi từ khóa tìm kiếm hoặc điều chỉnh bộ lọc.</p>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const currentUser = appState.currentUser;
+  let html = '';
+
+  filtered.forEach((u, index) => {
+    const isCurrentUser = currentUser && currentUser.username.toLowerCase() === u.username.toLowerCase();
+    const isDefaultAdmin = u.username.toLowerCase() === 'admin';
+    const isAdmin = u.role === 'admin';
+    const initial = (u.name || u.username || 'U').charAt(0).toUpperCase();
+
+    let dateStr = '--';
+    if (u.createdAt) {
+      try {
+        const d = new Date(u.createdAt);
+        dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      } catch (e) {}
+    }
+
+    html += `
+      <tr>
+        <td class="col-stt">${index + 1}</td>
+        <td class="col-account">
+          <div class="user-account-cell">
+            <div class="user-avatar-circle ${isAdmin ? 'user-avatar-admin' : ''}">
+              ${escapeHtml(initial)}
+            </div>
+            <div class="user-account-meta">
+              <span class="user-display-name">${escapeHtml(u.name || u.username)}</span>
+              <span class="user-username-tag">@${escapeHtml(u.username)}</span>
+            </div>
+          </div>
+        </td>
+        <td class="col-unit">
+          <div class="user-unit-cell">
+            ${u.departmentCode ? `<span class="unit-code-badge">${escapeHtml(u.departmentCode)}</span>` : ''}
+            <span class="user-unit-name">${escapeHtml(u.departmentName || 'Chưa liên kết đơn vị')}</span>
+          </div>
+        </td>
+        <td class="col-role">
+          <span class="user-role-badge ${isAdmin ? 'role-admin' : 'role-officer'}">
+            ${isAdmin ? '🛡️ Quản trị viên' : '💼 Cán bộ'}
+          </span>
+        </td>
+        <td class="col-contact">
+          <div class="user-contact-cell">
+            ${u.phone ? `<a href="tel:${escapeHtml(u.phone)}" class="user-phone-link">📞 ${escapeHtml(u.phone)}</a>` : ''}
+            ${u.note ? `<span class="user-note-text" title="${escapeHtml(u.note)}">${escapeHtml(u.note)}</span>` : '<span style="color: #cbd5e1;">--</span>'}
+          </div>
+        </td>
+        <td class="col-date">
+          <span class="user-date-cell">${dateStr}</span>
+        </td>
+        <td class="col-actions">
+          <div class="user-actions-btns">
+            <button type="button" class="btn-action-icon btn-action-key" onclick="openResetPasswordModal('${escapeHtml(u.username)}')" title="Cấp lại mật khẩu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </button>
+            <button type="button" class="btn-action-icon btn-action-edit" onclick="openEditUserModal('${escapeHtml(u.username)}')" title="Chỉnh sửa thông tin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button type="button" class="btn-action-icon btn-action-delete" onclick="openDeleteUserModal('${escapeHtml(u.username)}')" ${isCurrentUser || isDefaultAdmin ? 'disabled title="Không thể xóa tài khoản này"' : 'title="Xóa tài khoản"'}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+/**
+ * Mở modal Thêm tài khoản cán bộ mới
+ */
+window.openCreateUserModal = function () {
+  usersState.editingUser = null;
+
+  const modal = document.getElementById('user-modal');
+  const title = document.getElementById('user-modal-title');
+  const subtitle = document.getElementById('user-modal-subtitle');
+  const alertBox = document.getElementById('user-modal-alert');
+  const passGroup = document.getElementById('user-form-password-group');
+  const usernameInput = document.getElementById('user-form-username');
+  const usernameHint = document.getElementById('user-form-username-hint');
+  const passwordInput = document.getElementById('user-form-password');
+  const nameInput = document.getElementById('user-form-name');
+  const roleSelect = document.getElementById('user-form-role');
+  const unitSelect = document.getElementById('user-form-unit-select');
+  const deptCodeInput = document.getElementById('user-form-dept-code');
+  const deptNameInput = document.getElementById('user-form-dept-name');
+  const phoneInput = document.getElementById('user-form-phone');
+  const noteInput = document.getElementById('user-form-note');
+  const saveBtnText = document.getElementById('btn-save-user-text');
+
+  if (!modal) return;
+
+  if (title) title.textContent = 'Thêm tài khoản cán bộ mới';
+  if (subtitle) subtitle.textContent = 'Tài khoản tạo mới sẽ mặc định có quyền Cán bộ nghiệp vụ';
+  if (saveBtnText) saveBtnText.textContent = 'Tạo tài khoản';
+  if (alertBox) alertBox.style.display = 'none';
+
+  // Hiển thị ô nhập mật khẩu khi thêm mới
+  if (passGroup) passGroup.style.display = 'block';
+  if (passwordInput) {
+    passwordInput.required = true;
+    passwordInput.value = 'Canbo@766'; // Gợi ý mặc định
+  }
+
+  // Tên đăng nhập có thể gõ
+  if (usernameInput) {
+    usernameInput.value = '';
+    usernameInput.removeAttribute('readonly');
+    usernameInput.disabled = false;
+  }
+  if (usernameHint) usernameHint.textContent = 'Viết thường liền nhau không dấu, số, gạch dưới (vd: ubnd_tanlap, h15.102).';
+
+  if (nameInput) nameInput.value = '';
+  if (roleSelect) roleSelect.value = 'officer'; // Mặc định là quyền cán bộ
+  if (unitSelect) unitSelect.value = '';
+  if (deptCodeInput) deptCodeInput.value = '';
+  if (deptNameInput) deptNameInput.value = '';
+  if (phoneInput) phoneInput.value = '';
+  if (noteInput) noteInput.value = '';
+
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    if (usernameInput) usernameInput.focus();
+  }, 100);
+};
+
+/**
+ * Mở modal Sửa thông tin tài khoản
+ */
+window.openEditUserModal = function (username) {
+  const user = usersState.users.find((u) => u.username.toLowerCase() === username.toLowerCase());
+  if (!user) return;
+
+  usersState.editingUser = user;
+
+  const modal = document.getElementById('user-modal');
+  const title = document.getElementById('user-modal-title');
+  const subtitle = document.getElementById('user-modal-subtitle');
+  const alertBox = document.getElementById('user-modal-alert');
+  const passGroup = document.getElementById('user-form-password-group');
+  const usernameInput = document.getElementById('user-form-username');
+  const usernameHint = document.getElementById('user-form-username-hint');
+  const passwordInput = document.getElementById('user-form-password');
+  const nameInput = document.getElementById('user-form-name');
+  const roleSelect = document.getElementById('user-form-role');
+  const unitSelect = document.getElementById('user-form-unit-select');
+  const deptCodeInput = document.getElementById('user-form-dept-code');
+  const deptNameInput = document.getElementById('user-form-dept-name');
+  const phoneInput = document.getElementById('user-form-phone');
+  const noteInput = document.getElementById('user-form-note');
+  const saveBtnText = document.getElementById('btn-save-user-text');
+
+  if (!modal) return;
+
+  if (title) title.textContent = `Chỉnh sửa tài khoản: @${user.username}`;
+  if (subtitle) subtitle.textContent = 'Cập nhật họ tên, liên kết đơn vị phụ trách và phân quyền';
+  if (saveBtnText) saveBtnText.textContent = 'Lưu thay đổi';
+  if (alertBox) alertBox.style.display = 'none';
+
+  // Ẩn ô nhập mật khẩu khi sửa (Đổi mật khẩu làm qua nút chìa khóa riêng biệt)
+  if (passGroup) passGroup.style.display = 'none';
+  if (passwordInput) {
+    passwordInput.required = false;
+    passwordInput.value = '';
+  }
+
+  // Khóa ô tên đăng nhập
+  if (usernameInput) {
+    usernameInput.value = user.username;
+    usernameInput.setAttribute('readonly', 'true');
+  }
+  if (usernameHint) usernameHint.textContent = 'Tên đăng nhập cố định không thể sửa đổi.';
+
+  if (nameInput) nameInput.value = user.name || '';
+  if (roleSelect) roleSelect.value = user.role || 'officer';
+  if (deptCodeInput) deptCodeInput.value = user.departmentCode || '';
+  if (deptNameInput) deptNameInput.value = user.departmentName || '';
+  if (phoneInput) phoneInput.value = user.phone || '';
+  if (noteInput) noteInput.value = user.note || '';
+
+  if (unitSelect) {
+    unitSelect.value = user.departmentCode || '';
+  }
+
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    if (nameInput) nameInput.focus();
+  }, 100);
+};
+
+/**
+ * Đóng modal Người dùng
+ */
+window.closeUserModal = function () {
+  const modal = document.getElementById('user-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+/**
+ * Tạo mật khẩu chuẩn ngẫu nhiên trong form
+ */
+window.generatePasswordForForm = function () {
+  const passInput = document.getElementById('user-form-password');
+  if (!passInput) return;
+  const randNum = Math.floor(1000 + Math.random() * 9000);
+  passInput.value = `Canbo@766#${randNum}`;
+  passInput.type = 'text'; // Hiện rõ để Admin dễ ghi nhớ/sao chép
+  showToast(`Đã tạo mật khẩu: ${passInput.value}`, 'info');
+};
+
+/**
+ * Hiện/ẩn mật khẩu người dùng
+ */
+window.toggleUserPasswordVisibility = function (inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.type = el.type === 'password' ? 'text' : 'password';
+};
+
+/**
+ * Xử lý submit form Thêm / Sửa người dùng
+ */
+window.handleUserFormSubmit = async function (e) {
+  e.preventDefault();
+
+  const token = localStorage.getItem('dvc766_token');
+  if (!token) {
+    showToast('Vui lòng đăng nhập lại.', 'error');
+    return;
+  }
+
+  const alertBox = document.getElementById('user-modal-alert');
+  const spinner = document.getElementById('btn-save-user-spinner');
+  const btnText = document.getElementById('btn-save-user-text');
+  const username = document.getElementById('user-form-username')?.value.trim();
+  const password = document.getElementById('user-form-password')?.value;
+  const name = document.getElementById('user-form-name')?.value.trim();
+  const role = document.getElementById('user-form-role')?.value;
+  const deptCode = document.getElementById('user-form-dept-code')?.value.trim();
+  const deptName = document.getElementById('user-form-dept-name')?.value.trim();
+  const phone = document.getElementById('user-form-phone')?.value.trim();
+  const note = document.getElementById('user-form-note')?.value.trim();
+
+  const isEditing = Boolean(usersState.editingUser);
+
+  if (alertBox) alertBox.style.display = 'none';
+
+  // Hiển thị trạng thái loading
+  if (spinner) spinner.style.display = 'inline-block';
+  if (btnText) btnText.style.display = 'none';
+
+  try {
+    const payload = {
+      action: isEditing ? 'update' : 'create',
+      username,
+      name,
+      role,
+      departmentCode: deptCode,
+      departmentName: deptName,
+      phone,
+      note
+    };
+
+    if (!isEditing) {
+      payload.password = password;
+    }
+
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      if (alertBox) {
+        alertBox.className = 'user-modal-alert alert-error';
+        alertBox.textContent = data.error || 'Có lỗi xảy ra khi lưu tài khoản.';
+        alertBox.style.display = 'block';
+      }
+      return;
+    }
+
+    // Thành công
+    showToast(data.message || (isEditing ? 'Cập nhật thành công!' : 'Tạo tài khoản thành công!'), 'success');
+    closeUserModal();
+    await loadUsersList();
+  } catch (err) {
+    console.error('[UsersMgmt] Submit error:', err);
+    if (alertBox) {
+      alertBox.className = 'user-modal-alert alert-error';
+      alertBox.textContent = 'Lỗi kết nối máy chủ khi lưu tài khoản.';
+      alertBox.style.display = 'block';
+    }
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+    if (btnText) btnText.style.display = 'inline-block';
+  }
+};
+
+/**
+ * Mở modal Đổi mật khẩu
+ */
+window.openResetPasswordModal = function (username) {
+  const user = usersState.users.find((u) => u.username.toLowerCase() === username.toLowerCase());
+  if (!user) return;
+
+  usersState.resetPassUser = user;
+
+  const modal = document.getElementById('user-password-modal');
+  const targetInfo = document.getElementById('reset-pass-target-info');
+  const avatar = document.getElementById('reset-pass-avatar');
+  const userEl = document.getElementById('reset-pass-username');
+  const nameEl = document.getElementById('reset-pass-name');
+  const unitEl = document.getElementById('reset-pass-unit');
+  const passInput = document.getElementById('reset-pass-new');
+  const alertBox = document.getElementById('reset-pass-alert');
+
+  if (!modal) return;
+
+  if (targetInfo) targetInfo.textContent = `Tài khoản: @${user.username}`;
+  if (avatar) avatar.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
+  if (userEl) userEl.textContent = `@${user.username}`;
+  if (nameEl) nameEl.textContent = user.name || user.username;
+  if (unitEl) unitEl.textContent = user.departmentName ? `[${user.departmentCode || '--'}] ${user.departmentName}` : 'Chưa liên kết đơn vị';
+
+  if (passInput) passInput.value = 'Canbo@766';
+  if (alertBox) alertBox.style.display = 'none';
+
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    if (passInput) passInput.focus();
+  }, 100);
+};
+
+/**
+ * Đóng modal Đổi mật khẩu
+ */
+window.closeResetPasswordModal = function () {
+  const modal = document.getElementById('user-password-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+/**
+ * Tạo mật khẩu ngẫu nhiên cho modal đổi mật khẩu
+ */
+window.generatePasswordForReset = function () {
+  const passInput = document.getElementById('reset-pass-new');
+  if (!passInput) return;
+  const randNum = Math.floor(1000 + Math.random() * 9000);
+  passInput.value = `Canbo@766#${randNum}`;
+  showToast(`Đã sinh mật khẩu: ${passInput.value}`, 'info');
+};
+
+/**
+ * Áp dụng mẫu mật khẩu nhanh
+ */
+window.applySuggestedPassword = function (pass) {
+  const passInput = document.getElementById('reset-pass-new');
+  if (passInput) {
+    passInput.value = pass;
+    showToast(`Đã chọn mật khẩu: ${pass}`, 'info');
+  }
+};
+
+/**
+ * Sao chép mật khẩu trong ô đổi mật khẩu vào clipboard
+ */
+window.copyResetPasswordToClipboard = function () {
+  const passInput = document.getElementById('reset-pass-new');
+  if (!passInput || !passInput.value) {
+    showToast('Chưa có mật khẩu để sao chép', 'warning');
+    return;
+  }
+  navigator.clipboard
+    .writeText(passInput.value)
+    .then(() => {
+      showToast('Đã sao chép mật khẩu vào clipboard!', 'success');
+    })
+    .catch(() => {
+      showToast('Mật khẩu: ' + passInput.value, 'info');
+    });
+};
+
+/**
+ * Xử lý submit Đổi mật khẩu
+ */
+window.handleResetPasswordSubmit = async function (e) {
+  e.preventDefault();
+  const token = localStorage.getItem('dvc766_token');
+  if (!token || !usersState.resetPassUser) return;
+
+  const newPass = document.getElementById('reset-pass-new')?.value;
+  const alertBox = document.getElementById('reset-pass-alert');
+  const spinner = document.getElementById('btn-reset-pass-spinner');
+  const btnText = document.getElementById('btn-reset-pass-text');
+
+  if (!newPass || newPass.length < 6) {
+    if (alertBox) {
+      alertBox.className = 'user-modal-alert alert-error';
+      alertBox.textContent = 'Mật khẩu phải có ít nhất 6 ký tự.';
+      alertBox.style.display = 'block';
+    }
+    return;
+  }
+
+  if (spinner) spinner.style.display = 'inline-block';
+  if (btnText) btnText.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: 'reset-password',
+        username: usersState.resetPassUser.username,
+        newPassword: newPass
+      })
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      if (alertBox) {
+        alertBox.className = 'user-modal-alert alert-error';
+        alertBox.textContent = data.error || 'Lỗi khi cập nhật mật khẩu.';
+        alertBox.style.display = 'block';
+      }
+      return;
+    }
+
+    showToast(`Đã đổi mật khẩu cho @${usersState.resetPassUser.username} thành công!`, 'success');
+    closeResetPasswordModal();
+  } catch (err) {
+    console.error('[UsersMgmt] Reset pass error:', err);
+    if (alertBox) {
+      alertBox.className = 'user-modal-alert alert-error';
+      alertBox.textContent = 'Lỗi kết nối máy chủ.';
+      alertBox.style.display = 'block';
+    }
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+    if (btnText) btnText.style.display = 'inline-block';
+  }
+};
+
+/**
+ * Mở modal Xác nhận Xóa người dùng
+ */
+window.openDeleteUserModal = function (username) {
+  const user = usersState.users.find((u) => u.username.toLowerCase() === username.toLowerCase());
+  if (!user) return;
+
+  usersState.deletingUser = user;
+
+  const modal = document.getElementById('user-delete-modal');
+  const userEl = document.getElementById('delete-user-username');
+  const nameEl = document.getElementById('delete-user-name');
+  const unitEl = document.getElementById('delete-user-unit');
+
+  if (!modal) return;
+
+  if (userEl) userEl.textContent = `@${user.username}`;
+  if (nameEl) nameEl.textContent = user.name || user.username;
+  if (unitEl) unitEl.textContent = user.departmentName || 'Chưa liên kết đơn vị';
+
+  modal.style.display = 'flex';
+};
+
+/**
+ * Đóng modal Xác nhận Xóa người dùng
+ */
+window.closeDeleteUserModal = function () {
+  const modal = document.getElementById('user-delete-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+/**
+ * Xác nhận thực hiện xóa người dùng
+ */
+window.confirmDeleteUser = async function () {
+  const token = localStorage.getItem('dvc766_token');
+  if (!token || !usersState.deletingUser) return;
+
+  const spinner = document.getElementById('btn-delete-user-spinner');
+  const btnText = document.getElementById('btn-delete-user-text');
+
+  if (spinner) spinner.style.display = 'inline-block';
+  if (btnText) btnText.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        action: 'delete',
+        username: usersState.deletingUser.username
+      })
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      showToast(data.error || 'Không thể xóa tài khoản này.', 'error');
+      return;
+    }
+
+    showToast(`Đã xóa tài khoản @${usersState.deletingUser.username} thành công.`, 'success');
+    closeDeleteUserModal();
+    await loadUsersList();
+  } catch (err) {
+    console.error('[UsersMgmt] Delete user error:', err);
+    showToast('Lỗi kết nối máy chủ khi xóa tài khoản.', 'error');
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+    if (btnText) btnText.style.display = 'inline-block';
+  }
 };
 
 /* ==========================================================================

@@ -199,6 +199,170 @@ function getUserFromRequest(req) {
   return verifyJwt(token);
 }
 
+/**
+ * Get all users with password hashes stripped (safe for admin viewing)
+ */
+async function getAllUsersSafe() {
+  const users = await getAllUsers();
+  return users.map((u) => {
+    const { passwordHash, ...safe } = u;
+    return safe;
+  });
+}
+
+/**
+ * Create a new user (admin only)
+ */
+async function createUser({ username, password, name, departmentCode, departmentName, phone, note, role = 'officer' }) {
+  if (!username || !password) {
+    throw new Error('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.');
+  }
+
+  const cleanUsername = String(username).trim().toLowerCase();
+  if (cleanUsername.length < 3) {
+    throw new Error('Tên đăng nhập phải có ít nhất 3 ký tự.');
+  }
+  if (!/^[a-z0-9_.-]+$/.test(cleanUsername)) {
+    throw new Error('Tên đăng nhập chỉ được chứa chữ cái không dấu, số, dấu gạch dưới, gạch ngang hoặc dấu chấm.');
+  }
+
+  if (String(password).length < 6) {
+    throw new Error('Mật khẩu phải có ít nhất 6 ký tự.');
+  }
+
+  const users = await getAllUsers();
+  const exists = users.find((u) => u.username.toLowerCase() === cleanUsername);
+  if (exists) {
+    throw new Error(`Tên đăng nhập "${cleanUsername}" đã tồn tại trên hệ thống.`);
+  }
+
+  const newUser = {
+    username: cleanUsername,
+    name: name ? String(name).trim() : cleanUsername,
+    departmentCode: departmentCode ? String(departmentCode).trim() : '',
+    departmentName: departmentName ? String(departmentName).trim() : '',
+    role: role || 'officer',
+    phone: phone ? String(phone).trim() : '',
+    note: note ? String(note).trim() : '',
+    passwordHash: hashPassword(String(password)),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+  await storage.saveUsers(users);
+
+  const { passwordHash, ...safeUser } = newUser;
+  return safeUser;
+}
+
+/**
+ * Update user information (admin only)
+ */
+async function updateUser(username, { name, departmentCode, departmentName, phone, note, role }) {
+  if (!username) {
+    throw new Error('Thiếu tên đăng nhập cần cập nhật.');
+  }
+
+  const cleanUsername = String(username).trim().toLowerCase();
+  const users = await getAllUsers();
+  const idx = users.findIndex((u) => u.username.toLowerCase() === cleanUsername);
+  if (idx === -1) {
+    throw new Error(`Không tìm thấy tài khoản "${username}".`);
+  }
+
+  const user = users[idx];
+  if (name !== undefined) user.name = String(name).trim();
+  if (departmentCode !== undefined) user.departmentCode = String(departmentCode).trim();
+  if (departmentName !== undefined) user.departmentName = String(departmentName).trim();
+  if (phone !== undefined) user.phone = String(phone).trim();
+  if (note !== undefined) user.note = String(note).trim();
+  if (role !== undefined && ['admin', 'officer', 'canbo'].includes(role)) {
+    user.role = role;
+  }
+  user.updatedAt = new Date().toISOString();
+
+  await storage.saveUsers(users);
+
+  const { passwordHash, ...safeUser } = user;
+  return safeUser;
+}
+
+/**
+ * Delete a user (admin only)
+ */
+async function deleteUser(username, requestingUsername) {
+  if (!username) {
+    throw new Error('Thiếu tên đăng nhập cần xóa.');
+  }
+
+  const cleanUsername = String(username).trim().toLowerCase();
+  if (requestingUsername && requestingUsername.toLowerCase() === cleanUsername) {
+    throw new Error('Bạn không thể tự xóa tài khoản đang đăng nhập của chính mình.');
+  }
+
+  if (cleanUsername === 'admin') {
+    throw new Error('Không thể xóa tài khoản Quản trị viên hệ thống mặc định (admin).');
+  }
+
+  const users = await getAllUsers();
+  const idx = users.findIndex((u) => u.username.toLowerCase() === cleanUsername);
+  if (idx === -1) {
+    throw new Error(`Không tìm thấy tài khoản "${username}".`);
+  }
+
+  const deletedUser = users.splice(idx, 1)[0];
+  await storage.saveUsers(users);
+
+  const { passwordHash, ...safeUser } = deletedUser;
+  return safeUser;
+}
+
+/**
+ * Reset/change user password (admin only)
+ */
+async function resetUserPassword(username, newPassword) {
+  if (!username || !newPassword) {
+    throw new Error('Vui lòng cung cấp tên đăng nhập và mật khẩu mới.');
+  }
+
+  if (String(newPassword).length < 6) {
+    throw new Error('Mật khẩu mới phải có ít nhất 6 ký tự.');
+  }
+
+  const cleanUsername = String(username).trim().toLowerCase();
+  const users = await getAllUsers();
+  const user = users.find((u) => u.username.toLowerCase() === cleanUsername);
+  if (!user) {
+    throw new Error(`Không tìm thấy tài khoản "${username}".`);
+  }
+
+  user.passwordHash = hashPassword(String(newPassword));
+  user.updatedAt = new Date().toISOString();
+
+  await storage.saveUsers(users);
+  return { success: true, username: user.username };
+}
+
+/**
+ * Get available units from snapshot for linking with user accounts
+ */
+async function getAvailableUnits() {
+  try {
+    const snap = await storage.getLatestSnapshot();
+    if (snap && Array.isArray(snap.units)) {
+      return snap.units.map((u) => ({
+        code: u.departmentCode,
+        name: u.departmentName,
+        level: u.departmentLevel,
+        levelLabel: u.levelLabel,
+        group: u.group
+      }));
+    }
+  } catch (e) {}
+  return [];
+}
+
 module.exports = {
   hashPassword,
   verifyPassword,
@@ -207,5 +371,11 @@ module.exports = {
   authenticate,
   getUserFromRequest,
   getAllUsers,
-  getDefaultUsers
+  getAllUsersSafe,
+  getDefaultUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  resetUserPassword,
+  getAvailableUnits
 };
