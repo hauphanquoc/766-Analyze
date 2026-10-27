@@ -419,18 +419,18 @@ async function saveUsers(users) {
   try {
     ensureDirectories();
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+    const stat = fs.statSync(USERS_FILE);
+    memoryCache.usersMtime = stat.mtimeMs;
   } catch (err) {}
   return true;
 }
 
 /**
  * Get users list (for authentication)
+ * Luôn ưu tiên đọc từ Redis hoặc tệp đĩa có kiểm tra mtime để mọi phiên bản Serverless Lambda và Dev Server đều nhận tài khoản mới tức thì.
  */
 async function getUsers() {
-  if (memoryCache.users && Array.isArray(memoryCache.users) && memoryCache.users.length > 0) {
-    return memoryCache.users;
-  }
-
+  // 1. Kiểm tra Redis trước (nguồn chân lý đồng bộ giữa các lambda trên Vercel và máy cục bộ)
   if (redisClient) {
     try {
       const data = await redisClient.get('dvc:users');
@@ -446,15 +446,26 @@ async function getUsers() {
     }
   }
 
+  // 2. Kiểm tra tệp đĩa cục bộ (kèm đối soát mtime)
   try {
     if (fs.existsSync(USERS_FILE)) {
+      const stat = fs.statSync(USERS_FILE);
+      if (memoryCache.users && memoryCache.usersMtime && memoryCache.usersMtime >= stat.mtimeMs) {
+        return memoryCache.users;
+      }
       const parsed = JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8'));
       if (Array.isArray(parsed) && parsed.length > 0) {
         memoryCache.users = parsed;
+        memoryCache.usersMtime = stat.mtimeMs;
         return parsed;
       }
     }
   } catch (err) {}
+
+  // 3. Fallback bộ nhớ tạm RAM (chỉ khi không có Redis và không có ổ đĩa)
+  if (memoryCache.users && Array.isArray(memoryCache.users) && memoryCache.users.length > 0) {
+    return memoryCache.users;
+  }
 
   return null;
 }
