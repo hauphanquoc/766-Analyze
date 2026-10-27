@@ -4226,32 +4226,23 @@ function updateAuthUI() {
   // Quyền truy cập: Quản trị viên (Admin) hoặc Cán bộ nghiệp vụ (Officer/Canbo)
   const isStaffOrAdmin = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
 
-  // Quản lý hiển thị Menu Phân loại hồ sơ (DÀNH CHO CÁN BỘ VÀ QUẢN TRỊ VIÊN)
+  // Menu Phân loại hồ sơ (MỞ CÔNG KHAI CHO TẤT CẢ MỌI NGƯỜI)
   const navSplitItem = document.getElementById('nav-item-dossier-split');
   const mobileGridSplit = document.getElementById('mobile-grid-item-dossier-split');
   const splitAuthLock = document.getElementById('split-auth-lock-card');
   const splitWorkspace = document.getElementById('split-workspace-wrap');
 
   if (navSplitItem) {
-    navSplitItem.style.display = isStaffOrAdmin ? 'inline-block' : 'none';
+    navSplitItem.style.display = 'inline-block';
   }
   if (mobileGridSplit) {
-    mobileGridSplit.style.display = isStaffOrAdmin ? 'flex' : 'none';
+    mobileGridSplit.style.display = 'flex';
   }
   if (splitAuthLock) {
-    splitAuthLock.style.display = isStaffOrAdmin ? 'none' : 'block';
+    splitAuthLock.style.display = 'none';
   }
   if (splitWorkspace) {
-    splitWorkspace.style.display = isStaffOrAdmin ? 'block' : 'none';
-  }
-
-  // Nếu người dùng chưa đăng nhập quyền Cán bộ/Admin nhưng đang ở trên tab Phân loại hồ sơ thì chuyển về tab Cổng thông tin
-  if (!isStaffOrAdmin) {
-    const splitTabPane = document.getElementById('tab-content-dossier-split');
-    if (splitTabPane && splitTabPane.classList.contains('active')) {
-      const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
-      if (defaultTabBtn) defaultTabBtn.click();
-    }
+    splitWorkspace.style.display = 'block';
   }
 
   // Quản lý hiển thị Menu Báo cáo nhanh (CHỈ DÀNH CHO CÁN BỘ HOẶC QUẢN TRỊ VIÊN ĐĂNG NHẬP)

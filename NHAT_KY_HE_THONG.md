@@ -323,7 +323,18 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     - Điều hướng bảo vệ: Nếu chưa đăng nhập một trong hai quyền trên mà cố tình vào tab sẽ được chuyển an toàn về tab mặc định.
   - **Giao diện & Cảnh báo (`public/index.html`):**
     - Điều chỉnh tiêu đề tab và ghi chú thành *Phân loại hồ sơ (Cán bộ & Quản trị viên)*.
-    - Tinh chỉnh nội dung khối khóa (`#split-auth-lock-card`): Đổi thành *Yêu cầu đăng nhập Cán bộ hoặc Quản trị viên* và nút *Đăng nhập Hệ thống* thân thiện, trực quan.
+### 25. Mở công khai chức năng "Phân loại hồ sơ" cho toàn bộ người dùng (27/10/2026)
+* **Yêu cầu:** Mở công khai chức năng Phân loại hồ sơ để tất cả mọi người (khách truy cập, cán bộ, quản trị viên) đều sử dụng được trực tiếp mà không cần đăng nhập.
+* **Xử lý toàn diện:**
+  - **Giao diện điều hướng (`public/index.html`):**
+    - Loại bỏ thuộc tính ẩn `style="display: none;"` và gỡ bỏ biểu tượng ổ khóa `🔒` trên mục menu sidebar Desktop `#nav-item-dossier-split`.
+    - Cập nhật tiêu đề và comment tab thành *TAB 6: PHÂN LOẠI HỒ SƠ (CÔNG KHAI)*.
+    - Loại bỏ hoàn toàn khối cảnh báo khóa `#split-auth-lock-card`, trực tiếp hiển thị khối làm việc `#split-workspace-wrap` ngay khi truy cập.
+  - **Logic kiểm soát hiển thị (`public/app.js`):**
+    - Cập nhật hàm `updateAuthUI()`: Menu phân loại hồ sơ trên desktop (`navSplitItem`), trên drawer di động (`mobileGridSplit`) và khối làm việc (`splitWorkspace`) luôn ở trạng thái hiển thị (`display: inline-block` / `flex` / `block`).
+    - Gỡ bỏ logic chuyển hướng cưỡng bức (force redirect) người dùng chưa đăng nhập khi đang ở tab phân loại hồ sơ.
+  - **Tính năng độc lập & bảo mật:**
+    - Toàn bộ thuật toán phân tích, bóc tách và xuất file Excel nhiều sheet chạy 100% Offline trên trình duyệt thông qua `exceljs.min.js`, không gửi bất kỳ dữ liệu nhạy cảm nào lên server, hoàn toàn an toàn và miễn phí cho mọi đối tượng người dùng.
 
 ---
 

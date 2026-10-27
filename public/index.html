@@ -139,7 +139,7 @@
                 <span class="sidebar-lock-badge" title="Chức năng cho Cán bộ / Admin">🔒</span>
               </button>
             </li>
-            <li class="sidebar-menu-item" id="nav-item-dossier-split" style="display: none;">
+            <li class="sidebar-menu-item" id="nav-item-dossier-split">
               <button class="nav-tab-btn" id="tab-btn-dossier-split" data-tab="tab-content-dossier-split" title="Phân loại hồ sơ">
                 <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -149,7 +149,6 @@
                   <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
                 <span class="nav-tab-label">Phân loại hồ sơ</span>
-                <span class="sidebar-lock-badge" title="Chức năng cho Cán bộ / Admin">🔒</span>
               </button>
             </li>
           </ul>
@@ -3171,7 +3170,7 @@
     </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-tools -->
 
-  <!-- TAB 6: PHÂN LOẠI HỒ SƠ (CHỈ DÀNH CHO ADMIN) -->
+  <!-- TAB 6: PHÂN LOẠI HỒ SƠ (CÔNG KHAI) -->
   <div id="tab-content-dossier-split" class="tab-pane" style="display: none;">
     <div class="tools-container">
       <!-- UNIFIED ENTERPRISE CARD (MỘT CARD DUY NHẤT ĐỒNG BỘ PHONG CÁCH) -->
@@ -3202,22 +3201,7 @@
         <!-- Phần thân (Card Body) -->
         <div class="tools-card-body">
           
-          <!-- Khối cảnh báo nếu chưa đăng nhập quyền Cán bộ / Admin -->
-          <div id="split-auth-lock-card" class="tools-auth-lock-box" style="display: none;">
-            <div class="tools-lock-icon-badge">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <h3 class="tools-lock-title">Yêu cầu đăng nhập Cán bộ hoặc Quản trị viên</h3>
-            <p class="tools-lock-desc">Tính năng phân loại hồ sơ TTHC theo Cổng Tỉnh, Hộ kinh doanh & Bộ - Ngành phục vụ tài khoản Cán bộ và Quản trị viên của hệ thống.</p>
-            <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập tài khoản Cán bộ hoặc Quản trị viên để sử dụng công cụ Phân loại hồ sơ.')">
-              Đăng nhập Hệ thống
-            </button>
-          </div>
-
-          <!-- Khối làm việc chính (Khi đã xác thực Cán bộ hoặc Admin) -->
+          <!-- Khối làm việc chính (Công khai cho mọi người dùng) -->
           <div id="split-workspace-wrap">
             
             <!-- KHU VỰC TẢI LÊN FILE EXCEL (DROPZONE CHUẨN GOV-TECH) -->
