@@ -55,8 +55,11 @@ if (hasRedis) {
 // In-memory cache as fallback for Serverless without DB
 const memoryCache = {
   snapshots: new Map(),
+  snapshotMtimes: new Map(),
   dates: [],
-  history: []
+  history: [],
+  provinces: null,
+  provincesMtime: 0
 };
 
 // Paths for local file storage
@@ -116,6 +119,8 @@ async function saveSnapshot(analyzedData, options = {}) {
     ensureDirectories();
     const filePath = path.join(SNAPSHOTS_DIR, `${date}.json`);
     fs.writeFileSync(filePath, JSON.stringify(analyzedData, null, 2), 'utf-8');
+    const stat = fs.statSync(filePath);
+    memoryCache.snapshotMtimes.set(date, stat.mtimeMs);
   } catch (err) {
     // Disk write may fail on Vercel read-only root, which is fine
   }
@@ -127,12 +132,31 @@ async function saveSnapshot(analyzedData, options = {}) {
  * Get snapshot by date
  */
 async function getSnapshot(date) {
-  // Check memory
+  // 1. Check local disk first with mtime (ensures external sync updates are instantly loaded)
+  try {
+    const filePath = path.join(SNAPSHOTS_DIR, `${date}.json`);
+    if (fs.existsSync(filePath)) {
+      const stat = fs.statSync(filePath);
+      const cachedMtime = memoryCache.snapshotMtimes.get(date);
+      if (memoryCache.snapshots.has(date) && cachedMtime && cachedMtime >= stat.mtimeMs) {
+        return memoryCache.snapshots.get(date);
+      }
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(content);
+      memoryCache.snapshots.set(date, parsed);
+      memoryCache.snapshotMtimes.set(date, stat.mtimeMs);
+      return parsed;
+    }
+  } catch (err) {
+    // Ignore
+  }
+
+  // 2. Check memory (for serverless environments without disk)
   if (memoryCache.snapshots.has(date)) {
     return memoryCache.snapshots.get(date);
   }
 
-  // Check Redis
+  // 3. Check Redis
   if (redisClient) {
     try {
       const data = await redisClient.get(`dvc:snapshot:${date}`);
@@ -144,19 +168,6 @@ async function getSnapshot(date) {
     } catch (err) {
       console.error('[Storage] Redis get error:', err.message);
     }
-  }
-
-  // Check local disk
-  try {
-    const filePath = path.join(SNAPSHOTS_DIR, `${date}.json`);
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, 'utf-8');
-      const parsed = JSON.parse(content);
-      memoryCache.snapshots.set(date, parsed);
-      return parsed;
-    }
-  } catch (err) {
-    // Ignore
   }
 
   return null;
@@ -343,6 +354,8 @@ async function saveProvinceRankings(data) {
   try {
     ensureDirectories();
     fs.writeFileSync(PROVINCES_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    const stat = fs.statSync(PROVINCES_FILE);
+    memoryCache.provincesMtime = stat.mtimeMs;
     if (data.date) {
       const pPath = path.join(PROVINCES_DIR, `${data.date}.json`);
       fs.writeFileSync(pPath, JSON.stringify(data, null, 2), 'utf-8');
@@ -358,6 +371,20 @@ async function saveProvinceRankings(data) {
  * Get province rankings data
  */
 async function getProvinceRankings() {
+  // Check local disk first with mtime
+  try {
+    if (fs.existsSync(PROVINCES_FILE)) {
+      const stat = fs.statSync(PROVINCES_FILE);
+      if (memoryCache.provinces && memoryCache.provincesMtime && memoryCache.provincesMtime >= stat.mtimeMs) {
+        return memoryCache.provinces;
+      }
+      const parsed = JSON.parse(fs.readFileSync(PROVINCES_FILE, 'utf-8'));
+      memoryCache.provinces = parsed;
+      memoryCache.provincesMtime = stat.mtimeMs;
+      return parsed;
+    }
+  } catch (err) {}
+
   if (memoryCache.provinces) return memoryCache.provinces;
 
   if (redisClient) {
@@ -372,14 +399,6 @@ async function getProvinceRankings() {
       console.error('[Storage] Redis getProvinceRankings error:', err.message);
     }
   }
-
-  try {
-    if (fs.existsSync(PROVINCES_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(PROVINCES_FILE, 'utf-8'));
-      memoryCache.provinces = parsed;
-      return parsed;
-    }
-  } catch (err) {}
 
   return null;
 }
