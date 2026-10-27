@@ -333,8 +333,15 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Logic kiểm soát hiển thị (`public/app.js`):**
     - Cập nhật hàm `updateAuthUI()`: Menu phân loại hồ sơ trên desktop (`navSplitItem`), trên drawer di động (`mobileGridSplit`) và khối làm việc (`splitWorkspace`) luôn ở trạng thái hiển thị (`display: inline-block` / `flex` / `block`).
     - Gỡ bỏ logic chuyển hướng cưỡng bức (force redirect) người dùng chưa đăng nhập khi đang ở tab phân loại hồ sơ.
-  - **Tính năng độc lập & bảo mật:**
-    - Toàn bộ thuật toán phân tích, bóc tách và xuất file Excel nhiều sheet chạy 100% Offline trên trình duyệt thông qua `exceljs.min.js`, không gửi bất kỳ dữ liệu nhạy cảm nào lên server, hoàn toàn an toàn và miễn phí cho mọi đối tượng người dùng.
+### 26. Khắc phục lỗi đăng nhập tài khoản mới tạo trên Vercel Serverless (27/10/2026)
+* **Hiện tượng:** Tài khoản mới tạo qua chức năng Quản lý người dùng (`congthuong`, mật khẩu `Congthuong@357`) khi đăng nhập trên `https://tienich-dvc.vercel.app` bị báo lỗi 401 "Tên đăng nhập hoặc mật khẩu không chính xác".
+* **Nguyên nhân:**
+  - Trong kiến trúc Serverless của Vercel, hàm `/api/users` (tạo/sửa tài khoản) và `/api/auth` (đăng nhập) chạy trên các Lambda container độc lập.
+  - Hàm `getUsers()` trong `src/storage.js` trước đó ưu tiên đọc bộ nhớ tạm RAM `memoryCache.users` trước Redis/đĩa. Khi một container đăng nhập đã "ấm" (warm instance) từ trước với danh sách user cũ, nó không tải lại dữ liệu mới từ Upstash Redis, dẫn đến không tìm thấy tài khoản mới tạo.
+* **Xử lý toàn diện:**
+  - Cập nhật `src/storage.js`: Đảo thứ tự ưu tiên, luôn đọc dữ liệu người dùng trực tiếp từ Upstash Redis trước (nguồn chân lý chung giữa Cloud và Local) hoặc tệp đĩa có kiểm tra `mtime`.
+  - Đồng bộ tệp `data/users.json` trên ổ đĩa nội bộ với dữ liệu đám mây.
+  - Xác thực trực tiếp qua API: Tài khoản `congthuong` đăng nhập thành công 100% trên cả Vercel (`tienich-dvc.vercel.app`) lẫn Localhost (`localhost:3000`).
 
 ---
 

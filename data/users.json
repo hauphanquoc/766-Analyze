@@ -16,13 +16,25 @@
   {
     "username": "ubnd_eaknuec",
     "name": "Can bo tiep nhan - UBND xa Ea Knuec",
-    "departmentCode": "H15.100",
-    "departmentName": "UBND xa Ea Knuec",
+    "departmentCode": "H15.152",
+    "departmentName": "UBND xã Ea Knuếk",
     "role": "officer",
     "phone": "",
     "note": "",
     "passwordHash": "fb8f5c623fcfa3ddf1459a5ef8e457e9:158598b48a5ab92fb90771b484c89295b07aad3aba78a68b89cc837ea12e624d66e1c5e6434d9a21a228bee83f05af85188980e1da68b7d25f1e6a051df247de",
     "createdAt": "2026-10-26T08:05:54.475Z",
-    "updatedAt": "2026-10-26T08:05:54.475Z"
+    "updatedAt": "2026-10-26T08:30:08.264Z"
+  },
+  {
+    "username": "congthuong",
+    "name": "Chị Vy dễ thương",
+    "departmentCode": "H15.03",
+    "departmentName": "Sở Công Thương - Tỉnh Đắk Lắk",
+    "role": "officer",
+    "phone": "",
+    "note": "",
+    "passwordHash": "9643af0dacd6fe1803eb6c487e3803cf:3ec2d7ade9eac8c27557044cd2a1f338cdd02fb994339168bca443354be047ef3a669d5372dfa040db1fbf40f82b33804ae9656c260441fee2b79f52f8c4a4cb",
+    "createdAt": "2026-10-27T02:58:07.147Z",
+    "updatedAt": "2026-10-27T02:59:13.282Z"
   }
 ]
