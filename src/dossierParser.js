@@ -13,7 +13,10 @@ const MINISTRY_PREFIX_MAP = {
   '02': 'Bộ Công Thương',
   '06': 'Bộ Khoa học và Công nghệ',
   '15': 'Bộ Tư Pháp',
-  '16': 'Bộ Văn hóa, thể thao và du lịch'
+  '16': 'Bộ Văn hóa, thể thao và du lịch',
+  '12': 'Bộ Tài chính',
+  '21': 'Bộ Dân tộc và Tôn giáo',
+  '99': 'Cổng DVCQG'
 };
 
 const BUSINESS_HOUSEHOLD_PROCEDURE_CODES = [
@@ -82,7 +85,7 @@ function parseDossierCode(dossierCode, procedureCode = null) {
     sequence: seqStr,
     procedureCode: cleanProcedureCode || null,
     portalType, // 'PROVINCE' | 'BUSINESS_HOUSEHOLD' | 'MINISTRY' | 'UNKNOWN'
-    portalTypeLabel: portalType === 'PROVINCE' ? 'Cổng Tỉnh' : (portalType === 'BUSINESS_HOUSEHOLD' ? 'Hộ kinh doanh' : (portalType === 'MINISTRY' ? 'Cổng Bộ' : 'Chưa xác định')),
+    portalTypeLabel: portalType === 'PROVINCE' ? 'Cổng Tỉnh' : (portalType === 'BUSINESS_HOUSEHOLD' ? 'Hộ kinh doanh' : (portalType === 'MINISTRY' ? (ministryCode === '99' ? 'Cổng DVCQG' : 'Cổng Bộ') : 'Chưa xác định')),
     isBusinessHousehold,
     ministryCode,
     ministryName

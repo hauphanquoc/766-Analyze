@@ -32,6 +32,9 @@ Mã số hồ sơ thủ tục hành chính (TTHC) có dạng:
 | `06` | **Bộ Khoa học và Công nghệ** (`06xxxx`) |
 | `15` | **Bộ Tư pháp** (`15xxxx`) |
 | `16` | **Bộ Văn hóa, Thể thao và Du lịch** (`16xxxx`) |
+| `12` | **Bộ Tài chính** (`12xxxx`) |
+| `21` | **Bộ Dân tộc và Tôn giáo** (`21xxxx`) |
+| `99` | **Cổng DVCQG** (`99xxxx`) |
 
 ---
 

@@ -5390,7 +5390,10 @@ function initDossierSplitModule() {
     '02': { name: 'Bộ Công Thương', sheet: 'Bộ Công Thương', color: '#dc2626', tag: 'BỘ CÔNG THƯƠNG' },
     '06': { name: 'Bộ Khoa học và Công nghệ', sheet: 'Bộ KH&CN', color: '#0891b2', tag: 'BỘ KH&CN' },
     '15': { name: 'Bộ Tư Pháp', sheet: 'Bộ Tư Pháp', color: '#9333ea', tag: 'BỘ TƯ PHÁP' },
-    '16': { name: 'Bộ Văn hóa, thể thao và du lịch', sheet: 'Bộ VHTTDL', color: '#db2777', tag: 'BỘ VHTTDL' }
+    '16': { name: 'Bộ Văn hóa, thể thao và du lịch', sheet: 'Bộ VHTTDL', color: '#db2777', tag: 'BỘ VHTTDL' },
+    '12': { name: 'Bộ Tài chính', sheet: 'Bộ Tài chính', color: '#0284c7', tag: 'BỘ TÀI CHÍNH' },
+    '21': { name: 'Bộ Dân tộc và Tôn giáo', sheet: 'Bộ Dân tộc và Tôn giáo', color: '#7c3aed', tag: 'BỘ DÂN TỘC & TÔN GIÁO' },
+    '99': { name: 'Cổng DVCQG', sheet: 'Cổng DVCQG', color: '#b91c1c', tag: 'CỔNG DVCQG' }
   };
 
   function cellToString(val) {
@@ -6175,7 +6178,7 @@ function initDossierSplitModule() {
           ? 'Cổng DVC Tỉnh Đắk Lắk'
           : (g.isBusinessHousehold
               ? 'Lĩnh vực Hộ kinh doanh'
-              : 'Cổng Bộ - Ngành liên thông');
+              : (g.prefix === '99' ? 'Cổng Dịch vụ công Quốc gia' : 'Cổng Bộ - Ngành liên thông'));
 
         const row = wsSummary.addRow([
           stt++,

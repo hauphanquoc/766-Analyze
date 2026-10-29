@@ -353,6 +353,23 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Cơ chế Fallback an toàn cho API (`api/provinces.js` & `api/data.js`):** Khi người dùng bấm nút "Làm mới", nếu Cloud Serverless không thể kết nối trực tiếp Cổng DVCQG (do chặn IP), API sẽ tự động fallback về dữ liệu mới nhất trong Redis/Storage thay vì trả về lỗi 500.
   - **Đồng bộ hóa dữ liệu lịch sử:** Đưa đầy đủ các tệp snapshot và xếp hạng tỉnh từ ngày 27/10 đến 29/10/2026 (`data/provinces/2026-10-27.json`, `2026-10-28.json`, `2026-10-29.json`, `data/snapshots/2026-10-27.json`, `2026-10-28.json`, `2026-10-29.json` và `data/provinces-latest.json`) vào kho mã nguồn Git và đẩy lên Vercel.
 
+### 28. Cập nhật thêm Rule phân loại hồ sơ cho Bộ Tài chính, Bộ Dân tộc và Tôn giáo, Cổng DVCQG (29/10/2026)
+* **Yêu cầu:** Bổ sung các quy tắc phân loại mã tiền tố dãy số thứ tự 6-7 chữ số cho module Phân loại hồ sơ:
+  - Mã tiền tố `12xxxx` (6-7 số): **Bộ Tài chính**
+  - Mã tiền tố `21xxxx` (6-7 số): **Bộ Dân tộc và Tôn giáo**
+  - Mã tiền tố `99xxxx` (6-7 số): **Cổng DVCQG**
+* **Xử lý toàn diện:**
+  - **Lưu trữ tri thức nghiệp vụ:** Cập nhật bảng tra cứu mã Bộ chủ quản tại [`.agents/rules/dossier-code-rules.md`](file:///f:/DVC%20QG%20C12/766-Analyze/.agents/rules/dossier-code-rules.md).
+  - **Module phân tích Backend (`src/dossierParser.js`):**
+    - Cập nhật hằng số `MINISTRY_PREFIX_MAP` bổ sung mã `'12'`, `'21'`, `'99'`.
+    - Chuẩn hóa nhãn `portalTypeLabel` trả về: với mã `'99'` hiển thị rõ `Cổng DVCQG` (thay vì nhãn chung Cổng Bộ).
+  - **Module phân loại Frontend & Xuất Excel (`public/app.js`):**
+    - Cập nhật bảng `MINISTRY_RULES`:
+      * `'12'`: Tên `Bộ Tài chính`, Sheet `Bộ Tài chính`, màu nhận diện `#0284c7` (Sky Blue), Tag `BỘ TÀI CHÍNH`.
+      * `'21'`: Tên `Bộ Dân tộc và Tôn giáo`, Sheet `Bộ Dân tộc và Tôn giáo`, màu nhận diện `#7c3aed` (Purple), Tag `BỘ DÂN TỘC & TÔN GIÁO`.
+      * `'99'`: Tên `Cổng DVCQG`, Sheet `Cổng DVCQG`, màu nhận diện `#b91c1c` (Crimson), Tag `CỔNG DVCQG`.
+    - Tại Sheet 1 *Tổng hợp thống kê* của file Excel xuất ra: Hồ sơ mã `99xxxx` tự động ghi nhận cơ quan là `Cổng Dịch vụ công Quốc gia` (các bộ ghi `Cổng Bộ - Ngành liên thông`).
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
