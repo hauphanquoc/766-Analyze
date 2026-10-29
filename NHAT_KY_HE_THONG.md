@@ -343,6 +343,16 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Đồng bộ tệp `data/users.json` trên ổ đĩa nội bộ với dữ liệu đám mây.
   - Xác thực trực tiếp qua API: Tài khoản `congthuong` đăng nhập thành công 100% trên cả Vercel (`tienich-dvc.vercel.app`) lẫn Localhost (`localhost:3000`).
 
+### 27. Khắc phục lỗi Bảng Xếp hạng 766 các tỉnh bị đứng ngày 26/10/2026 trên Vercel (29/10/2026)
+* **Hiện tượng:** Trên web công khai Vercel (`https://tienich-dvc.vercel.app`), tab "Xếp hạng 766 các tỉnh" hiển thị dừng ở mốc thời gian *"Cập nhật: 06:00 26/10/2026 (giờ Việt Nam)"* và Đắk Lắk đạt 66.62 điểm (#8), trong khi trên máy tính nội bộ và Upstash Redis đã thu thập đầy đủ số liệu tới ngày 29/10/2026 (Đắk Lắk đạt **67.00 điểm, Hạng 7 toàn quốc**).
+* **Nguyên nhân:**
+  - Trong `src/storage.js`, hàm `getProvinceRankings()` trước đây ưu tiên kiểm tra tệp tĩnh `PROVINCES_FILE` (`data/provinces-latest.json`) trên đĩa trước Redis. Do Vercel đóng gói tệp git commit từ ngày 26/10, hàm luôn đọc tệp tĩnh này mà không đọc dữ liệu mới nhất được máy nội bộ đẩy lên Upstash Redis (`dvc:provinces:latest`).
+  - Nút "Làm mới" trên Vercel khi gọi `/api/provinces?refresh=true` cố gắng gọi trực tiếp API Cổng DVCQG từ Cloud Serverless, nhưng do Cổng DVCQG có tường lửa chặn IP nước ngoài (Geo-blocking) nên báo lỗi `fetch failed` (HTTP 500) mà không có cơ chế fallback.
+* **Xử lý toàn diện:**
+  - **Tự động đồng bộ nguồn chân lý mới nhất (`src/storage.js`):** Nâng cấp hàm `getProvinceRankings()` so sánh thông minh giữa Upstash Redis và Đĩa cục bộ. Luôn tự động chọn nguồn có ngày dữ liệu (`date` / `updatedAt`) mới hơn. Khi job 6h sáng chạy ở máy nội bộ đẩy điểm tỉnh lên Redis, Vercel Serverless sẽ lập tức nhận số liệu mới mà không cần phải commit git hay deploy lại mã nguồn.
+  - **Cơ chế Fallback an toàn cho API (`api/provinces.js` & `api/data.js`):** Khi người dùng bấm nút "Làm mới", nếu Cloud Serverless không thể kết nối trực tiếp Cổng DVCQG (do chặn IP), API sẽ tự động fallback về dữ liệu mới nhất trong Redis/Storage thay vì trả về lỗi 500.
+  - **Đồng bộ hóa dữ liệu lịch sử:** Đưa đầy đủ các tệp snapshot và xếp hạng tỉnh từ ngày 27/10 đến 29/10/2026 (`data/provinces/2026-10-27.json`, `2026-10-28.json`, `2026-10-29.json`, `data/snapshots/2026-10-27.json`, `2026-10-28.json`, `2026-10-29.json` và `data/provinces-latest.json`) vào kho mã nguồn Git và đẩy lên Vercel.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

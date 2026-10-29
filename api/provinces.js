@@ -15,8 +15,14 @@ module.exports = async function handler(req, res) {
   try {
     let data = !forceRefresh ? await storage.getProvinceRankings() : null;
     if (!data) {
-      data = await fetchProvinceRankings();
-      await storage.saveProvinceRankings(data);
+      try {
+        data = await fetchProvinceRankings();
+        await storage.saveProvinceRankings(data);
+      } catch (crawlErr) {
+        console.warn('[Provinces API] fetchProvinceRankings failed, falling back to storage:', crawlErr.message);
+        data = await storage.getProvinceRankings();
+        if (!data) throw crawlErr;
+      }
     }
 
     return res.status(200).json({

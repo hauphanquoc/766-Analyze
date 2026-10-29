@@ -369,36 +369,79 @@ async function saveProvinceRankings(data) {
 
 /**
  * Get province rankings data
+ * Đồng bộ nguồn chân lý giữa Redis (cloud) và Đĩa cục bộ:
+ * Ưu tiên bản ghi có ngày dữ liệu mới nhất (date / updatedAt) giúp môi trường Serverless
+ * trên Vercel luôn tự động tải số liệu mới nhất từ Redis mà không bị giữ cache file tĩnh cũ.
  */
-async function getProvinceRankings() {
-  // Check local disk first with mtime
-  try {
-    if (fs.existsSync(PROVINCES_FILE)) {
-      const stat = fs.statSync(PROVINCES_FILE);
-      if (memoryCache.provinces && memoryCache.provincesMtime && memoryCache.provincesMtime >= stat.mtimeMs) {
-        return memoryCache.provinces;
-      }
-      const parsed = JSON.parse(fs.readFileSync(PROVINCES_FILE, 'utf-8'));
-      memoryCache.provinces = parsed;
-      memoryCache.provincesMtime = stat.mtimeMs;
-      return parsed;
+async function getProvinceRankings(date) {
+  if (date) {
+    if (redisClient) {
+      try {
+        const data = await redisClient.get(`dvc:provinces:${date}`);
+        if (data) return typeof data === 'string' ? JSON.parse(data) : data;
+      } catch (err) {}
     }
-  } catch (err) {}
+    try {
+      const pPath = path.join(PROVINCES_DIR, `${date}.json`);
+      if (fs.existsSync(pPath)) {
+        return JSON.parse(fs.readFileSync(pPath, 'utf-8'));
+      }
+    } catch (err) {}
+    return null;
+  }
 
-  if (memoryCache.provinces) return memoryCache.provinces;
-
+  let redisData = null;
   if (redisClient) {
     try {
       const data = await redisClient.get('dvc:provinces:latest');
       if (data) {
-        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-        memoryCache.provinces = parsed;
-        return parsed;
+        redisData = typeof data === 'string' ? JSON.parse(data) : data;
       }
     } catch (err) {
       console.error('[Storage] Redis getProvinceRankings error:', err.message);
     }
   }
+
+  let diskData = null;
+  try {
+    if (fs.existsSync(PROVINCES_FILE)) {
+      const stat = fs.statSync(PROVINCES_FILE);
+      if (memoryCache.provinces && memoryCache.provincesMtime && memoryCache.provincesMtime >= stat.mtimeMs) {
+        diskData = memoryCache.provinces;
+      } else {
+        diskData = JSON.parse(fs.readFileSync(PROVINCES_FILE, 'utf-8'));
+        memoryCache.provincesMtime = stat.mtimeMs;
+      }
+    }
+  } catch (err) {}
+
+  // So sánh và ưu tiên nguồn có dữ liệu ngày mới hơn
+  if (redisData && diskData) {
+    const redisDate = redisData.date || '';
+    const diskDate = diskData.date || '';
+    const redisTime = new Date(redisData.updatedAt || 0).getTime();
+    const diskTime = new Date(diskData.updatedAt || 0).getTime();
+
+    if (redisDate > diskDate || (redisDate === diskDate && redisTime >= diskTime)) {
+      memoryCache.provinces = redisData;
+      return redisData;
+    } else {
+      memoryCache.provinces = diskData;
+      return diskData;
+    }
+  }
+
+  if (redisData) {
+    memoryCache.provinces = redisData;
+    return redisData;
+  }
+
+  if (diskData) {
+    memoryCache.provinces = diskData;
+    return diskData;
+  }
+
+  if (memoryCache.provinces) return memoryCache.provinces;
 
   return null;
 }
