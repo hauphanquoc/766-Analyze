@@ -4299,20 +4299,29 @@ function updateAuthUI() {
     usersWorkspace.style.display = isAdmin ? 'block' : 'none';
   }
 
-  // Quản lý hiển thị Menu Hướng dẫn (Đang phát triển) - YÊU CẦU ĐĂNG NHẬP MỚI XEM ĐƯỢC
-  const isGuidesAuthorized = Boolean(user);
+  // Quản lý hiển thị Menu Hướng dẫn (Đang phát triển) - ẨN MENU KHI CHƯA ĐĂNG NHẬP (GIỐNG BÁO CÁO NHANH)
+  const isGuidesAuthorized = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'));
+  const navGuidesItem = document.getElementById('nav-item-guides');
   const guidesAuthLock = document.getElementById('guides-auth-lock-card');
   const guidesWorkspace = document.getElementById('guides-workspace-wrap');
-  const guidesLockBadge = document.getElementById('guides-lock-badge');
 
+  if (navGuidesItem) {
+    navGuidesItem.style.display = isGuidesAuthorized ? 'inline-block' : 'none';
+  }
   if (guidesAuthLock) {
     guidesAuthLock.style.display = isGuidesAuthorized ? 'none' : 'block';
   }
   if (guidesWorkspace) {
     guidesWorkspace.style.display = isGuidesAuthorized ? 'block' : 'none';
   }
-  if (guidesLockBadge) {
-    guidesLockBadge.style.display = isGuidesAuthorized ? 'none' : 'inline-block';
+
+  // Nếu người dùng chưa đăng nhập nhưng đang ở tab Hướng dẫn thì chuyển về tab mặc định
+  if (!isGuidesAuthorized) {
+    const guidesTabPane = document.getElementById('tab-content-guides');
+    if (guidesTabPane && guidesTabPane.classList.contains('active')) {
+      const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
+      if (defaultTabBtn) defaultTabBtn.click();
+    }
   }
 
   // Nếu người dùng không phải Quản trị viên nhưng đang ở tab Quản lý người dùng thì chuyển về tab Cổng thông tin

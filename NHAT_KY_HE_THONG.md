@@ -396,23 +396,25 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     6. *Hướng dẫn Chụp ảnh màn hình & Gửi báo lỗi kỹ thuật chuẩn:* Phím tắt `Win + Shift + S`, 3 thông tin vàng (mã lỗi, mã hồ sơ, thanh URL) giúp kỹ thuật viên xử lý ngay trong 5 phút.
   - **Logic điều khiển tương tác (`public/app.js`):** Khởi tạo module `initGuidesModule()` xử lý chuyển bài mượt mà, tự động chuyển mục theo kết quả tìm kiếm, hỗ trợ in ấn và sao chép đường dẫn.
 
-### 31. Chuyển đổi Menu Hướng dẫn thành "Hướng dẫn (Đang phát triển)" & Yêu cầu đăng nhập (30/10/2026)
+### 31. Chuyển đổi Menu Hướng dẫn thành "Hướng dẫn (Đang phát triển)" & Ẩn khi chưa đăng nhập (30/10/2026)
 * **Yêu cầu:**
   - Sửa tên menu thành: *"Hướng dẫn (Đang phát triển)"*.
-  - Bật chế độ bảo vệ: Yêu cầu người dùng phải đăng nhập tài khoản hệ thống mới xem được nội dung hướng dẫn.
+  - Ẩn hoàn toàn menu trên Sidebar khi chưa đăng nhập (đồng bộ cơ chế bảo mật với chức năng *Báo cáo nhanh*).
+  - Chỉ hiển thị menu khi người dùng đã đăng nhập (Cán bộ hoặc Quản trị viên).
 * **Xử lý toàn diện:**
   - **Điều hướng & Nhận diện (`public/index.html`):**
     * Cập nhật nhãn hiển thị: `Hướng dẫn (Đang phát triển)`.
-    * Bổ sung huy hiệu ổ khóa bảo vệ `🔒` (`#guides-lock-badge`) trên sidebar menu.
-    * Điều chỉnh tiêu đề và badge trong tab thành: *Cẩm nang & Hướng dẫn Kỹ thuật Nghiệp vụ (Đang phát triển)* và *Đang phát triển • Yêu cầu đăng nhập*.
-  - **Màn hình khóa xác thực chuẩn Gov-tech (`#guides-auth-lock-card`):**
-    * Áp dụng khung thẻ `split-lock-box` với biểu tượng ổ khóa xanh thanh lịch.
-    * Thông báo rõ ràng: *"Chức năng Hướng dẫn (Đang phát triển) yêu cầu đăng nhập tài khoản hệ thống (Cán bộ nghiệp vụ hoặc Quản trị viên) để xem tài liệu và cẩm nang hướng dẫn kỹ thuật."*
-    * Tích hợp nút hành động nổi bật: **"Đăng nhập ngay"** gọi hộp thoại đăng nhập tức thì.
-  - **Logic kiểm soát phân quyền (`public/app.js`):**
-    * Cập nhật hàm `updateAuthUI()`: Tự động phát hiện trạng thái phiên đăng nhập của người dùng (`isGuidesAuthorized = Boolean(user)`).
-    * Khi chưa đăng nhập: Khóa chặt nội dung, ẩn khối làm việc `#guides-workspace-wrap`, hiển thị màn hình khóa `#guides-auth-lock-card` và icon khóa `🔒`.
-    * Khi đã đăng nhập thành công: Mở khóa mượt mà toàn bộ 6 bài hướng dẫn và các tiện ích in ấn/tìm kiếm.
+    * Thêm `id="nav-item-guides"` với thuộc tính `style="display: none;"` để mặc định ẩn menu khi chưa xác thực danh tính.
+    * Bỏ huy hiệu ổ khóa `🔒` trên thanh điều hướng để đảm bảo thanh menu gọn gàng, sạch sẽ y như chức năng *Báo cáo nhanh*.
+    * Điều chỉnh tiêu đề và badge trong tab thành: *Cẩm nang & Hướng dẫn Kỹ thuật Nghiệp vụ (Đang phát triển)*.
+  - **Màn hình khóa & Bảo vệ nội dung (`#guides-auth-lock-card`):**
+    * Duy trì thẻ bảo vệ `guides-auth-lock-card` dự phòng trong nội dung tab với nút "Đăng nhập ngay".
+  - **Logic kiểm soát phân quyền & Điều hướng (`public/app.js`):**
+    * Cập nhật hàm `updateAuthUI()`:
+      - Kiểm tra phiên làm việc của Cán bộ / Admin: `isGuidesAuthorized = Boolean(user && (user.role === 'admin' || user.role === 'officer' || user.role === 'canbo'))`.
+      - Khi chưa đăng nhập: Ẩn hoàn toàn `navGuidesItem` (`display = 'none'`).
+      - Khi đã đăng nhập: Hiển thị `navGuidesItem` (`display = 'inline-block'`) và mở khối nội dung cẩm nang.
+      - Chống truy cập trái phép: Nếu người dùng chưa đăng nhập đang ở tab Hướng dẫn, hệ thống tự động chuyển hướng về tab mặc định.
 
 ---
 
