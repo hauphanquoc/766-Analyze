@@ -370,6 +370,14 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
       * `'99'`: Tên `Cổng DVCQG`, Sheet `Cổng DVCQG`, màu nhận diện `#b91c1c` (Crimson), Tag `CỔNG DVCQG`.
     - Tại Sheet 1 *Tổng hợp thống kê* của file Excel xuất ra: Hồ sơ mã `99xxxx` tự động ghi nhận cơ quan là `Cổng Dịch vụ công Quốc gia` (các bộ ghi `Cổng Bộ - Ngành liên thông`).
 
+### 29. Bổ sung Cổng "Phản ánh hiện trường" vào danh bạ các cổng Đắk Lắk (30/10/2026)
+* **Yêu cầu:** Bổ sung thêm cổng **"Phản ánh hiện trường"** (liên kết `https://dieuhanhioc.daklak.gov.vn`) vào phần Tỉnh Đắk Lắk trong danh bạ các cổng.
+* **Xử lý toàn diện:**
+  - Thêm thẻ `PHẢN ÁNH HIỆN TRƯỜNG` vào danh mục `PORTAL_SECTIONS` nhóm Tỉnh Đắk Lắk (`daklak`) trong [`public/app.js`](file:///f:/DVC%20QG%20C12/766-Analyze/public/app.js).
+  - Thiết kế biểu tượng SVG sắc nét phong cách Gov-tech: màn hình trung tâm giám sát điều hành IOC, pin phát tín hiệu phản ánh hiện trường và huy hiệu xác thực.
+  - Tích hợp từ khóa tìm kiếm (`phan anh hien truong`, `dieuhanhioc`, `ioc daklak`, `ioc`, `phan anh kien nghi`, `tuong tac nguoi dan`, `do thi thong minh`, `pakn`, `dak lak`) giúp tìm kiếm nhanh chóng trên thanh tìm kiếm.
+  - Tự động nâng tổng số cổng kết nối lên **36 hệ thống trực tuyến** (riêng khối Tỉnh Đắk Lắk đạt 8 hệ thống).
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

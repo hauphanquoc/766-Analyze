@@ -1,5 +1,15 @@
 [
   {
+    "timestamp": "2026-10-29T23:00:08.626Z",
+    "type": "SYNC",
+    "date": "2026-10-30",
+    "durationMs": 6602,
+    "totalScore": 67.18,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
     "timestamp": "2026-10-28T23:00:08.806Z",
     "type": "SYNC",
     "date": "2026-10-29",
@@ -452,15 +462,5 @@
     "totalScore": 65.15,
     "classification": "Trung bình",
     "success": true
-  },
-  {
-    "timestamp": "2026-10-02T23:00:08.025Z",
-    "type": "LOCAL_SYNC_ONLY",
-    "date": "2026-10-03",
-    "durationMs": 5749,
-    "totalScore": 65.22,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 117
   }
 ]
