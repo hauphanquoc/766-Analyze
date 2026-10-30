@@ -4299,6 +4299,22 @@ function updateAuthUI() {
     usersWorkspace.style.display = isAdmin ? 'block' : 'none';
   }
 
+  // Quản lý hiển thị Menu Hướng dẫn (Đang phát triển) - YÊU CẦU ĐĂNG NHẬP MỚI XEM ĐƯỢC
+  const isGuidesAuthorized = Boolean(user);
+  const guidesAuthLock = document.getElementById('guides-auth-lock-card');
+  const guidesWorkspace = document.getElementById('guides-workspace-wrap');
+  const guidesLockBadge = document.getElementById('guides-lock-badge');
+
+  if (guidesAuthLock) {
+    guidesAuthLock.style.display = isGuidesAuthorized ? 'none' : 'block';
+  }
+  if (guidesWorkspace) {
+    guidesWorkspace.style.display = isGuidesAuthorized ? 'block' : 'none';
+  }
+  if (guidesLockBadge) {
+    guidesLockBadge.style.display = isGuidesAuthorized ? 'none' : 'inline-block';
+  }
+
   // Nếu người dùng không phải Quản trị viên nhưng đang ở tab Quản lý người dùng thì chuyển về tab Cổng thông tin
   if (!isAdmin) {
     const usersTabPane = document.getElementById('tab-content-users-mgmt');

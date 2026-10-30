@@ -166,13 +166,14 @@
                 <span class="nav-tab-label">Tiện ích văn phòng</span>
               </button>
             </li>
-            <li class="sidebar-menu-item">
-              <button class="nav-tab-btn" id="tab-btn-guides" data-tab="tab-content-guides" title="Hướng dẫn sử dụng & xử lý kỹ thuật">
+            <li class="sidebar-menu-item" id="nav-item-guides">
+              <button class="nav-tab-btn" id="tab-btn-guides" data-tab="tab-content-guides" title="Hướng dẫn (Đang phát triển)">
                 <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                   <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                 </svg>
-                <span class="nav-tab-label">Hướng dẫn</span>
+                <span class="nav-tab-label">Hướng dẫn (Đang phát triển)</span>
+                <span class="sidebar-lock-badge" id="guides-lock-badge" title="Yêu cầu đăng nhập">🔒</span>
               </button>
             </li>
           </ul>
@@ -3179,33 +3180,53 @@
     </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-tools -->
 
-  <!-- TAB: CẨM NANG & HƯỚNG DẪN KỸ THUẬT (CÔNG CỤ TIỆN ÍCH) -->
+  <!-- TAB: CẨM NANG & HƯỚNG DẪN KỸ THUẬT (CÔNG CỤ TIỆN ÍCH - YÊU CẦU ĐĂNG NHẬP) -->
   <div id="tab-content-guides" class="tab-pane" style="display: none;">
     <div class="tools-container">
-      <div class="tools-unified-card guides-unified-card">
-        
-        <!-- Header: Tiêu đề & Thông tin -->
-        <div class="tools-card-header">
-          <div class="tools-header-top">
-            <div class="tools-title-row">
-              <h2 class="tools-clean-title">Cẩm nang & Hướng dẫn Kỹ thuật Nghiệp vụ</h2>
-              <div class="tools-badge-offline">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tools-badge-icon">
-                  <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
-                <span>Tài liệu HTML Trực quan • Thao tác từng bước</span>
+
+      <!-- Khối thông báo khóa nếu chưa đăng nhập -->
+      <div id="guides-auth-lock-card" class="split-lock-box" style="display: none;">
+        <div class="split-lock-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3 class="split-lock-title">Yêu cầu đăng nhập hệ thống</h3>
+        <p class="split-lock-desc">
+          Chức năng <strong>Hướng dẫn (Đang phát triển)</strong> yêu cầu đăng nhập tài khoản hệ thống (Cán bộ nghiệp vụ hoặc Quản trị viên) để xem tài liệu và cẩm nang hướng dẫn kỹ thuật.
+        </p>
+        <button type="button" class="btn btn-primary" onclick="openLoginModal('Vui lòng đăng nhập để xem Cẩm nang & Hướng dẫn kỹ thuật.')">
+          Đăng nhập ngay
+        </button>
+      </div>
+
+      <!-- Khối nội dung chính (Chỉ hiển thị khi đã đăng nhập) -->
+      <div id="guides-workspace-wrap" style="display: none;">
+        <div class="tools-unified-card guides-unified-card">
+          
+          <!-- Header: Tiêu đề & Thông tin -->
+          <div class="tools-card-header">
+            <div class="tools-header-top">
+              <div class="tools-title-row">
+                <h2 class="tools-clean-title">Cẩm nang & Hướng dẫn Kỹ thuật Nghiệp vụ (Đang phát triển)</h2>
+                <div class="tools-badge-offline" style="background-color: #fef3c7; color: #b45309; border-color: #fde68a;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tools-badge-icon" style="color: #b45309;">
+                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                  </svg>
+                  <span>Đang phát triển • Yêu cầu đăng nhập</span>
+                </div>
+              </div>
+              <p class="tools-clean-desc">
+                Tổng hợp cẩm nang khắc phục sự cố thường gặp, hướng dẫn cấu hình chữ ký số chuyên dùng, xóa bộ nhớ đệm và các thủ thuật tối ưu tác nghiệp trên Cổng Dịch vụ công.
+              </p>
+              <div class="portals-stats-strip">
+                <span class="portal-stat-chip"><strong id="guides-count-chip">6</strong> Bài hướng dẫn chi tiết</span>
+                <span class="portal-stat-chip"><strong>Thực hành ngay</strong> Có phím tắt nhanh</span>
+                <span class="portal-stat-chip"><strong>Tương thích</strong> Chrome • Edge • Cốc Cốc</span>
               </div>
             </div>
-            <p class="tools-clean-desc">
-              Tổng hợp cẩm nang khắc phục sự cố thường gặp, hướng dẫn cấu hình chữ ký số chuyên dùng, xóa bộ nhớ đệm và các thủ thuật tối ưu tác nghiệp trên Cổng Dịch vụ công.
-            </p>
-            <div class="portals-stats-strip">
-              <span class="portal-stat-chip"><strong id="guides-count-chip">6</strong> Bài hướng dẫn chi tiết</span>
-              <span class="portal-stat-chip"><strong>Thực hành ngay</strong> Có phím tắt nhanh</span>
-              <span class="portal-stat-chip"><strong>Tương thích</strong> Chrome • Edge • Cốc Cốc</span>
-            </div>
           </div>
-        </div>
 
         <!-- Thanh điều khiển: Tìm kiếm & Lọc chuyên mục -->
         <div class="guides-control-bar">
@@ -3783,8 +3804,9 @@
           </div>
         </div>
 
-      </div>
-    </div>
+        </div> <!-- end .guides-unified-card -->
+      </div> <!-- end #guides-workspace-wrap -->
+    </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-guides -->
 
 
