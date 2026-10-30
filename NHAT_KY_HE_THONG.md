@@ -416,6 +416,20 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
       - Khi đã đăng nhập: Hiển thị `navGuidesItem` (`display = 'inline-block'`) và mở khối nội dung cẩm nang.
       - Chống truy cập trái phép: Nếu người dùng chưa đăng nhập đang ở tab Hướng dẫn, hệ thống tự động chuyển hướng về tab mặc định.
 
+### 32. Tinh gọn Menu Hướng dẫn: Loại bỏ chữ ký số & in ấn, chỉ giữ lại 2 hướng dẫn về Trình duyệt và Cache (30/10/2026)
+* **Yêu cầu:**
+  - Bỏ toàn bộ các hướng dẫn liên quan đến Chữ ký số (VGCA, USB Token) và In ấn (cho phép Pop-up).
+  - Tinh gọn chỉ giữ lại đúng 2 hướng dẫn cốt lõi: Hướng dẫn xóa Cache & Cookies và Hướng dẫn mở Cửa sổ duyệt web ẩn danh.
+* **Xử lý toàn diện:**
+  - **Lọc và gỡ bỏ bài viết (`public/index.html`):**
+    * Gỡ bỏ 4 bài viết: Cấu hình VGCA (`#view-guide-vgca-setup`), Lỗi USB Token (`#view-guide-usb-token-error`), Bật Pop-up In ấn (`#view-guide-allow-popup`), Chụp ảnh màn hình báo lỗi (`#view-guide-screenshot-report`).
+    * Gỡ bỏ các thẻ tương ứng trong danh sách điều hướng bên trái (`.guides-sidebar-list`).
+    * Chuẩn hóa bài viết Ẩn danh: Loại bỏ đoạn lưu ý về chữ ký số, chỉ giữ lại hướng dẫn thuần túy về quản lý tiện ích mở rộng (Extensions).
+  - **Cập nhật thanh điều hướng và bộ lọc chuyên mục:**
+    * Cập nhật các tab lọc thành: *Tất cả bài viết (2)*, *Xóa Cache & Cookies*, *Trình duyệt ẩn danh*.
+    * Điều chỉnh số đếm hiển thị (`#guides-count-chip`, `#cat-count-all`) thành 2 bài.
+    * Cập nhật từ khóa và mô tả tìm kiếm tập trung vào Cache, Cookies, F5, Ctrl+F5, Incognito, InPrivate.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
