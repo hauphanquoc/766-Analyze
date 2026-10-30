@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initProcedureQrModule();
   initQuickReportModule();
   initUsersManagementModule();
+  initGuidesModule();
   loadInitialData();
 });
 
@@ -8266,6 +8267,174 @@ function fallbackCopyText(text) {
   }
   document.body.removeChild(ta);
 }
+
+/**
+ * ==========================================================================
+ * MODULE: CẨM NANG & HƯỚNG DẪN KỸ THUẬT (GUIDES & KNOWLEDGE BASE)
+ * ==========================================================================
+ */
+function initGuidesModule() {
+  const catButtons = document.querySelectorAll('.guides-cat-btn[data-category]');
+  const searchInput = document.getElementById('guides-search-input');
+  const searchClearBtn = document.getElementById('guides-search-clear');
+  const guideCards = document.querySelectorAll('.guide-item-card[data-guide-id]');
+  const guideViews = document.querySelectorAll('.guide-view-container');
+  const emptySearchState = document.getElementById('guides-empty-search');
+  const resetSearchBtn = document.getElementById('btn-reset-guide-search');
+  const catCountAll = document.getElementById('cat-count-all');
+  const guidesCountChip = document.getElementById('guides-count-chip');
+
+  if (!guideCards.length) return;
+
+  if (catCountAll) catCountAll.textContent = guideCards.length;
+  if (guidesCountChip) guidesCountChip.textContent = guideCards.length;
+
+  let currentCategory = 'all';
+  let searchQuery = '';
+
+  function filterGuides() {
+    let visibleCount = 0;
+    const query = searchQuery.trim().toLowerCase();
+
+    guideCards.forEach(card => {
+      const cat = card.getAttribute('data-category');
+      const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+      const title = (card.querySelector('.guide-item-title')?.textContent || '').toLowerCase();
+      const desc = (card.querySelector('.guide-item-desc')?.textContent || '').toLowerCase();
+
+      const matchesCat = (currentCategory === 'all' || cat === currentCategory);
+      const matchesSearch = !query || title.includes(query) || desc.includes(query) || keywords.includes(query);
+
+      if (matchesCat && matchesSearch) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (emptySearchState) {
+      emptySearchState.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    // Nếu card đang active bị ẩn thì tự động kích hoạt card đầu tiên hiển thị
+    const activeCard = document.querySelector('.guide-item-card.active');
+    if (!activeCard || activeCard.style.display === 'none') {
+      const firstVisible = Array.from(guideCards).find(c => c.style.display !== 'none');
+      if (firstVisible) {
+        selectGuide(firstVisible.getAttribute('data-guide-id'));
+      }
+    }
+  }
+
+  function selectGuide(guideId) {
+    if (!guideId) return;
+
+    guideCards.forEach(c => {
+      const isActive = c.getAttribute('data-guide-id') === guideId;
+      c.classList.toggle('active', isActive);
+    });
+
+    guideViews.forEach(v => {
+      const isTarget = v.id === `view-${guideId}`;
+      v.classList.toggle('active', isTarget);
+    });
+
+    // On mobile, scroll detail pane into view
+    if (window.innerWidth <= 900) {
+      const reader = document.getElementById('guides-detail-reader');
+      if (reader) reader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Category filter clicks
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      catButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = btn.getAttribute('data-category') || 'all';
+      filterGuides();
+    });
+  });
+
+  // Guide card clicks
+  guideCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.getAttribute('data-guide-id');
+      selectGuide(id);
+    });
+  });
+
+  // Search input
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      if (searchClearBtn) {
+        searchClearBtn.style.display = searchQuery ? 'block' : 'none';
+      }
+      filterGuides();
+    });
+  }
+
+  if (searchClearBtn) {
+    searchClearBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      searchClearBtn.style.display = 'none';
+      filterGuides();
+      if (searchInput) searchInput.focus();
+    });
+  }
+
+  if (resetSearchBtn) {
+    resetSearchBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      if (searchClearBtn) searchClearBtn.style.display = 'none';
+      currentCategory = 'all';
+      catButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-category') === 'all'));
+      filterGuides();
+    });
+  }
+}
+
+/**
+ * In trực tiếp nội dung bài hướng dẫn đang xem
+ */
+window.printGuideContent = function(articleId) {
+  window.print();
+};
+
+/**
+ * Tiện ích sao chép text và hiển thị thông báo toast
+ */
+window.copyTextToClipboard = function(text) {
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast(`Đã sao chép: "${text}"`, 'success'))
+      .catch(() => fallbackCopySimple(text));
+  } else {
+    fallbackCopySimple(text);
+  }
+};
+
+function fallbackCopySimple(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast(`Đã sao chép: "${text}"`, 'success');
+  } catch (e) {
+    showToast('Vui lòng bôi đen và nhấn Ctrl+C để sao chép', 'warning');
+  }
+  document.body.removeChild(ta);
+}
+
 
 
 

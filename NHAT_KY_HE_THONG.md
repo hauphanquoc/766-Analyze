@@ -378,6 +378,24 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Tích hợp từ khóa tìm kiếm (`phan anh hien truong`, `dieuhanhioc`, `ioc daklak`, `ioc`, `phan anh kien nghi`, `tuong tac nguoi dan`, `do thi thong minh`, `pakn`, `dak lak`) giúp tìm kiếm nhanh chóng trên thanh tìm kiếm.
   - Tự động nâng tổng số cổng kết nối lên **36 hệ thống trực tuyến** (riêng khối Tỉnh Đắk Lắk đạt 8 hệ thống).
 
+### 30. Xây dựng Menu "Hướng dẫn" trong Khối Công cụ Tiện ích (30/10/2026)
+* **Yêu cầu:** Thiết kế menu "Hướng dẫn" trong nhóm Công cụ tiện ích. Tích hợp trực tiếp các bài hướng dẫn kỹ thuật trên web dạng HTML phong phú: Hướng dẫn xóa cache, Hướng dẫn mở trình duyệt ẩn danh, Cấu hình ký số VGCA...
+* **Xử lý toàn diện:**
+  - **Điều hướng Sidebar (`public/index.html`):** Bổ sung mục menu `Hướng dẫn` (`#tab-btn-guides`) với biểu tượng cuốn sách cẩm nang trong nhóm `CÔNG CỤ TIỆN ÍCH`.
+  - **Kiến trúc giao diện Master-Detail (`#tab-content-guides` & `public/styles.css`):**
+    * Thẻ chính đồng bộ phong cách `tools-unified-card` với huy hiệu *Tài liệu HTML Trực quan • Thao tác từng bước*.
+    * Thanh điều khiển: Bộ lọc 4 nhóm chuyên mục (*Tất cả*, *Trình duyệt & Cache*, *Chữ ký số & VGCA*, *Thủ thuật DVC & In ấn*) kết hợp thanh tìm kiếm Live Search nhanh theo từ khóa.
+    * Cột danh mục bên trái: Hiển thị các bài hướng dẫn với thẻ phân loại màu, thời lượng đọc ước tính, tóm tắt ngắn gọn.
+    * Khung hiển thị chi tiết bên phải: Định dạng HTML phong phú với phím tắt phím nổi `<kbd>`, các bước hướng dẫn đánh số thứ tự trực quan, hộp thông báo mẹo hay (Tip xanh), cảnh báo lỗi (Warning vàng), nút sao chép đường dẫn và nút in bài viết ra giấy/PDF.
+  - **Tích hợp 6 bài hướng dẫn nghiệp vụ chuyên sâu:**
+    1. *Hướng dẫn xóa bộ nhớ đệm (Cache) & Cookies trình duyệt:* Phím tắt nhanh `Ctrl + F5`, bảng điều khiển `Ctrl + Shift + Delete`, giải quyết dứt điểm lỗi kẹt giao diện cũ.
+    2. *Hướng dẫn mở Cửa sổ duyệt web ẩn danh (Incognito / InPrivate):* Phím tắt `Ctrl + Shift + N`, cách đăng nhập song song 2 tài khoản và cấp quyền tiện ích ký số trong ẩn danh.
+    3. *Hướng dẫn Cài đặt & Cấu hình phần mềm Ký số VGCA (Ban Cơ yếu Chính phủ):* 4 bước thông suốt dịch vụ ký số, mở cờ `chrome://flags/#allow-insecure-localhost`, kiểm tra kết nối cổng `https://127.0.0.1:8080`.
+    4. *Hướng dẫn Xử lý lỗi Máy tính không nhận USB Token / Chứng thư số:* Kiểm tra nguồn điện cổng USB, kiểm tra hạn chứng thư và khởi động lại dịch vụ `Smart Card` trong Windows `services.msc`.
+    5. *Hướng dẫn Bật cho phép Cửa sổ bật lên (Pop-up) khi In phiếu & Ký số:* Mở khóa biểu tượng pop-up bị chặn, thêm ngoại lệ vĩnh viễn cho `[*.]daklak.gov.vn` và `[*.]dichvucong.gov.vn`.
+    6. *Hướng dẫn Chụp ảnh màn hình & Gửi báo lỗi kỹ thuật chuẩn:* Phím tắt `Win + Shift + S`, 3 thông tin vàng (mã lỗi, mã hồ sơ, thanh URL) giúp kỹ thuật viên xử lý ngay trong 5 phút.
+  - **Logic điều khiển tương tác (`public/app.js`):** Khởi tạo module `initGuidesModule()` xử lý chuyển bài mượt mà, tự động chuyển mục theo kết quả tìm kiếm, hỗ trợ in ấn và sao chép đường dẫn.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

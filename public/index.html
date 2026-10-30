@@ -166,6 +166,15 @@
                 <span class="nav-tab-label">Tiện ích văn phòng</span>
               </button>
             </li>
+            <li class="sidebar-menu-item">
+              <button class="nav-tab-btn" id="tab-btn-guides" data-tab="tab-content-guides" title="Hướng dẫn sử dụng & xử lý kỹ thuật">
+                <svg class="nav-tab-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+                <span class="nav-tab-label">Hướng dẫn</span>
+              </button>
+            </li>
           </ul>
         </div>
 
@@ -3169,6 +3178,615 @@
       </div> <!-- end .tools-unified-card -->
     </div> <!-- end .tools-container -->
   </div> <!-- end #tab-content-tools -->
+
+  <!-- TAB: CẨM NANG & HƯỚNG DẪN KỸ THUẬT (CÔNG CỤ TIỆN ÍCH) -->
+  <div id="tab-content-guides" class="tab-pane" style="display: none;">
+    <div class="tools-container">
+      <div class="tools-unified-card guides-unified-card">
+        
+        <!-- Header: Tiêu đề & Thông tin -->
+        <div class="tools-card-header">
+          <div class="tools-header-top">
+            <div class="tools-title-row">
+              <h2 class="tools-clean-title">Cẩm nang & Hướng dẫn Kỹ thuật Nghiệp vụ</h2>
+              <div class="tools-badge-offline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tools-badge-icon">
+                  <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <span>Tài liệu HTML Trực quan • Thao tác từng bước</span>
+              </div>
+            </div>
+            <p class="tools-clean-desc">
+              Tổng hợp cẩm nang khắc phục sự cố thường gặp, hướng dẫn cấu hình chữ ký số chuyên dùng, xóa bộ nhớ đệm và các thủ thuật tối ưu tác nghiệp trên Cổng Dịch vụ công.
+            </p>
+            <div class="portals-stats-strip">
+              <span class="portal-stat-chip"><strong id="guides-count-chip">6</strong> Bài hướng dẫn chi tiết</span>
+              <span class="portal-stat-chip"><strong>Thực hành ngay</strong> Có phím tắt nhanh</span>
+              <span class="portal-stat-chip"><strong>Tương thích</strong> Chrome • Edge • Cốc Cốc</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thanh điều khiển: Tìm kiếm & Lọc chuyên mục -->
+        <div class="guides-control-bar">
+          <div class="guides-cat-pills" id="guides-cat-pills">
+            <button type="button" class="guides-cat-btn active" data-category="all">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Tất cả bài viết (<span id="cat-count-all">6</span>)
+            </button>
+            <button type="button" class="guides-cat-btn" data-category="browser">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              Trình duyệt & Cache
+            </button>
+            <button type="button" class="guides-cat-btn" data-category="vgca">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Chữ ký số & VGCA
+            </button>
+            <button type="button" class="guides-cat-btn" data-category="dvc">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              Thủ thuật DVC & In ấn
+            </button>
+          </div>
+
+          <div class="guides-search-box">
+            <svg class="guides-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="guides-search-input" class="guides-search-input" placeholder="Tìm hướng dẫn (cache, vgca, ẩn danh, token...)" autocomplete="off">
+            <button type="button" id="guides-search-clear" class="guides-search-clear" title="Xóa tìm kiếm">✕</button>
+          </div>
+        </div>
+
+        <!-- Master-Detail Explorer: Danh mục bài bên trái + Nội dung đọc bên phải -->
+        <div class="guides-explorer-grid">
+          
+          <!-- Cột trái: Danh sách các bài hướng dẫn -->
+          <div class="guides-sidebar-list" id="guides-sidebar-list">
+            
+            <!-- Item 1: Xóa Cache -->
+            <div class="guide-item-card active" data-guide-id="guide-clear-cache" data-category="browser" data-keywords="xoa cache clear cache xoa cookie xoa du lieu duyet web reload f5 ctrl f5 ket trang chrome edge coccoc">
+              <div class="guide-item-meta">
+                <span class="guide-tag guide-tag-blue">Trình duyệt & Cache</span>
+                <span class="guide-read-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  2 phút
+                </span>
+              </div>
+              <h4 class="guide-item-title">Hướng dẫn xóa bộ nhớ đệm (Cache) & Cookies</h4>
+              <p class="guide-item-desc">Khắc phục lỗi trang web hiển thị dữ liệu cũ, không thấy chức năng mới cập nhật, hoặc kẹt phiên làm việc.</p>
+            </div>
+
+            <!-- Item 2: Trình duyệt ẩn danh -->
+            <div class="guide-item-card" data-guide-id="guide-incognito" data-category="browser" data-keywords="an danh incognito inprivate trinh duyet an danh ctrl shift n dang nhap 2 tai khoan cua so moi">
+              <div class="guide-item-meta">
+                <span class="guide-tag guide-tag-purple">Trình duyệt & Ẩn danh</span>
+                <span class="guide-read-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  2 phút
+                </span>
+              </div>
+              <h4 class="guide-item-title">Hướng dẫn mở Cửa sổ duyệt web ẩn danh</h4>
+              <p class="guide-item-desc">Kiểm tra web trong môi trường sạch hoàn toàn, không dính cookie cũ và đăng nhập song song 2 tài khoản.</p>
+            </div>
+
+            <!-- Item 3: Cấu hình VGCA -->
+            <div class="guide-item-card" data-guide-id="guide-vgca-setup" data-category="vgca" data-keywords="vgca ban co yeu chinh phu ky so chu ky so token vgcasigntool vgca sign service loi ky so 127.0.0.1:8080 allow-insecure-localhost">
+              <div class="guide-item-meta">
+                <span class="guide-tag guide-tag-rose">Chữ ký số & VGCA</span>
+                <span class="guide-read-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  4 phút
+                </span>
+              </div>
+              <h4 class="guide-item-title">Cài đặt & Cấu hình phần mềm Ký số VGCA</h4>
+              <p class="guide-item-desc">Hướng dẫn kích hoạt dịch vụ ký số Ban Cơ yếu Chính phủ, mở cổng 8080 và xử lý lỗi chặn kết nối cục bộ.</p>
+            </div>
+
+            <!-- Item 4: Lỗi không nhận Token -->
+            <div class="guide-item-card" data-guide-id="guide-usb-token-error" data-category="vgca" data-keywords="usb token khong nhan token smart card loi chung thu so driver token ctv services.msc cam token">
+              <div class="guide-item-meta">
+                <span class="guide-tag guide-tag-rose">Chứng thư số & Token</span>
+                <span class="guide-read-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  3 phút
+                </span>
+              </div>
+              <h4 class="guide-item-title">Xử lý lỗi Không nhận USB Token / Chứng thư số</h4>
+              <p class="guide-item-desc">Khắc phục lỗi cắm Token nhưng phần mềm không tìm thấy chứng thư số hoặc đơ dịch vụ Smart Card Windows.</p>
+            </div>
+
+            <!-- Item 5: Bật Pop-up in ấn -->
+            <div class="guide-item-card" data-guide-id="guide-allow-popup" data-category="dvc" data-keywords="popup cua so bat len chan popup in phieu hen in giay tiep nhan xem truoc ban ky allow popup daklak.gov.vn">
+              <div class="guide-item-meta">
+                <span class="guide-tag guide-tag-amber">Cổng DVC & In ấn</span>
+                <span class="guide-read-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  2 phút
+                </span>
+              </div>
+              <h4 class="guide-item-title">Bật cho phép Cửa sổ bật lên (Pop-up) khi In ấn</h4>
+              <p class="guide-item-desc">Khắc phục lỗi bấm In giấy hẹn, phiếu kiểm soát hoặc xem trước bản ký mà màn hình không phản hồi.</p>
+            </div>
+
+            <!-- Item 6: Chụp màn hình báo lỗi -->
+            <div class="guide-item-card" data-guide-id="guide-screenshot-report" data-category="dvc" data-keywords="chup man hinh bao loi snipping tool win shift s prtscn zalo ho tro ky thuat vnpt daklak">
+              <div class="guide-item-meta">
+                <span class="guide-tag guide-tag-emerald">Hỗ trợ kỹ thuật</span>
+                <span class="guide-read-time">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  2 phút
+                </span>
+              </div>
+              <h4 class="guide-item-title">Chụp ảnh màn hình & Gửi báo lỗi kỹ thuật chuẩn</h4>
+              <p class="guide-item-desc">Hướng dẫn lấy đúng 3 thông tin cần thiết giúp kỹ thuật viên tiếp nhận và xử lý sự cố trong vòng 5 phút.</p>
+            </div>
+
+            <!-- Trạng thái trống khi tìm kiếm không ra -->
+            <div id="guides-empty-search" class="guides-empty-search" style="display: none;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+              <p>Không tìm thấy bài hướng dẫn phù hợp</p>
+              <button type="button" class="btn-clear-search-guide" id="btn-reset-guide-search">Xem tất cả hướng dẫn</button>
+            </div>
+
+          </div>
+
+          <!-- Cột phải: Khung hiển thị nội dung chi tiết bài viết (HTML phong phú) -->
+          <div class="guides-detail-reader" id="guides-detail-reader">
+            
+            <!-- BÀI 1: XÓA CACHE & COOKIE -->
+            <article class="guide-view-container active" id="view-guide-clear-cache">
+              <div class="guide-article-head">
+                <div class="guide-article-top">
+                  <span class="guide-tag guide-tag-blue">Chuyên mục: Trình duyệt & Bộ nhớ đệm</span>
+                  <div class="guide-article-actions">
+                    <button type="button" class="btn-guide-action" onclick="window.printGuideContent('view-guide-clear-cache')" title="In hướng dẫn này ra giấy hoặc lưu PDF">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                      In bài này
+                    </button>
+                  </div>
+                </div>
+                <h3 class="guide-article-title">Hướng dẫn xóa bộ nhớ đệm (Cache) & Dữ liệu duyệt web</h3>
+              </div>
+
+              <div class="guide-lead-box">
+                <strong>💡 Mục tiêu:</strong> Khi hệ thống phần mềm DVC cập nhật tính năng mới hoặc sửa lỗi, trình duyệt thường lưu lại các tệp mã nguồn cũ (Cache) khiến bạn vẫn thấy giao diện cũ hoặc gặp lỗi nút bấm. Việc xóa cache giúp trình duyệt nạp lại 100% phiên bản mới nhất từ máy chủ.
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">⚡</span>
+                  Cách 1: Xóa cưỡng bức tức thì tại trang đang mở (Nhanh nhất)
+                </h4>
+                <p>Khi bạn đang ở trang web cần làm mới (ví dụ: trang Bảng điểm 766, Một cửa điện tử), nhấn đồng thời tổ hợp phím:</p>
+                <div class="guide-callout guide-callout-info">
+                  <div style="font-size: 20px;">⌨️</div>
+                  <div>
+                    <strong>Phím tắt:</strong> Nhấn giữ <kbd>Ctrl</kbd> rồi bấm <kbd>F5</kbd> (hoặc giữ <kbd>Ctrl</kbd> + <kbd>Shift</kbd> rồi bấm <kbd>R</kbd>).<br>
+                    <small style="color: #475569;">Trình duyệt sẽ tự động xóa cache của riêng trang web này và tải lại dữ liệu mới nhất trong 1 giây.</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">🛠️</span>
+                  Cách 2: Xóa sạch bộ nhớ đệm & Cookies toàn diện (Khuyên dùng)
+                </h4>
+                <div class="guide-steps-flow">
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Mở nhanh bảng điều khiển xóa dữ liệu</h5>
+                      <p class="guide-step-body">
+                        Bấm tổ hợp phím: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Delete</kbd> trên bàn phím.<br>
+                        <em>Hoặc dán đường dẫn này vào thanh địa chỉ rồi nhấn Enter:</em>
+                        <br>
+                        <span class="guide-code-pill">chrome://settings/clearBrowserData <button type="button" class="btn-copy-mini" onclick="copyTextToClipboard('chrome://settings/clearBrowserData')">Sao chép</button></span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Chọn phạm vi thời gian</h5>
+                      <p class="guide-step-body">
+                        Tại mục <strong>Phạm vi thời gian (Time range)</strong>, chọn là: <strong>Từ trước đến nay (All time)</strong> để đảm bảo sạch sẽ hoàn toàn.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Tích chọn các mục cần xóa</h5>
+                      <p class="guide-step-body">
+                        Chỉ cần tích chọn 2 mục quan trọng sau:
+                        <br>• ☑️ <strong>Tệp và hình ảnh được lưu trong bộ nhớ đệm</strong> (Cached images and files) - <em>Giải phóng tài nguyên và nạp code mới</em>.
+                        <br>• ☑️ <strong>Cookie và các dữ liệu khác của trang web</strong> (Cookies and other site data) - <em>Xóa phiên đăng nhập lỗi cũ</em>.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">4</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Bấm nút xác nhận</h5>
+                      <p class="guide-step-body">
+                        Bấm nút <strong>Xóa dữ liệu (Clear data)</strong> màu xanh. Chờ 3-5 giây rồi đóng trình duyệt và mở lại.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-callout guide-callout-tip">
+                <div style="font-size: 20px;">💡</div>
+                <div>
+                  <strong>Mẹo cho Cán bộ Một cửa:</strong> Sau khi hệ thống thông báo có phiên bản mới lúc 06:00 sáng hàng ngày, anh/chị nên tạo thói quen bấm <kbd>Ctrl</kbd> + <kbd>F5</kbd> một lần khi bắt đầu ngày làm việc để luôn thấy số liệu mới nhất.
+                </div>
+              </div>
+            </article>
+
+            <!-- BÀI 2: TRÌNH DUYỆT ẨN DANH -->
+            <article class="guide-view-container" id="view-guide-incognito">
+              <div class="guide-article-head">
+                <div class="guide-article-top">
+                  <span class="guide-tag guide-tag-purple">Chuyên mục: Trình duyệt & Ẩn danh</span>
+                  <div class="guide-article-actions">
+                    <button type="button" class="btn-guide-action" onclick="window.printGuideContent('view-guide-incognito')" title="In hướng dẫn này">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                      In bài này
+                    </button>
+                  </div>
+                </div>
+                <h3 class="guide-article-title">Hướng dẫn mở và sử dụng Cửa sổ ẩn danh (Incognito / InPrivate)</h3>
+              </div>
+
+              <div class="guide-lead-box">
+                <strong>💡 Mục tiêu:</strong> Chế độ ẩn danh tạo ra một môi trường trình duyệt hoàn toàn độc lập và sạch sẽ. Nó không dùng lại cookie, không lưu lại lịch sử, giúp cán bộ đăng nhập đồng thời 2 tài khoản khác nhau hoặc kiểm tra xem lỗi có phải do cache của máy tính hay không.
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">⚡</span>
+                  Phím tắt mở Cửa sổ ẩn danh tức thì
+                </h4>
+                <div class="guide-callout guide-callout-info">
+                  <div style="font-size: 20px;">⌨️</div>
+                  <div>
+                    <strong>Phím tắt:</strong> Nhấn tổ hợp <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd><br>
+                    <small style="color: #475569;">Áp dụng cho tất cả các trình duyệt phổ biến: Google Chrome, Microsoft Edge, Cốc Cốc, Brave.</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">🖱️</span>
+                  Cách mở bằng chuột
+                </h4>
+                <div class="guide-steps-flow">
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Bấm menu góc trên bên phải</h5>
+                      <p class="guide-step-body">Nhấp vào biểu tượng <strong>3 dấu chấm thẳng đứng ⋮</strong> ở góc trên bên phải của cửa sổ trình duyệt.</p>
+                    </div>
+                  </div>
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Chọn mục Cửa sổ ẩn danh mới</h5>
+                      <p class="guide-step-body">
+                        • Trên Chrome / Cốc Cốc: Chọn <strong>Cửa sổ ẩn danh mới (New Incognito Window)</strong>.<br>
+                        • Trên Microsoft Edge: Chọn <strong>Cửa sổ InPrivate mới (New InPrivate Window)</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">⚠️</span>
+                  Lưu ý quan trọng khi Ký số ở chế độ ẩn danh
+                </h4>
+                <div class="guide-callout guide-callout-warning">
+                  <div>
+                    Mặc định, các trình duyệt sẽ <strong>tắt toàn bộ tiện ích mở rộng (Extension)</strong> khi ở chế độ ẩn danh (kể cả extension ký số VGCA).<br>
+                    👉 <strong>Cách bật ký số trong ẩn danh:</strong> Mở đường dẫn <span class="guide-code-pill">chrome://extensions</span> ➔ Tìm tiện ích <em>VGCA Sign Plugin</em> hoặc <em>VNPT Sign</em> ➔ Bấm <strong>Chi tiết (Details)</strong> ➔ Bật công tắc <strong>Cho phép ở chế độ ẩn danh (Allow in incognito)</strong>.
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- BÀI 3: CẤU HÌNH VGCA -->
+            <article class="guide-view-container" id="view-guide-vgca-setup">
+              <div class="guide-article-head">
+                <div class="guide-article-top">
+                  <span class="guide-tag guide-tag-rose">Chuyên mục: Chữ ký số & VGCA</span>
+                  <div class="guide-article-actions">
+                    <button type="button" class="btn-guide-action" onclick="window.printGuideContent('view-guide-vgca-setup')" title="In hướng dẫn này">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                      In bài này
+                    </button>
+                  </div>
+                </div>
+                <h3 class="guide-article-title">Hướng dẫn Cài đặt & Cấu hình phần mềm Ký số VGCA (Ban Cơ yếu Chính phủ)</h3>
+              </div>
+
+              <div class="guide-lead-box">
+                <strong>💡 Mục tiêu:</strong> Phần mềm <em>VGCA Sign Service</em> (Ban Cơ yếu Chính phủ) chịu trách nhiệm kết nối trực tiếp với USB Token công vụ để thực hiện ký số văn bản, hồ sơ TTHC trên Cổng DVC và IOffice. Hướng dẫn này giúp bạn cấu hình thông suốt kết nối cổng nội bộ `8080`.
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">🚨</span>
+                  Hiện tượng nhận biết lỗi
+                </h4>
+                <p>Khi nhấp vào nút "Ký số", màn hình hiển thị một trong các thông báo:</p>
+                <div class="guide-callout guide-callout-warning">
+                  <div>
+                    • <em>"Không kết nối được với dịch vụ ký số VGCA."</em><br>
+                    • <em>"Chưa khởi động phần mềm ký số Ban Cơ yếu Chính phủ."</em><br>
+                    • <em>Hệ thống quay tròn liên tục và không hiện cửa sổ nhập mã PIN Token.</em>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">📋</span>
+                  Quy trình 4 bước cấu hình chuẩn
+                </h4>
+                <div class="guide-steps-flow">
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Kiểm tra dịch vụ VGCA đang chạy ngầm</h5>
+                      <p class="guide-step-body">
+                        Quan sát ở góc dưới bên phải màn hình Windows (khay hệ thống gần đồng hồ). Tìm biểu tượng <strong>Logo Ban Cơ yếu Chính phủ</strong> (hình lá cờ màu xanh/đỏ).<br>
+                        • Nếu chưa có: Bấm phím <kbd>Windows</kbd>, gõ tìm từ khóa <strong>VGCA Sign Service</strong> và nhấp mở.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Mở cờ cho phép chứng chỉ nội bộ Localhost trên trình duyệt</h5>
+                      <p class="guide-step-body">
+                        Các phiên bản trình duyệt mới chặn giao thức HTTPS nội bộ kết nối tới cổng `127.0.0.1:8080`. Cần bật cờ này để trình duyệt cho phép kết nối:<br>
+                        • Mở một tab mới trên Chrome, dán liên kết sau rồi Enter:<br>
+                        <span class="guide-code-pill">chrome://flags/#allow-insecure-localhost <button type="button" class="btn-copy-mini" onclick="copyTextToClipboard('chrome://flags/#allow-insecure-localhost')">Sao chép</button></span><br>
+                        • Tìm dòng <strong>Allow invalid certificates for resources loaded from localhost</strong>.<br>
+                        • Chuyển trạng thái từ <strong>Disabled</strong> sang <strong>Enabled</strong>.<br>
+                        • Bấm nút <strong>Relaunch</strong> (Khởi động lại trình duyệt) ở góc dưới.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Kiểm tra thông tuyến dịch vụ 127.0.0.1:8080</h5>
+                      <p class="guide-step-body">
+                        Mở một tab mới và truy cập thẳng vào địa chỉ:<br>
+                        <span class="guide-code-pill">https://127.0.0.1:8080 <button type="button" class="btn-copy-mini" onclick="copyTextToClipboard('https://127.0.0.1:8080')">Sao chép</button></span><br>
+                        • Nếu màn hình hiển thị trang web có chữ <em>VGCA Service Running</em> hoặc phản hồi JSON: <strong>Kết nối thành công 100%!</strong><br>
+                        • Nếu hiện cảnh báo bảo mật màu đỏ <em>"Kết nối của bạn không phải là kết nối riêng tư"</em>: Bấm vào <strong>Nâng cao (Advanced)</strong> ➔ Chọn <strong>Tiếp tục truy cập 127.0.0.1 (không an toàn)</strong>.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">4</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Cắm lại USB Token và ký thử</h5>
+                      <p class="guide-step-body">
+                        Rút USB Token ra và cắm lại vào cổng USB trên máy tính. Quay trở lại trang hồ sơ Một cửa và thực hiện thao tác ký số, hộp thoại nhập mã PIN của VGCA sẽ hiện lên ngay lập tức.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- BÀI 4: LỖI KHÔNG NHẬN TOKEN -->
+            <article class="guide-view-container" id="view-guide-usb-token-error">
+              <div class="guide-article-head">
+                <div class="guide-article-top">
+                  <span class="guide-tag guide-tag-rose">Chuyên mục: Chứng thư số & Token</span>
+                  <div class="guide-article-actions">
+                    <button type="button" class="btn-guide-action" onclick="window.printGuideContent('view-guide-usb-token-error')" title="In hướng dẫn này">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                      In bài này
+                    </button>
+                  </div>
+                </div>
+                <h3 class="guide-article-title">Hướng dẫn Xử lý lỗi Máy tính không nhận USB Token / Chứng thư số</h3>
+              </div>
+
+              <div class="guide-lead-box">
+                <strong>💡 Mục tiêu:</strong> Xử lý tình huống đã cắm USB Token vào máy nhưng phần mềm báo "Không tìm thấy chứng thư số", không tải được danh sách người ký, hoặc dịch vụ đọc thẻ thông minh (Smart Card) của Windows bị dừng.
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">🔍</span>
+                  Các bước kiểm tra và xử lý
+                </h4>
+                <div class="guide-steps-flow">
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Đổi cổng cắm USB trên máy tính</h5>
+                      <p class="guide-step-body">
+                        Một số cổng USB mặt trước máy tính để bàn có nguồn điện không đủ khiến Token bị chập chờn. <strong>Hãy cắm trực tiếp vào cổng USB phía sau thùng máy tính</strong> (hoặc cắm trực tiếp vào thân máy laptop, không dùng qua đầu chia hub). Đèn LED trên USB Token phải sáng liên tục hoặc nhấp nháy.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Mở ứng dụng Quản lý Token (Token Manager)</h5>
+                      <p class="guide-step-body">
+                        Vào Start Menu tìm mở ứng dụng quản lý Token của nhà cung cấp (ví dụ: <em>Ban Cơ yếu Token Manager</em>, <em>VNPT-CA Token Manager</em>). Kiểm tra xem phần mềm có nhận được tên cán bộ và thời hạn chứng thư số không. Nếu chứng thư báo <em>Hết hạn (Expired)</em> thì cần báo quản trị viên gia hạn.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Khởi động lại dịch vụ Smart Card trong Windows</h5>
+                      <p class="guide-step-body">
+                        Dịch vụ nền của Windows đôi khi bị treo khiến máy không đọc được chip trên Token. Thao tác khởi động lại như sau:<br>
+                        • Bấm tổ hợp phím: <kbd>Windows</kbd> + <kbd>R</kbd> ➔ Gõ: <span class="guide-code-pill">services.msc</span> rồi nhấn Enter.<br>
+                        • Cuộn danh sách xuống tìm dịch vụ có tên là: <strong>Smart Card</strong>.<br>
+                        • Nhấn chuột phải vào <strong>Smart Card</strong> ➔ Chọn <strong>Restart</strong> (nếu đang chạy) hoặc chọn <strong>Start</strong> (nếu đang dừng).<br>
+                        • Nhấp đúp chuột vào dịch vụ, chuyển mục <strong>Startup type</strong> thành <strong>Automatic</strong> để dịch vụ luôn tự chạy khi mở máy.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- BÀI 5: BẬT POP-UP IN ẤN -->
+            <article class="guide-view-container" id="view-guide-allow-popup">
+              <div class="guide-article-head">
+                <div class="guide-article-top">
+                  <span class="guide-tag guide-tag-amber">Chuyên mục: Cổng DVC & In ấn</span>
+                  <div class="guide-article-actions">
+                    <button type="button" class="btn-guide-action" onclick="window.printGuideContent('view-guide-allow-popup')" title="In hướng dẫn này">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                      In bài này
+                    </button>
+                  </div>
+                </div>
+                <h3 class="guide-article-title">Hướng dẫn Bật cho phép Cửa sổ bật lên (Pop-up) khi In phiếu & Ký số</h3>
+              </div>
+
+              <div class="guide-lead-box">
+                <strong>💡 Mục tiêu:</strong> Khi bấm vào nút "In giấy tiếp nhận", "In phiếu kiểm soát quá trình giải quyết TTHC" hoặc xem trước bản PDF ký số, trình duyệt tự động chặn không cho mở cửa sổ mới. Hướng dẫn này giúp bạn mở khóa vĩnh viễn tính năng này.
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">⚡</span>
+                  Cách 1: Cho phép nhanh ngay trên thanh địa chỉ URL (Chỉ mất 5 giây)
+                </h4>
+                <div class="guide-steps-flow">
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Quan sát góc phải thanh địa chỉ</h5>
+                      <p class="guide-step-body">Ngay sau khi bạn bấm nút In hoặc Ký số mà trang web không hiện gì, hãy nhìn vào góc phải thanh địa chỉ URL (gần biểu tượng dấu trang sao). Bạn sẽ thấy biểu tượng <strong>một cửa sổ nhỏ có dấu gạch chéo đỏ</strong>.</p>
+                    </div>
+                  </div>
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Chọn luôn cho phép</h5>
+                      <p class="guide-step-body">Bấm chuột vào biểu tượng đó ➔ Tích chọn: <strong>"Luôn cho phép cửa sổ bật lên và liên kết chuyển hướng từ [trang này]"</strong> ➔ Nhấn nút <strong>Xong (Done)</strong>.</p>
+                    </div>
+                  </div>
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Thực hiện lại thao tác</h5>
+                      <p class="guide-step-body">Bấm lại nút In phiếu hoặc Ký số, cửa sổ tài liệu xem trước sẽ xuất hiện ngay lập tức.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">⚙️</span>
+                  Cách 2: Thêm danh sách ngoại lệ cho toàn bộ Cổng DVC tỉnh Đắk Lắk
+                </h4>
+                <p>Để không bao giờ bị hỏi lại trên bất kỳ máy tính hay cổng làm việc nào của tỉnh:</p>
+                <p>1. Dán đường dẫn này vào thanh địa chỉ: <span class="guide-code-pill">chrome://settings/content/popups <button type="button" class="btn-copy-mini" onclick="copyTextToClipboard('chrome://settings/content/popups')">Sao chép</button></span></p>
+                <p>2. Tại phần <strong>Được phép gửi cửa sổ bật lên (Allowed to send pop-ups)</strong>, nhấn nút <strong>Thêm (Add)</strong>.</p>
+                <p>3. Thêm lần lượt 2 địa chỉ sau:</p>
+                <div class="guide-code-pill" style="display: block; margin-bottom: 8px;">[*.]daklak.gov.vn</div>
+                <div class="guide-code-pill" style="display: block;">[*.]dichvucong.gov.vn</div>
+              </div>
+            </article>
+
+            <!-- BÀI 6: CHỤP MÀN HÌNH BÁO LỖI -->
+            <article class="guide-view-container" id="view-guide-screenshot-report">
+              <div class="guide-article-head">
+                <div class="guide-article-top">
+                  <span class="guide-tag guide-tag-emerald">Chuyên mục: Hỗ trợ kỹ thuật</span>
+                  <div class="guide-article-actions">
+                    <button type="button" class="btn-guide-action" onclick="window.printGuideContent('view-guide-screenshot-report')" title="In hướng dẫn này">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                      In bài này
+                    </button>
+                  </div>
+                </div>
+                <h3 class="guide-article-title">Hướng dẫn Chụp ảnh màn hình & Gửi thông tin báo lỗi kỹ thuật chuẩn</h3>
+              </div>
+
+              <div class="guide-lead-box">
+                <strong>💡 Mục tiêu:</strong> Cung cấp đầy đủ thông tin chuẩn xác khi gặp sự cố phần mềm giúp cán bộ quản trị hoặc kỹ thuật viên VNPT chẩn đoán đúng lỗi và xử lý dứt điểm chỉ trong 5 phút.
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">📸</span>
+                  Phím tắt chụp nhanh vùng màn hình Windows
+                </h4>
+                <div class="guide-callout guide-callout-info">
+                  <div style="font-size: 20px;">⌨️</div>
+                  <div>
+                    <strong>Phím tắt:</strong> Nhấn giữ <kbd>Windows</kbd> + <kbd>Shift</kbd> rồi bấm phím <kbd>S</kbd><br>
+                    <small style="color: #475569;">Màn hình sẽ tối nhẹ. Dùng chuột kéo quét vùng cần chụp. Ảnh chụp sẽ tự động lưu vào bộ nhớ tạm (Clipboard), chỉ cần sang khung chat Zalo nhấn <kbd>Ctrl</kbd> + <kbd>V</kbd> để gửi ngay.</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-section">
+                <h4 class="guide-section-title">
+                  <span class="guide-icon-bullet">🎯</span>
+                  3 Thông tin vàng bắt buộc phải có trong ảnh chụp lỗi
+                </h4>
+                <div class="guide-steps-flow">
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Toàn bộ nội dung hộp thoại thông báo lỗi</h5>
+                      <p class="guide-step-body">Chụp rõ ràng câu chữ báo lỗi, mã lỗi (nếu có dạng Error 500, Token not found, Null pointer...) thay vì chỉ nói chung chung "bị lỗi rồi".</p>
+                    </div>
+                  </div>
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Mã số hồ sơ hoặc mã thủ tục đang thao tác</h5>
+                      <p class="guide-step-body">Chụp thấy rõ mã hồ sơ (ví dụ: <code>H15.50.05.13-261029-0123</code>) để kỹ thuật viên tra cứu nhật ký cơ sở dữ liệu.</p>
+                    </div>
+                  </div>
+                  <div class="guide-step-card">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                      <h5 class="guide-step-title">Thanh địa chỉ URL của trình duyệt</h5>
+                      <p class="guide-step-body">Kéo vùng chụp bao gồm cả thanh địa chỉ phía trên cùng (ví dụ: <code>https://motcua.daklak.gov.vn/...</code>) để kỹ thuật viên biết chính xác bạn đang ở màn hình phân hệ nào.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div> <!-- end #tab-content-guides -->
+
 
   <!-- TAB 6: PHÂN LOẠI HỒ SƠ (CÔNG KHAI) -->
   <div id="tab-content-dossier-split" class="tab-pane" style="display: none;">
