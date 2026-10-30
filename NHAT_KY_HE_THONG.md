@@ -430,6 +430,19 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Điều chỉnh số đếm hiển thị (`#guides-count-chip`, `#cat-count-all`) thành 2 bài.
     * Cập nhật từ khóa và mô tả tìm kiếm tập trung vào Cache, Cookies, F5, Ctrl+F5, Incognito, InPrivate.
 
+### 33. Xây dựng Sơ đồ Đồ họa & Infographic Quy tắc Nhận diện Mã số Hồ sơ TTHC (30/10/2026)
+* **Yêu cầu:** Thiết kế hình ảnh infographic đồ họa mô tả toàn diện quy tắc nhận biết cấu trúc mã số hồ sơ theo chuẩn Cổng DVCQG và Cổng Tỉnh.
+* **Xử lý toàn diện:**
+  - **Sơ đồ Vector SVG Chuẩn xác (`public/quy-tac-phan-loai-ho-so.svg`):**
+    * Độ phân giải cao, hiển thị sắc nét 100% trên mọi màn hình, không bị mờ nhòe tiếng Việt có dấu.
+    * Thể hiện rõ 3 thành phần cấu trúc: Mã đơn vị (`H15.50.05.13`) - Ngày tiếp nhận (`yymmdd`) - Số thứ tự trong ngày.
+    * Trực quan hóa cây quyết định logic: Nhánh 4 số (Cổng Tỉnh & 4 mã Hộ kinh doanh: `1.001266`, `1.001570`, `1.001612`, `2.000720`) và Nhánh 6-7 số (Cổng các Bộ theo tiền tố 2 số đầu).
+    * Bảng ma trận 12 Bộ/Ngành chủ quản và Cổng DVCQG (đầy đủ các mã mới: `12` - Bộ Tài chính, `21` - Bộ Dân tộc & Tôn giáo, `99` - Cổng DVCQG).
+  - **Hình ảnh minh họa Infographic Đồ họa 3D Gov-Tech:**
+    * Bản ngang Landscape 16:9 (`public/quy-tac-phan-loai-ho-so-landscape.jpg`): Phù hợp trình chiếu, chèn tài liệu báo cáo.
+    * Bản dọc Portrait Poster (`public/quy-tac-phan-loai-ho-so-poster.jpg`): Thiết kế dạng poster tra cứu tại Bộ phận Một cửa.
+  - **Tích hợp nút tra cứu nhanh trên Web (`public/index.html`):** Bổ sung nút bấm *"Xem sơ đồ quy tắc ↗"* trên thanh công cụ Phân loại hồ sơ, cho phép mở trực tiếp sơ đồ vector trong tab mới.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

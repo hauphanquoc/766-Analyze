@@ -1,0 +1,363 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 980" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fafafa"/>
+    </linearGradient>
+
+    <linearGradient id="primaryGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <linearGradient id="blueBoxGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+
+    <linearGradient id="amberBoxGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+
+    <linearGradient id="emeraldBoxGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ecfdf5"/>
+      <stop offset="100%" stop-color="#d1fae5"/>
+    </linearGradient>
+
+    <linearGradient id="purpleBoxGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#faf5ff"/>
+      <stop offset="100%" stop-color="#f3e8ff"/>
+    </linearGradient>
+
+    <linearGradient id="redBoxGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef2f2"/>
+      <stop offset="100%" stop-color="#fee2e2"/>
+    </linearGradient>
+
+    <!-- Filters / Shadows -->
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.06"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.04"/>
+    </filter>
+
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+
+  <style>
+    .font-sans { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .title-main { font-weight: 800; font-size: 26px; fill: #0f172a; letter-spacing: -0.5px; }
+    .badge-text { font-weight: 700; font-size: 11px; fill: #0369a1; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sec-title { font-weight: 700; font-size: 16px; fill: #1e293b; }
+    .sec-sub { font-weight: 400; font-size: 13px; fill: #64748b; }
+    .code-main { font-family: 'Consolas', 'Courier New', monospace; font-weight: 800; font-size: 24px; letter-spacing: 1px; }
+    .card-title { font-weight: 700; font-size: 14px; fill: #0f172a; }
+    .card-desc { font-weight: 400; font-size: 12px; fill: #475569; line-height: 1.4; }
+    .tag-text { font-weight: 700; font-size: 11px; }
+    .tree-label { font-weight: 700; font-size: 13px; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="1280" height="980" fill="url(#bgGrad)"/>
+
+  <!-- Subtle Blueprint Grid Lines -->
+  <g opacity="0.4" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="4 4">
+    <line x1="40" y1="120" x2="1240" y2="120"/>
+    <line x1="40" y1="350" x2="1240" y2="350"/>
+    <line x1="40" y1="600" x2="1240" y2="600"/>
+    <line x1="40" y1="910" x2="1240" y2="910"/>
+  </g>
+
+  <!-- MAIN CONTAINER CARD -->
+  <g transform="translate(30, 24)">
+    <rect width="1220" height="932" rx="20" fill="url(#cardGrad)" stroke="#e2e8f0" stroke-width="1.5" filter="url(#cardShadow)"/>
+
+    <!-- ==================== HEADER SECTION ==================== -->
+    <g transform="translate(40, 28)">
+      <!-- Gov-Tech Emblem Pill -->
+      <rect x="0" y="0" width="310" height="26" rx="13" fill="#e0f2fe" stroke="#bae6fd" stroke-width="1"/>
+      <circle cx="14" cy="13" r="5" fill="#0284c7"/>
+      <text x="26" y="17" class="font-sans badge-text">HỆ THỐNG DVC ĐẮK LẮK • NGHIỆP VỤ 766</text>
+
+      <!-- Main Headline -->
+      <text x="0" y="60" class="font-sans title-main">SƠ ĐỒ QUY TẮC NHẬN DIỆN VÀ PHÂN LOẠI MÃ SỐ HỒ SƠ TTHC</text>
+      <text x="0" y="82" class="font-sans sec-sub">Cơ chế giải mã cấu trúc mã số hồ sơ theo tiêu chuẩn kết nối liên thông Cổng DVC Quốc Gia (DVCQG) & Cổng DVC Tỉnh Đắk Lắk</text>
+
+      <!-- Top Right Status Badge -->
+      <g transform="translate(930, 0)">
+        <rect width="210" height="42" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="14" y="18" class="font-sans" font-size="11" font-weight="600" fill="#64748b">CHẾ ĐỘ XỬ LÝ</text>
+        <circle cx="20" cy="30" r="4" fill="#10b981"/>
+        <text x="30" y="33" class="font-sans" font-size="12" font-weight="700" fill="#0f766e">100% Offline Bảo Mật</text>
+      </g>
+    </g>
+
+    <line x1="40" y1="126" x2="1180" y2="126" stroke="#f1f5f9" stroke-width="2"/>
+
+    <!-- ==================== KHỐI 1: CẤU TRÚC 3 THÀNH PHẦN ==================== -->
+    <g transform="translate(40, 142)">
+      <!-- Title -->
+      <text x="0" y="14" class="font-sans sec-title">1. Cấu trúc 3 thành phần của Mã số hồ sơ TTHC</text>
+      <text x="0" y="32" class="font-sans sec-sub">Mỗi mã hồ sơ được chuẩn hóa phân tách bằng 2 dấu gạch nối (-), đại diện cho Đơn vị, Ngày tiếp nhận và Số thứ tự:</text>
+
+      <!-- Visual Anatomy Code Box -->
+      <g transform="translate(0, 48)">
+        <!-- Master Box -->
+        <rect width="1140" height="136" rx="14" fill="#0f172a" stroke="#334155" stroke-width="1.5" filter="url(#softShadow)"/>
+
+        <!-- Display Code Highlight -->
+        <g transform="translate(30, 20)">
+          <!-- Segment 1: Unit Code -->
+          <rect x="0" y="0" width="280" height="46" rx="8" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="140" y="31" class="code-main" fill="#60a5fa" text-anchor="middle">H15.50.05.13</text>
+
+          <!-- Separator 1 -->
+          <text x="298" y="33" class="code-main" fill="#64748b" text-anchor="middle">-</text>
+
+          <!-- Segment 2: Date yymmdd -->
+          <rect x="315" y="0" width="180" height="46" rx="8" fill="#78350f" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="405" y="31" class="code-main" fill="#fbbf24" text-anchor="middle">261008</text>
+
+          <!-- Separator 2 -->
+          <text x="512" y="33" class="code-main" fill="#64748b" text-anchor="middle">-</text>
+
+          <!-- Segment 3: Sequence Number (Key Decision) -->
+          <rect x="530" y="0" width="310" height="46" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5"/>
+          <text x="685" y="31" class="code-main" fill="#34d399" text-anchor="middle">0975 / 090123</text>
+
+          <text x="860" y="30" class="font-sans" font-size="13" font-weight="600" fill="#94a3b8">← Ví dụ mã thực tế</text>
+        </g>
+
+        <!-- Explanations Below Segments -->
+        <g transform="translate(30, 80)">
+          <!-- Exp 1 -->
+          <rect x="0" y="0" width="280" height="44" rx="6" fill="#1e293b"/>
+          <text x="14" y="18" class="font-sans" font-size="11" font-weight="700" fill="#93c5fd">THÀNH PHẦN 1: MÃ ĐƠN VỊ</text>
+          <text x="14" y="34" class="font-sans" font-size="11" fill="#cbd5e1">H15: Đắk Lắk • 50.05.13: Cấp xã/phòng</text>
+
+          <!-- Exp 2 -->
+          <rect x="315" y="0" width="180" height="44" rx="6" fill="#1e293b"/>
+          <text x="327" y="18" class="font-sans" font-size="11" font-weight="700" fill="#fde68a">THÀNH PHẦN 2: NGÀY</text>
+          <text x="327" y="34" class="font-sans" font-size="11" fill="#cbd5e1">yymmdd ➔ Ngày 08/10/2026</text>
+
+          <!-- Exp 3 -->
+          <rect x="530" y="0" width="550" height="44" rx="6" fill="#1e293b"/>
+          <text x="544" y="18" class="font-sans" font-size="11" font-weight="700" fill="#a7f3d0">THÀNH PHẦN 3: SỐ THỨ TỰ TRONG NGÀY (QUYẾT ĐỊNH CỔNG)</text>
+          <text x="544" y="34" class="font-sans" font-size="11" fill="#cbd5e1">4 số = Cổng Tỉnh / Hộ KD  |  6-7 số = Cổng các Bộ & Cổng DVCQG (Theo tiền tố)</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- ==================== KHỐI 2: CÂY QUYẾT ĐỊNH PHÂN LOẠI ==================== -->
+    <g transform="translate(40, 360)">
+      <!-- Title -->
+      <text x="0" y="14" class="font-sans sec-title">2. Cây logic phân loại tự động vào các Sheet Excel</text>
+      <text x="0" y="32" class="font-sans sec-sub">Hệ thống kiểm tra độ dài số thứ tự và đối chiếu mã TTHC (Cột C) để tự động xuất ra từng Sheet tương ứng:</text>
+
+      <!-- Flowchart Boxes -->
+      <g transform="translate(0, 48)">
+        <!-- Left Branch: 4 Chữ số -->
+        <g transform="translate(0, 0)">
+          <!-- Header card -->
+          <rect width="470" height="152" rx="12" fill="url(#emeraldBoxGrad)" stroke="#a7f3d0" stroke-width="1.5" filter="url(#softShadow)"/>
+          
+          <rect x="18" y="14" width="130" height="24" rx="6" fill="#047857"/>
+          <text x="83" y="30" class="font-sans tag-text" fill="#ffffff" text-anchor="middle">ĐUÔI CÓ 4 CHỮ SỐ</text>
+          <text x="160" y="31" class="code-main" font-size="15" fill="#065f46">Ví dụ: ...-0975, ...-0042</text>
+
+          <!-- Branch 1A: Cổng Tỉnh -->
+          <g transform="translate(18, 48)">
+            <rect width="205" height="88" rx="8" fill="#ffffff" stroke="#6ee7b7" stroke-width="1"/>
+            <text x="12" y="20" class="font-sans" font-size="12" font-weight="700" fill="#047857">CỔNG TỈNH (MỘT CỬA)</text>
+            <text x="12" y="38" class="font-sans" font-size="11" fill="#475569">• Thủ tục hành chính cấp tỉnh/huyện/xã</text>
+            <text x="12" y="54" class="font-sans" font-size="11" fill="#475569">• Tác nghiệp trên iGate Đắk Lắk</text>
+            <rect x="12" y="64" width="110" height="18" rx="4" fill="#d1fae5"/>
+            <text x="67" y="77" class="font-sans" font-size="10" font-weight="700" fill="#065f46" text-anchor="middle">Sheet "Cổng Tỉnh"</text>
+          </g>
+
+          <!-- Branch 1B: Hộ kinh doanh (4 mã TTHC đặc thù) -->
+          <g transform="translate(235, 48)">
+            <rect width="217" height="88" rx="8" fill="#ffffff" stroke="#fdba74" stroke-width="1"/>
+            <text x="12" y="20" class="font-sans" font-size="12" font-weight="700" fill="#c2410c">NHÓM HỘ KINH DOANH</text>
+            <text x="12" y="36" class="font-sans" font-size="11" fill="#475569">Khi Cột C có 1 trong 4 mã TTHC:</text>
+            <text x="12" y="52" class="code-main" font-size="11" fill="#ea580c">1.001266 • 1.001570</text>
+            <text x="12" y="66" class="code-main" font-size="11" fill="#ea580c">1.001612 • 2.000720</text>
+            <rect x="12" y="70" width="135" height="16" rx="4" fill="#ffedd5"/>
+            <text x="79" y="82" class="font-sans" font-size="9" font-weight="700" fill="#9a3412" text-anchor="middle">Sheet "Hộ kinh doanh"</text>
+          </g>
+        </g>
+
+        <!-- Right Branch: 6-7 Chữ số -->
+        <g transform="translate(490, 0)">
+          <!-- Header card -->
+          <rect width="650" height="152" rx="12" fill="url(#purpleBoxGrad)" stroke="#ddd6fe" stroke-width="1.5" filter="url(#softShadow)"/>
+
+          <rect x="20" y="14" width="160" height="24" rx="6" fill="#6d28d9"/>
+          <text x="100" y="30" class="font-sans tag-text" fill="#ffffff" text-anchor="middle">ĐUÔI CÓ 6 HOẶC 7 CHỮ SỐ</text>
+          <text x="195" y="31" class="code-main" font-size="15" fill="#5b21b6">Ví dụ: ...-090123, ...-1800456, ...-990012</text>
+
+          <!-- Inner Logic Box -->
+          <g transform="translate(20, 48)">
+            <rect width="610" height="88" rx="8" fill="#ffffff" stroke="#c4b5fd" stroke-width="1"/>
+            <text x="14" y="22" class="font-sans" font-size="13" font-weight="700" fill="#5b21b6">CỔNG BỘ CHUYÊN NGÀNH & CỔNG DVCQG (HỆ THỐNG LIÊN THÔNG DÙNG CHUNG)</text>
+            
+            <g transform="translate(14, 34)">
+              <rect x="0" y="0" width="135" height="42" rx="6" fill="#f5f3ff" stroke="#e9d5ff" stroke-width="1"/>
+              <text x="10" y="16" class="font-sans" font-size="11" font-weight="600" fill="#6b21a8">QUY TẮC NHẬN DIỆN:</text>
+              <text x="10" y="32" class="code-main" font-size="13" fill="#7c3aed">XXxxxx (2 số đầu)</text>
+            </g>
+
+            <g transform="translate(160, 34)">
+              <text x="0" y="15" class="font-sans" font-size="11.5" fill="#334155">• <strong>2 chữ số đầu tiên</strong> của dãy số thứ tự quy định chính xác Bộ / Ngành chủ quản.</text>
+              <text x="0" y="33" class="font-sans" font-size="11.5" fill="#334155">• Hồ sơ phát sinh thuộc Bộ nào sẽ tự động xuất thành một <strong>Sheet riêng biệt của Bộ đó</strong>.</text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- ==================== KHỐI 3: BẢNG TRA CỨU TIỀN TỐ 2 SỐ ĐẦU CỔNG BỘ ==================== -->
+    <g transform="translate(40, 584)">
+      <!-- Title -->
+      <div style="display: flex;">
+        <text x="0" y="14" class="font-sans sec-title">3. Bảng quy chuẩn mã tiền tố 2 số đầu Cổng Bộ & Cổng DVCQG</text>
+        <text x="0" y="32" class="font-sans sec-sub">Cập nhật đầy đủ 12 cơ quan trọng điểm theo chuẩn chia sẻ dữ liệu liên thông quốc gia:</text>
+      </div>
+
+      <!-- 12 Cards Grid (4 columns x 3 rows) -->
+      <g transform="translate(0, 46)">
+        
+        <!-- ROW 1 -->
+        <!-- 1. Bộ Nội vụ (09) -->
+        <g transform="translate(0, 0)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#1d4ed8" text-anchor="middle">09</text>
+          <text x="68" y="27" class="card-title">Bộ Nội vụ</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">09xxxx</code> • Sheet riêng</text>
+        </g>
+
+        <!-- 2. Bộ Y tế (18) -->
+        <g transform="translate(290, 0)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#047857" text-anchor="middle">18</text>
+          <text x="68" y="27" class="card-title">Bộ Y tế</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">18xxxx</code> • Y tế, dược phẩm</text>
+        </g>
+
+        <!-- 3. Bộ GD & ĐT (03) -->
+        <g transform="translate(580, 0)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#1e40af" text-anchor="middle">03</text>
+          <text x="68" y="27" class="card-title">Bộ Giáo dục & Đào tạo</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">03xxxx</code> • GDĐT văn bằng</text>
+        </g>
+
+        <!-- 4. Bộ NN & MT (10) -->
+        <g transform="translate(870, 0)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#15803d" text-anchor="middle">10</text>
+          <text x="68" y="27" class="card-title">Bộ Nông nghiệp & MT</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">10xxxx</code> • Đất đai, môi trường</text>
+        </g>
+
+        <!-- ROW 2 -->
+        <!-- 5. Bộ Xây dựng (17) -->
+        <g transform="translate(0, 70)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#c2410c" text-anchor="middle">17</text>
+          <text x="68" y="27" class="card-title">Bộ Xây dựng</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">17xxxx</code> • Cấp phép xây dựng</text>
+        </g>
+
+        <!-- 6. Bộ Công Thương (02) -->
+        <g transform="translate(290, 70)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#b91c1c" text-anchor="middle">02</text>
+          <text x="68" y="27" class="card-title">Bộ Công Thương</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">02xxxx</code> • Thương mại điện tử</text>
+        </g>
+
+        <!-- 7. Bộ KH & CN (06) -->
+        <g transform="translate(580, 70)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#0f766e" text-anchor="middle">06</text>
+          <text x="68" y="27" class="card-title">Bộ Khoa học & CN</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">06xxxx</code> • Tiêu chuẩn, đo lường</text>
+        </g>
+
+        <!-- 8. Bộ Tư pháp (15) -->
+        <g transform="translate(870, 70)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#fdf4ff" stroke="#f5d0fe" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#a21caf" text-anchor="middle">15</text>
+          <text x="68" y="27" class="card-title">Bộ Tư pháp</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">15xxxx</code> • Hộ tịch, LLTP</text>
+        </g>
+
+        <!-- ROW 3 (Gồm 3 rule mới: 12, 21, 99) -->
+        <!-- 9. Bộ VH-TT-DL (16) -->
+        <g transform="translate(0, 140)">
+          <rect width="270" height="60" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#fefce8" stroke="#fef08a" stroke-width="1"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#a16207" text-anchor="middle">16</text>
+          <text x="68" y="27" class="card-title">Bộ VH, Thể thao & DL</text>
+          <text x="68" y="44" class="card-desc">Mã: <code style="font-family: monospace;">16xxxx</code> • Di tích, du lịch</text>
+        </g>
+
+        <!-- 10. Bộ Tài chính (12 - MỚI) -->
+        <g transform="translate(290, 140)">
+          <rect width="270" height="60" rx="8" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1.5"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#0284c7"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#ffffff" text-anchor="middle">12</text>
+          <text x="68" y="27" class="card-title" fill="#0369a1">Bộ Tài chính ⭐</text>
+          <text x="68" y="44" class="card-desc" fill="#0284c7">Mã: <code style="font-family: monospace;">12xxxx</code> • Kho bạc, Thuế</text>
+        </g>
+
+        <!-- 11. Bộ Dân tộc & Tôn giáo (21 - MỚI) -->
+        <g transform="translate(580, 140)">
+          <rect width="270" height="60" rx="8" fill="#faf5ff" stroke="#c084fc" stroke-width="1.5"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#7c3aed"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#ffffff" text-anchor="middle">21</text>
+          <text x="68" y="27" class="card-title" fill="#6b21a8">Bộ Dân tộc & TG ⭐</text>
+          <text x="68" y="44" class="card-desc" fill="#7c3aed">Mã: <code style="font-family: monospace;">21xxxx</code> • Dân tộc, tín ngưỡng</text>
+        </g>
+
+        <!-- 12. Cổng DVCQG (99 - MỚI) -->
+        <g transform="translate(870, 140)">
+          <rect width="270" height="60" rx="8" fill="#fef2f2" stroke="#f87171" stroke-width="1.5"/>
+          <rect x="10" y="12" width="48" height="36" rx="6" fill="#dc2626"/>
+          <text x="34" y="36" class="code-main" font-size="18" fill="#ffffff" text-anchor="middle">99</text>
+          <text x="68" y="27" class="card-title" fill="#991b1b">Cổng DVCQG ⭐</text>
+          <text x="68" y="44" class="card-desc" fill="#dc2626">Mã: <code style="font-family: monospace;">99xxxx</code> • DVC Quốc gia</text>
+        </g>
+
+      </g>
+    </g>
+
+    <!-- ==================== FOOTER GHI CHÚ NHANH ==================== -->
+    <g transform="translate(40, 860)">
+      <rect width="1140" height="48" rx="8" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+      <circle cx="24" cy="24" r="10" fill="#0284c7"/>
+      <text x="24" y="28" class="font-sans" font-size="13" font-weight="800" fill="#ffffff" text-anchor="middle">i</text>
+      <text x="46" y="28" class="font-sans" font-size="12" font-weight="600" fill="#334155">
+        Lưu ý nghiệp vụ: File Excel sau khi nạp lên web sẽ tự động sinh Sheet 1 "Tổng hợp thống kê" và phân tách độc lập từng Sheet mà không làm thay đổi bất kỳ trường dữ liệu gốc nào.
+      </text>
+    </g>
+
+  </g>
+</svg>
