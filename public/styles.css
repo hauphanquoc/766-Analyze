@@ -10637,13 +10637,13 @@ kbd {
    MODULE: CÔNG THỨC TÍNH 2085 (QUYẾT ĐỊNH 2085/QĐ-TTg)
    ========================================================================== */
 .f2085-master-box {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: 1px solid #334155;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  color: #ffffff;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .f2085-master-header {
@@ -10652,31 +10652,41 @@ kbd {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .f2085-master-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #38bdf8;
+  color: #1e3a8a;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+.f2085-master-sub {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  background: #ffffff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
 .f2085-master-formula-eq {
-  font-size: 18px;
-  font-weight: 800;
-  background: rgba(2, 132, 199, 0.2);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  padding: 12px 20px;
-  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  background: #ffffff;
+  border: 1.5px solid #0284c7;
+  padding: 13px 18px;
+  border-radius: 9px;
   text-align: center;
-  margin-bottom: 20px;
-  color: #f8fafc;
-  letter-spacing: 0.3px;
+  margin-bottom: 16px;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10687,20 +10697,21 @@ kbd {
 .f2085-pillars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .f2085-pillar-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 14px 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
 }
 
 .f2085-pillar-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(56, 189, 248, 0.3);
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .f2085-pillar-head {
@@ -10708,37 +10719,40 @@ kbd {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  gap: 10px;
 }
 
 .f2085-pillar-name {
   font-size: 13.5px;
   font-weight: 700;
-  color: #e2e8f0;
+  color: #0f172a;
 }
 
 .f2085-pillar-badge {
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
 }
 
 .f2085-pillar-badge-a {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
 }
 
 .f2085-pillar-badge-b {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
 }
 
 .f2085-pillar-desc {
-  font-size: 12px;
-  color: #94a3b8;
-  line-height: 1.5;
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.55;
+  margin: 0;
 }
 
 /* Tier Switcher */
