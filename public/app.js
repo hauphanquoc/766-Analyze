@@ -4085,13 +4085,13 @@ function initFormula2085Directory() {
       currentTier = selectedTier;
 
       if (currentTier === 'tinh') {
-        if (tierStatusLabel) tierStatusLabel.textContent = 'Cấp Tỉnh (UBND Tỉnh Đắk Lắk)';
+        if (tierStatusLabel) tierStatusLabel.textContent = 'Cấp Tỉnh';
         updateTierBadges('tinh');
       } else if (currentTier === 'xa') {
-        if (tierStatusLabel) tierStatusLabel.textContent = 'Cấp Xã (UBND Xã / Phường / Thị trấn)';
+        if (tierStatusLabel) tierStatusLabel.textContent = 'Cấp Xã';
         updateTierBadges('xa');
       } else if (currentTier === 'compare') {
-        if (tierStatusLabel) tierStatusLabel.textContent = 'Bảng So sánh Đối chiếu Đa cấp (Cấp Tỉnh vs Cấp Xã vs Cấp Bộ)';
+        if (tierStatusLabel) tierStatusLabel.textContent = 'Bảng So sánh Đối chiếu (Cấp Tỉnh vs Cấp Xã vs Cấp Bộ)';
       }
 
       applyFilters();

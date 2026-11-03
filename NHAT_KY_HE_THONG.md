@@ -467,7 +467,7 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Module `initFormula2085Directory()` hỗ trợ chuyển đổi Tier tức thì mà không cần tải lại trang.
     * Bộ lọc 5 nhóm chuyên mục: *Tất cả*, *Trụ cột A (30đ)*, *B.I: Công khai minh bạch*, *B.II: Kết quả & Chất lượng*, *B.III: Số hóa & Dữ liệu*, *B.IV: Mức độ hài lòng*.
     * Tìm kiếm nhanh Live Search lọc tức thì trên cả chế độ Thẻ tiêu chí và Bảng so sánh đối chiếu.
-    * **Chuẩn hóa thiết kế Gov-tech:** Thay thế hộp hiển thị công thức nền tối (dark/AI style) bằng bố cục thẻ sáng trang nhã, văn phong hành chính chuẩn mực; lược bỏ 2 mục thừa (*Phân cấp áp dụng* và *Kế thừa 766*) để đảm bảo phần đầu gọn gàng, tinh tế.
+    * **Chuẩn hóa thiết kế Gov-tech:** Thay thế hộp hiển thị công thức nền tối (dark/AI style) bằng bố cục thẻ sáng trang nhã, văn phong hành chính chuẩn mực; lược bỏ 2 mục thừa (*Phân cấp áp dụng* và *Kế thừa 766*); tinh gọn nhãn các nút chọn cấp thành *🏛️ Xem theo Cấp Tỉnh* và *🏡 Xem theo Cấp Xã* (bỏ các cụm chữ mở ngoặc thừa).
 
 ---
 
