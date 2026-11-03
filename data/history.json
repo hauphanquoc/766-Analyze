@@ -1,5 +1,55 @@
 [
   {
+    "timestamp": "2026-11-02T23:00:09.655Z",
+    "type": "SYNC",
+    "date": "2026-11-03",
+    "durationMs": 6980,
+    "totalScore": 67.32,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-11-02T08:55:26.401Z",
+    "type": "SYNC",
+    "date": "2026-11-02",
+    "durationMs": 7754,
+    "totalScore": 67.21,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-11-01T23:00:08.546Z",
+    "type": "SYNC",
+    "date": "2026-11-02",
+    "durationMs": 6604,
+    "totalScore": 67.21,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-10-31T23:00:09.194Z",
+    "type": "SYNC",
+    "date": "2026-11-01",
+    "durationMs": 7257,
+    "totalScore": 67.25,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-10-30T23:00:08.479Z",
+    "type": "SYNC",
+    "date": "2026-10-31",
+    "durationMs": 6498,
+    "totalScore": 67.26,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
     "timestamp": "2026-10-29T23:00:08.626Z",
     "type": "SYNC",
     "date": "2026-10-30",
@@ -416,51 +466,5 @@
     "classification": "Trung bình",
     "success": true,
     "unitsCount": 116
-  },
-  {
-    "timestamp": "2026-10-05T23:00:10.244Z",
-    "type": "SYNC",
-    "date": "2026-10-06",
-    "durationMs": 7798,
-    "totalScore": 65.08,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 116
-  },
-  {
-    "timestamp": "2026-10-04T23:00:09.249Z",
-    "type": "SYNC",
-    "date": "2026-10-05",
-    "durationMs": 6699,
-    "totalScore": 65.13,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 116
-  },
-  {
-    "timestamp": "2026-10-04T23:00:06.716Z",
-    "type": "LOCAL_CRON_6AM",
-    "date": "2026-10-05",
-    "totalScore": 65.13,
-    "classification": "Trung bình",
-    "success": true
-  },
-  {
-    "timestamp": "2026-10-03T23:00:08.233Z",
-    "type": "LOCAL_SYNC_ONLY",
-    "date": "2026-10-04",
-    "durationMs": 5856,
-    "totalScore": 65.15,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 117
-  },
-  {
-    "timestamp": "2026-10-03T23:00:06.858Z",
-    "type": "LOCAL_CRON_6AM",
-    "date": "2026-10-04",
-    "totalScore": 65.15,
-    "classification": "Trung bình",
-    "success": true
   }
 ]

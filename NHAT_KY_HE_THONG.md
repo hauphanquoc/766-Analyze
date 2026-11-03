@@ -443,6 +443,31 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Bản dọc Portrait Poster (`public/quy-tac-phan-loai-ho-so-poster.jpg`): Thiết kế dạng poster tra cứu tại Bộ phận Một cửa.
   - **Tích hợp nút tra cứu nhanh trên Web (`public/index.html`):** Bổ sung nút bấm *"Xem sơ đồ quy tắc ↗"* trên thanh công cụ Phân loại hồ sơ, cho phép mở trực tiếp sơ đồ vector trong tab mới.
 
+### 34. Xây dựng Chức năng "Công thức tính 2085 - Đang hoàn thiện" Hỗ trợ Cấp Tỉnh và Cấp Xã (03/11/2026)
+* **Yêu cầu:**
+  - Bổ sung menu: *"Công thức tính 2085 - Đang hoàn thiện"* nằm ngay dưới menu *"Công thức tính 766"* trên Sidebar.
+  - Chế độ truy cập: **Công khai** (Public - ai cũng xem được, không yêu cầu đăng nhập).
+  - Trực quan hóa công thức và phương pháp tính Bộ chỉ số cải cách TTHC mới theo **Quyết định số 2085/QĐ-TTg ngày 02/11/2026** của Thủ tướng Chính phủ.
+  - Thiết kế linh hoạt, cho phép người dùng xem rõ ràng cơ cấu điểm và quy chuẩn tính của **Cấp Tỉnh (UBND Tỉnh)** và **Cấp Xã (Xã/Phường/Thị trấn)**.
+  - Phân định chuẩn xác các tiêu chuẩn khác biệt giữa các cấp: Tỷ lệ hồ sơ thanh toán trực tuyến (Cấp Tỉnh 2đ, Cấp Xã 3đ), Hồ sơ nộp trực tuyến (Cấp Tỉnh 2đ, Cấp Xã 4đ), Nguyên tắc hướng dẫn 1 lần (Cấp Tỉnh 5đ, Cấp Xã 10đ), Hài lòng giải quyết TTHC (Cấp Tỉnh 5đ, Cấp Xã 10đ), Đánh giá tác động TTHC (Cấp Tỉnh 3đ, Cấp Xã 15đ dồn điểm), các tiêu chí Cấp Xã không áp dụng...
+  - Thiết kế đúng phong cách Gov-tech của hệ thống (Unified Enterprise Card, math fractions, dynamic score badges, segmented tabs, search box). Không làm simulator mô phỏng.
+* **Xử lý toàn diện:**
+  - **Điều hướng Sidebar (`public/index.html`):** Bổ sung nút bấm menu `#tab-btn-formula-2085` với biểu tượng tài liệu quyết định trong nhóm *THEO DÕI & ĐÁNH GIÁ 766*, ở chế độ công khai.
+  - **Khung Công thức Tổng quan (Master Formula Box):**
+    * Công thức tổng hợp xếp hạng: `Tổng điểm Xếp hạng = Nhóm A (tối đa 30đ) + [Nhóm B (tối đa 100đ) × 70%]`.
+    * Hai thẻ trụ cột chính: *Trụ cột A: Cắt giảm, đơn giản hóa TTHC (30 điểm)* và *Trụ cột B: Chất lượng phục vụ TTHC & DVC (100 điểm, tính 70%)*.
+  - **Bộ chuyển đổi Cấp Hành chính (Tier Switcher: Tỉnh vs Xã vs So sánh):**
+    * Nút 1: *🏛️ Xem theo Cấp Tỉnh (UBND Tỉnh Đắk Lắk)* - hiển thị thang điểm và quy chuẩn Cấp Tỉnh.
+    * Nút 2: *🏡 Xem theo Cấp Xã (Xã/Phường/Thị trấn)* - tự động chuyển đổi badge điểm số, đánh dấu rõ các tiêu chí Cấp Xã được nhân hệ số/dồn điểm hoặc *"Không áp dụng cho Cấp Xã"*.
+    * Nút 3: *⚖️ Bảng So sánh Đối chiếu (Tỉnh vs Xã vs Bộ)* - mở bảng ma trận đối sánh 3 cấp với màu sắc nổi bật các tiêu chí đặc thù của Cấp Xã.
+  - **Hệ thống Thẻ Tiêu chí Chi tiết (Cards View):**
+    * Bố cục phân số toán học trực quan (Tử số, Mẫu số, $\times 100\%$).
+    * Danh sách quy tắc nghiệp vụ, lưu ý đặc thù phân cấp và nguồn dữ liệu trích xuất (DVCQG, CSDL chuyên ngành).
+  - **Giao diện & Trải nghiệm (`public/styles.css` & `public/app.js`):**
+    * Module `initFormula2085Directory()` hỗ trợ chuyển đổi Tier tức thì mà không cần tải lại trang.
+    * Bộ lọc 5 nhóm chuyên mục: *Tất cả*, *Trụ cột A (30đ)*, *B.I: Công khai minh bạch*, *B.II: Kết quả & Chất lượng*, *B.III: Số hóa & Dữ liệu*, *B.IV: Mức độ hài lòng*.
+    * Tìm kiếm nhanh Live Search lọc tức thì trên cả chế độ Thẻ tiêu chí và Bảng so sánh đối chiếu.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

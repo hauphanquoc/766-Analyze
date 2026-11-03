@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPortalsDirectory();
   initProvincesTab();
   initFormulaDirectory();
+  initFormula2085Directory();
   initToolsSubnavigation();
   initSignatureRemoverTool();
   initImageMergerTool();
@@ -3953,6 +3954,210 @@ function initFormulaDirectory() {
     });
     applyFilters();
   };
+}
+
+/**
+ * =========================================================================
+ * MODULE: CÔNG THỨC & PHƯƠNG PHÁP TÍNH BỘ CHỈ SỐ 2085 (ĐANG HOÀN THIỆN)
+ * (Quyết định số 2085/QĐ-TTg ngày 02/11/2026 của Thủ tướng Chính phủ)
+ * =========================================================================
+ */
+function initFormula2085Directory() {
+  const tierBtns = document.querySelectorAll('.f2085-tier-btn[data-f2085-tier]');
+  const tierStatusLabel = document.getElementById('f2085-tier-current-label');
+  const cardsView = document.getElementById('f2085-cards-view');
+  const compareView = document.getElementById('f2085-compare-view');
+  const tabBtns = document.querySelectorAll('#f2085-cat-tabs .formula-tab-btn[data-f2085-group]');
+  const groupSections = document.querySelectorAll('#f2085-sections-wrap .formula-group-section');
+  const searchInput = document.getElementById('f2085-search-input');
+  const clearSearchBtn = document.getElementById('f2085-search-clear');
+  const emptyState = document.getElementById('f2085-empty-state');
+  const cards = document.querySelectorAll('#f2085-cards-view .formula-card');
+
+  let currentTier = 'tinh'; // 'tinh' | 'xa' | 'compare'
+  let currentGroup = 'all';
+
+  function updateTierBadges(tier) {
+    if (tier === 'compare') return;
+
+    cards.forEach(card => {
+      const badge = card.querySelector('.f2085-score-badge');
+      if (!badge) return;
+
+      const tinhVal = (badge.getAttribute('data-tinh') || '').trim();
+      const xaVal = (badge.getAttribute('data-xa') || '').trim();
+
+      if (tier === 'tinh') {
+        if (tinhVal === 'Không áp dụng') {
+          badge.textContent = 'Không áp dụng cho Cấp Tỉnh';
+          badge.className = 'f2085-score-badge f2085-score-na';
+          card.classList.add('f2085-card-na');
+        } else {
+          const displayScore = tinhVal.includes('điểm') ? tinhVal : `${tinhVal} điểm`;
+          badge.textContent = `${displayScore} (Cấp Tỉnh)`;
+          badge.className = 'f2085-score-badge f2085-score-tinh';
+          card.classList.remove('f2085-card-na');
+        }
+      } else if (tier === 'xa') {
+        if (xaVal === 'Không áp dụng') {
+          badge.textContent = 'Không áp dụng cho Cấp Xã';
+          badge.className = 'f2085-score-badge f2085-score-na';
+          card.classList.add('f2085-card-na');
+        } else {
+          const displayScore = xaVal.includes('điểm') ? xaVal : `${xaVal} điểm`;
+          badge.textContent = `${displayScore} (Cấp Xã)`;
+          badge.className = 'f2085-score-badge f2085-score-xa';
+          card.classList.remove('f2085-card-na');
+        }
+      }
+    });
+  }
+
+  function applyFilters() {
+    const term = (searchInput ? searchInput.value : '').trim().toLowerCase();
+
+    if (currentTier === 'compare') {
+      if (cardsView) cardsView.style.display = 'none';
+      if (compareView) compareView.style.display = 'block';
+      if (emptyState) emptyState.style.display = 'none';
+
+      // Lọc tức thì trong bảng so sánh đối chiếu
+      if (compareView) {
+        const rows = compareView.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+          if (tr.classList.contains('f2085-group-row')) {
+            tr.style.display = '';
+          } else {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = (!term || text.includes(term)) ? '' : 'none';
+          }
+        });
+      }
+      return;
+    }
+
+    if (cardsView) cardsView.style.display = 'block';
+    if (compareView) compareView.style.display = 'none';
+
+    let totalCardsVisible = 0;
+
+    groupSections.forEach(section => {
+      const sectionGroup = section.getAttribute('data-f2085-group');
+      const matchesGroup = (currentGroup === 'all' || currentGroup === sectionGroup);
+
+      if (!matchesGroup) {
+        section.style.display = 'none';
+        return;
+      }
+
+      const secCards = section.querySelectorAll('.formula-card');
+      let visibleInSec = 0;
+
+      secCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const matchesSearch = !term || text.includes(term);
+
+        if (matchesSearch) {
+          card.style.display = '';
+          visibleInSec++;
+          totalCardsVisible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      section.style.display = (visibleInSec > 0) ? '' : 'none';
+    });
+
+    if (emptyState) {
+      emptyState.style.display = (totalCardsVisible === 0) ? 'block' : 'none';
+    }
+  }
+
+  // Bắt sự kiện chọn cấp hành chính (Tier Switcher)
+  tierBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selectedTier = btn.getAttribute('data-f2085-tier');
+      if (!selectedTier) return;
+
+      tierBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTier = selectedTier;
+
+      if (currentTier === 'tinh') {
+        if (tierStatusLabel) tierStatusLabel.textContent = 'Cấp Tỉnh (UBND Tỉnh Đắk Lắk)';
+        updateTierBadges('tinh');
+      } else if (currentTier === 'xa') {
+        if (tierStatusLabel) tierStatusLabel.textContent = 'Cấp Xã (UBND Xã / Phường / Thị trấn)';
+        updateTierBadges('xa');
+      } else if (currentTier === 'compare') {
+        if (tierStatusLabel) tierStatusLabel.textContent = 'Bảng So sánh Đối chiếu Đa cấp (Cấp Tỉnh vs Cấp Xã vs Cấp Bộ)';
+      }
+
+      applyFilters();
+    });
+  });
+
+  // Bắt sự kiện phân nhóm theo Trụ cột & Chuyên mục
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentGroup = btn.getAttribute('data-f2085-group') || 'all';
+
+      // Nếu đang ở màn hình compare, tự động chuyển về dạng thẻ để lọc theo nhóm
+      if (currentTier === 'compare') {
+        const tinhBtn = document.getElementById('f2085-btn-tier-tinh');
+        if (tinhBtn) {
+          tinhBtn.click();
+          return;
+        }
+      }
+
+      applyFilters();
+    });
+  });
+
+  // Tìm kiếm tức thì
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      if (clearSearchBtn) {
+        clearSearchBtn.style.display = searchInput.value.trim() ? 'flex' : 'none';
+      }
+      applyFilters();
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyFilters();
+      }
+    });
+  }
+
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      clearSearchBtn.style.display = 'none';
+      applyFilters();
+      searchInput.focus();
+    });
+  }
+
+  // Hàm khôi phục tìm kiếm toàn cục
+  window.resetF2085Search = function() {
+    if (searchInput) searchInput.value = '';
+    if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+    currentGroup = 'all';
+    tabBtns.forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-f2085-group') === 'all');
+    });
+    applyFilters();
+  };
+  window.resetFormula2085Search = window.resetF2085Search;
+
+  // Khởi tạo hiển thị ban đầu với Cấp Tỉnh
+  updateTierBadges('tinh');
 }
 
 /* ==========================================================================
