@@ -8,7 +8,7 @@ function getClassification(totalScore) {
   if (totalScore >= 80) return { label: 'Tốt', grade: 'good', color: '#3b82f6' };
   if (totalScore >= 70) return { label: 'Khá', grade: 'fair', color: '#f59e0b' };
   if (totalScore >= 50) return { label: 'Trung bình', grade: 'average', color: '#ec4899' };
-  return { label: 'Yếu / Kém', grade: 'poor', color: '#ef4444' };
+  return { label: 'Yếu', grade: 'poor', color: '#ef4444' };
 }
 
 /**

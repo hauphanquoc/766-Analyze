@@ -2060,7 +2060,7 @@
         "totalScore": 7.9,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -2336,7 +2336,7 @@
         "totalScore": 19.9,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -2434,7 +2434,7 @@
         "totalScore": 26.18,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -2710,7 +2710,7 @@
         "totalScore": 41.09,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -2986,7 +2986,7 @@
         "totalScore": 43.52,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -34453,7 +34453,7 @@
       "totalScore": 43.52,
       "maxScore": 100,
       "classification": {
-        "label": "Yếu / Kém",
+        "label": "Yếu",
         "grade": "poor",
         "color": "#ef4444"
       },
@@ -34729,7 +34729,7 @@
       "totalScore": 41.09,
       "maxScore": 100,
       "classification": {
-        "label": "Yếu / Kém",
+        "label": "Yếu",
         "grade": "poor",
         "color": "#ef4444"
       },
@@ -34827,7 +34827,7 @@
       "totalScore": 26.18,
       "maxScore": 100,
       "classification": {
-        "label": "Yếu / Kém",
+        "label": "Yếu",
         "grade": "poor",
         "color": "#ef4444"
       },
@@ -35103,7 +35103,7 @@
       "totalScore": 19.9,
       "maxScore": 100,
       "classification": {
-        "label": "Yếu / Kém",
+        "label": "Yếu",
         "grade": "poor",
         "color": "#ef4444"
       },
@@ -35379,7 +35379,7 @@
       "totalScore": 7.9,
       "maxScore": 100,
       "classification": {
-        "label": "Yếu / Kém",
+        "label": "Yếu",
         "grade": "poor",
         "color": "#ef4444"
       },

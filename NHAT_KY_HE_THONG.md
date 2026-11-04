@@ -469,6 +469,13 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Tìm kiếm nhanh Live Search lọc tức thì trên cả chế độ Thẻ tiêu chí và Bảng so sánh đối chiếu.
     * **Chuẩn hóa thiết kế Gov-tech:** Thay thế hộp hiển thị công thức nền tối (dark/AI style) bằng bố cục thẻ sáng trang nhã, văn phong hành chính chuẩn mực; lược bỏ 2 mục thừa (*Phân cấp áp dụng* và *Kế thừa 766*); tinh gọn nhãn các nút chọn cấp thành *🏛️ Xem theo Cấp Tỉnh* và *🏡 Xem theo Cấp Xã* (bỏ các cụm chữ mở ngoặc thừa).
 
+### 35. Chuẩn hóa Xếp loại Bộ chỉ số 766: Sửa "Yếu / Kém" thành "Yếu" (04/11/2026)
+* **Yêu cầu:** Trong chức năng Bộ chỉ số 766, tại cột Xếp loại (và huy hiệu xếp loại toàn tỉnh), sửa nhãn xếp loại dưới 50 điểm từ "Yếu / Kém" thành "Yếu".
+* **Xử lý toàn diện:**
+  - **Logic phân loại (`src/analyzer.js`):** Cập nhật hàm `getClassification(totalScore)` để trả về nhãn `{ label: 'Yếu', grade: 'poor', color: '#ef4444' }` khi điểm số dưới 50 điểm.
+  - **Xử lý giao diện & Dữ liệu (`public/app.js`):** Bổ sung hàm `sanitizeClassificationLabels(data)` tự động chuẩn hóa nhãn xếp loại từ "Yếu / Kém" sang "Yếu" ngay khi nạp dữ liệu ở cả giao diện Dashboard tổng quan, Bảng xếp hạng các đơn vị và Chức năng Báo cáo nhanh.
+  - **Đồng bộ cơ sở dữ liệu Snapshots (`data/snapshots/*.json`):** Quét và chuẩn hóa toàn bộ các tệp snapshot lưu trữ để đảm bảo nhãn hiển thị đồng nhất 100% trên toàn hệ thống.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

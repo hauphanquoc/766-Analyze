@@ -2077,7 +2077,7 @@
         "totalScore": 47.03,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -4871,7 +4871,7 @@
         "totalScore": 47.03,
         "maxScore": 100,
         "classification": {
-          "label": "Yếu / Kém",
+          "label": "Yếu",
           "grade": "poor",
           "color": "#ef4444"
         },
@@ -40869,7 +40869,7 @@
       "totalScore": 47.03,
       "maxScore": 100,
       "classification": {
-        "label": "Yếu / Kém",
+        "label": "Yếu",
         "grade": "poor",
         "color": "#ef4444"
       },

@@ -706,9 +706,31 @@ function renderDateOptions() {
 }
 
 /**
+ * Chuẩn hóa nhãn Xếp loại: "Yếu / Kém" -> "Yếu"
+ */
+function sanitizeClassificationLabels(data) {
+  if (!data) return;
+  if (data.overview && data.overview.classification) {
+    if (data.overview.classification.label === 'Yếu / Kém' || data.overview.classification.label === 'Yếu/Kém') {
+      data.overview.classification.label = 'Yếu';
+    }
+  }
+  if (Array.isArray(data.units)) {
+    data.units.forEach(u => {
+      if (u && u.classification) {
+        if (u.classification.label === 'Yếu / Kém' || u.classification.label === 'Yếu/Kém') {
+          u.classification.label = 'Yếu';
+        }
+      }
+    });
+  }
+}
+
+/**
  * Render all dashboard components
  */
 function renderAll(data) {
+  sanitizeClassificationLabels(data);
   renderOverview(data);
   renderIndicators(data);
   renderRadarChart(data);
@@ -726,7 +748,8 @@ function renderOverview(data) {
   dom.totalProgressBar.style.width = `${Math.min(overview.ratio, 100)}%`;
 
   const badge = overview.classification || { label: 'Chưa xác định', color: '#64748b' };
-  dom.classificationBadge.textContent = badge.label;
+  const badgeLabel = (badge.label === 'Yếu / Kém' || badge.label === 'Yếu/Kém') ? 'Yếu' : badge.label;
+  dom.classificationBadge.textContent = badgeLabel;
   dom.classificationBadge.style.backgroundColor = badge.color;
 
   // Delta score
@@ -1044,6 +1067,7 @@ function renderUnitsTable() {
 
       const rankHtml = `<span class="${rankClass}">${rankNum}</span>`;
       const grade = u.classification || { label: '-', color: '#64748b' };
+      const gradeLabel = (grade.label === 'Yếu / Kém' || grade.label === 'Yếu/Kém') ? 'Yếu' : grade.label;
 
       const loggedIn = Boolean(appState.currentUser);
       const scoreCell = (val, indKey, title) => {
@@ -1077,7 +1101,7 @@ function renderUnitsTable() {
         <td style="text-align: right;" class="score-cell-bold">${u.totalScore.toFixed(2)}</td>
         <td style="text-align: center; white-space: nowrap;">
           <span class="badge-grade" style="background-color: ${grade.color}; font-size: 11px; padding: 3px 10px; white-space: nowrap; display: inline-block;">
-            ${escapeHtml(grade.label)}
+            ${escapeHtml(gradeLabel)}
           </span>
         </td>
       `;
@@ -7572,6 +7596,7 @@ async function getSnapshotForDate(date) {
     throw new Error(json.error || `Không thể tải snapshot ngày ${date}`);
   }
 
+  sanitizeClassificationLabels(json.data);
   quickReportState.cachedSnapshots[date] = json.data;
   return json.data;
 }
