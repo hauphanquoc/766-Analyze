@@ -1,5 +1,25 @@
 [
   {
+    "timestamp": "2026-11-05T01:23:59.550Z",
+    "type": "SYNC",
+    "date": "2026-11-05",
+    "durationMs": 7594,
+    "totalScore": 67.5,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-11-04T23:00:09.353Z",
+    "type": "SYNC",
+    "date": "2026-11-05",
+    "durationMs": 6700,
+    "totalScore": 67.41,
+    "classification": "Trung bình",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
     "timestamp": "2026-11-03T23:00:09.972Z",
     "type": "SYNC",
     "date": "2026-11-04",
@@ -446,24 +466,6 @@
     "type": "LOCAL_CRON_6AM",
     "date": "2026-10-09",
     "totalScore": 65.33,
-    "classification": "Trung bình",
-    "success": true
-  },
-  {
-    "timestamp": "2026-10-07T23:00:09.168Z",
-    "type": "SYNC",
-    "date": "2026-10-08",
-    "durationMs": 6578,
-    "totalScore": 65.19,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 116
-  },
-  {
-    "timestamp": "2026-10-07T23:00:07.407Z",
-    "type": "LOCAL_CRON_6AM",
-    "date": "2026-10-08",
-    "totalScore": 65.19,
     "classification": "Trung bình",
     "success": true
   }
