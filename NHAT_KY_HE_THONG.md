@@ -476,6 +476,24 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Xử lý giao diện & Dữ liệu (`public/app.js`):** Bổ sung hàm `sanitizeClassificationLabels(data)` tự động chuẩn hóa nhãn xếp loại từ "Yếu / Kém" sang "Yếu" ngay khi nạp dữ liệu ở cả giao diện Dashboard tổng quan, Bảng xếp hạng các đơn vị và Chức năng Báo cáo nhanh.
   - **Đồng bộ cơ sở dữ liệu Snapshots (`data/snapshots/*.json`):** Quét và chuẩn hóa toàn bộ các tệp snapshot lưu trữ để đảm bảo nhãn hiển thị đồng nhất 100% trên toàn hệ thống.
 
+### 36. Cập nhật chi tiết API Bộ chỉ số 766: Bổ sung Tên chính thức, Mã chỉ tiêu (code), Điểm thành phần và Breakdown (09/11/2026)
+* **Bối cảnh & Yêu cầu:** Cổng Dịch vụ công Quốc gia (DVCQG) đã cập nhật response chi tiết cho các API xem điểm Bộ chỉ số 766, bổ sung đầy đủ thuộc tính `name` (tên chính thức theo Quyết định), `code` (mã định danh chỉ tiêu), khung điểm thành phần (`score` / `maxScore`) và số liệu phân loại chi tiết (`breakdown`). Cần rà soát và cập nhật toàn bộ backend analyzer, collector, xuất Excel và modal hiển thị frontend.
+* **Các chỉ tiêu & cấu trúc cập nhật:**
+  - **Chỉ số 1 - Công khai, minh bạch (18đ):** 4 chỉ tiêu con chuẩn (`PUBLISH_ON_TIME` - 6đ, `PUBLIC_UPDATE_ON_TIME` - 4đ, `PUBLIC_CONTENT_FULL` - 2đ, `DOSSIER_SYNC` - 6đ). Bổ sung thông tin phân loại đúng hạn/quá hạn và loại trừ trễ hạn/chưa đồng bộ.
+  - **Chỉ số 2 - Tiến độ giải quyết (20đ):** Tên chính thức `ON_TIME_AHEAD_OF_SCHEDULE` ("Tỷ lệ hồ sơ xử lý trước hạn, đúng hạn" - 20đ) kèm số liệu thống kê hồ sơ hoàn thành, quá hạn, thời gian xử lý trung bình.
+  - **Chỉ số 3 - Dịch vụ công trực tuyến (12đ):** Bổ sung đầy đủ 4 chỉ tiêu con từ Cổng DVCQG: `FORMALITY_ONLINE_PROVISION` (Tỷ lệ TTHC cung cấp DVCTT - 2đ; phân loại Toàn trình / Một phần), `ONLINE_SERVICE_HAS_DOSSIER` (Tỷ lệ DVCTT có phát sinh hồ sơ - 4đ), `DOSSIER_ONLINE_CHANNEL` (Tỷ lệ hồ sơ nộp trực tuyến - 6đ; phân loại Trực tiếp / Bưu chính), `ONLINE_DOSSIER_RESULT` (Kết quả xử lý hồ sơ nộp trực tuyến - theo dõi thống kê).
+  - **Chỉ số 4 - Số hóa hồ sơ (22đ):** 7 chỉ tiêu con chuẩn (`ORIGINAL_RESULT_AVAILABLE` - 6đ, `SO_HOA_GIAY_TO_GIAI_QUYET` - 4đ, `REUSED_DIGITIZED_DATA` - 2đ, `SYNCED_WITH_DVCQG_PERSONAL_STORAGE` - 4đ, `CITIZEN_DATA_CONNECTED_DOSSIER` - 2đ, `CITIZEN_DATA_CONNECTED_FORMALITY` - 2đ, `ELECTRONIC_CERTIFIED_COPY` - 2đ).
+  - **Chỉ số 5 - Thanh toán trực tuyến (10đ):** Bổ sung điểm thành phần chính thức của Cổng DVCQG: `DOSSIER_ONLINE_PAYMENT` (Tỷ lệ hồ sơ có giao dịch TTTT - 6đ), `FORMALITY_ONLINE_PAYMENT` (Tỷ lệ TTHC phát sinh TTTT - 2đ), `FORMALITY_FEE_DOSSIER` (Tỷ lệ TTHC phát sinh nghĩa vụ tài chính - 2đ).
+  - **Chỉ số 6 - Mức độ hài lòng (18đ):** 4 chỉ tiêu con chuẩn (`PETITION_CLASSIFICATION_TTHC` - 0đ phân loại, `DOSSIER_RECEIVING_SATISFACTION` - 6đ, `PETITION_PROCESSING_ON_TIME` - 6đ, `PETITION_HANDLING_SATISFACTION` - 6đ).
+* **Xử lý toàn diện mã nguồn:**
+  - **`src/analyzer.js`:** Cập nhật trích xuất đầy đủ mảng `metrics` từ API thực tế cho cả cấp toàn tỉnh và toàn bộ 115+ đơn vị trực thuộc; giữ nguyên tính tương thích ngược cho các thuộc tính thống kê cũ.
+  - **`src/collector.js`:** Nâng timeout lên 35.000ms giúp các endpoint tính toán tổng hợp nặng của Cổng DVCQG không bị ngắt quãng giữa chừng bởi AbortError.
+  - **`src/excelGenerator.js`:** Hỗ trợ xuất chi tiết tất cả các chỉ tiêu con của cả 6 nhóm chỉ số vào Sheet Báo cáo chi tiết.
+  - **`public/app.js` & `public/index.html`:**
+    * Modal Tiêu chí (`renderMetricItemCard`): Hiển thị Tên chuẩn, Mã chỉ tiêu `code`, Điểm số đạt được trên điểm tối đa, và hộp phân loại chi tiết (`breakdown`).
+    * Modal Thanh toán trực tuyến (`openDedicatedPaymentModal`): Cập nhật huy hiệu mã tiêu chí, khung điểm chính thức (6đ - 2đ - 2đ) và thông điệp hướng dẫn chuẩn.
+  - **Đồng bộ dữ liệu:** Chạy `npm run sync` cập nhật thành công snapshot `data/snapshots/2026-11-09.json` với 6/6 chỉ số chuẩn xác.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

@@ -1287,11 +1287,15 @@ window.openDedicatedPaymentModal = function (unitId, isProvince = false) {
 
       const ratioDisplay = m.ratio != null ? `${m.ratio}%` : '-';
       const fillWidth = Math.min(Math.max(m.ratio ?? 0, 0), 100);
+      const scoreDisplay = m.score != null 
+        ? (m.maxScore != null ? `${m.score} / ${m.maxScore}đ` : `${m.score}đ`)
+        : (m.maxScore != null ? `- / ${m.maxScore}đ` : '-');
 
       card.innerHTML = `
-        <div class="pay-crit-header">
-          <span class="pay-crit-badge">Chỉ tiêu con ${idx + 1}</span>
-          <h4 class="pay-crit-title">${escapeHtml(m.name)}</h4>
+        <div class="pay-crit-header" style="flex-wrap: wrap; gap: 8px;">
+          <span class="pay-crit-badge">Chỉ tiêu con ${idx + 1}${m.code ? ` • ${escapeHtml(m.code)}` : ''}</span>
+          <h4 class="pay-crit-title" style="margin-right: auto;">${escapeHtml(m.name)}</h4>
+          ${m.maxScore != null ? `<span style="font-size: 13px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 3px 10px; border-radius: 999px; white-space: nowrap;">Điểm: ${scoreDisplay}</span>` : ''}
         </div>
         ${m.desc ? `<p class="pay-crit-desc">${escapeHtml(m.desc)}</p>` : ''}
         <div class="pay-crit-stats-grid">
@@ -1417,8 +1421,35 @@ function renderMetricItemCard(m, idx, meta) {
     ? (m.maxScore != null ? `${m.score} / ${m.maxScore}` : `${m.score}`)
     : (m.maxScore != null ? `- / ${m.maxScore}` : '-');
 
+  // Breakdown details if available (e.g., partial/full, direct/postal, onTime/overdue, notSynced/excludedLate)
+  let breakdownHtml = '';
+  if (m.breakdown && typeof m.breakdown === 'object') {
+    const b = m.breakdown;
+    const parts = [];
+    if (b.full != null || b.partial != null) {
+      parts.push(`Toàn trình: <strong>${formatNumber(b.full ?? 0)}</strong> | Một phần: <strong>${formatNumber(b.partial ?? 0)}</strong>`);
+    }
+    if (b.direct != null || b.postal != null) {
+      parts.push(`Nộp trực tiếp: <strong>${formatNumber(b.direct ?? 0)}</strong> | Bưu chính: <strong>${formatNumber(b.postal ?? 0)}</strong>`);
+    }
+    if (b.onTime != null || b.overdue != null) {
+      parts.push(`Đúng/Trước hạn: <strong>${formatNumber(b.onTime ?? 0)}</strong> | Quá hạn: <strong>${formatNumber(b.overdue ?? 0)}</strong>`);
+    }
+    if ((b.excludedLate != null || b.notSynced != null) && ((b.excludedLate ?? 0) > 0 || (b.notSynced ?? 0) > 0)) {
+      parts.push(`Chưa đồng bộ: <strong>${formatNumber(b.notSynced ?? 0)}</strong> | Loại trừ trễ hạn: <strong>${formatNumber(b.excludedLate ?? 0)}</strong>`);
+    }
+    if (parts.length > 0) {
+      breakdownHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 12px; color: #475569;">
+        ℹ️ <strong>Phân loại chi tiết:</strong> ${parts.join(' &nbsp;•&nbsp; ')}
+      </div>`;
+    }
+  }
+
   card.innerHTML = `
-    <div class="metric-item-title">${idx + 1}. ${escapeHtml(m.name)}</div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+      <div class="metric-item-title" style="margin-bottom: 0;">${idx + 1}. ${escapeHtml(m.name)}</div>
+      ${m.code ? `<span style="font-size: 11px; font-weight: 600; padding: 2px 7px; background: #e0f2fe; color: #0369a1; border-radius: 4px; white-space: nowrap; font-family: monospace;">${escapeHtml(m.code)}</span>` : ''}
+    </div>
     <div class="metric-item-stats">
       <div class="stat-box">
         <span class="stat-label">Tử số</span>
@@ -1437,6 +1468,7 @@ function renderMetricItemCard(m, idx, meta) {
         <span class="stat-value" style="color: #2563eb;">${scoreDisplay}</span>
       </div>
     </div>
+    ${breakdownHtml}
     ${m.note ? `<p style="font-size: 11px; color: #d97706; margin-top: 8px;">* ${escapeHtml(m.note)}</p>` : ''}
   `;
   dom.modalBodyContent.appendChild(card);

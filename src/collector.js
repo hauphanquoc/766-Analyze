@@ -145,7 +145,7 @@ async function fetchWithRetry(url, options, maxRetries = 3) {
       await cookieManager.initSession(false);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout to fail fast on firewall drop
+      const timeoutId = setTimeout(() => controller.abort(), 35000); // 35s timeout to allow heavy DVCQG aggregation endpoints to finish
 
       // Attach current dynamic cookies
       const cookieStr = cookieManager.getCookieString();

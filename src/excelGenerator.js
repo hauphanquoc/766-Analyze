@@ -172,8 +172,11 @@ async function generateWorkbook(data) {
   let metricIndex = 1;
   for (const indKey of indKeys) {
     const ind = data.indicators[indKey];
-    if (ind.metrics && ind.metrics.length > 0) {
-      for (const m of ind.metrics) {
+    const metricList = Array.isArray(ind.metrics)
+      ? ind.metrics
+      : (ind.metrics?.items || (ind.metrics?.onTime ? [ind.metrics.onTime, ind.metrics.overdue] : []));
+    if (metricList && metricList.length > 0) {
+      for (const m of metricList) {
         const r = wsDetail.getRow(detailRow);
         r.height = 20;
         r.getCell(1).value = metricIndex++;

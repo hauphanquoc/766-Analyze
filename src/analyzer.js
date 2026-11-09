@@ -68,6 +68,8 @@ function analyzeData(collectionResult, previousSnapshot = null) {
         ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
         score: m.score != null ? Number(m.score.toFixed(2)) : 0,
         maxScore: m.maxScore ?? 0,
+        applicable: m.applicable ?? true,
+        breakdown: m.breakdown || null,
         note: m.dataQualityMessage || ''
       }));
     } else if (ind.type === 'tree' && data.parent) {
@@ -91,16 +93,31 @@ function analyzeData(collectionResult, previousSnapshot = null) {
         metrics = {
           totalReceived,
           avgProcessingDays,
+          items: (p.metrics || []).map((m) => ({
+            code: m.code,
+            name: m.name,
+            numerator: m.numerator ?? 0,
+            denominator: m.denominator ?? 0,
+            ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
+            score: m.score != null ? Number(m.score.toFixed(2)) : 0,
+            maxScore: m.maxScore ?? 20,
+            applicable: m.applicable ?? true,
+            breakdown: m.breakdown || null,
+            note: m.dataQualityMessage || ''
+          })),
           onTime: {
-            name: 'Hồ sơ giải quyết đúng hạn',
-            desc: 'Số hồ sơ giải quyết đúng hạn (và trước hạn) trên tổng số hồ sơ tiếp nhận',
+            code: 'ON_TIME_AHEAD_OF_SCHEDULE',
+            name: p.metrics?.[0]?.name || 'Tỷ lệ hồ sơ xử lý trước hạn, đúng hạn',
+            desc: 'Số hồ sơ giải quyết trước hạn, đúng hạn trên tổng số hồ sơ tiếp nhận',
             numerator: totalOnTime,
             denominator: totalReceived,
             ratio: onTimeRatio,
             score: score,
-            maxScore: 20
+            maxScore: 20,
+            breakdown: p.metrics?.[0]?.breakdown || { overdue: totalOverdue, completed: p.totalCompleted }
           },
           overdue: {
+            code: 'OVERDUE',
             name: 'Hồ sơ giải quyết quá hạn',
             desc: 'Số hồ sơ giải quyết quá hạn trên tổng số hồ sơ tiếp nhận',
             numerator: totalOverdue,
@@ -109,41 +126,83 @@ function analyzeData(collectionResult, previousSnapshot = null) {
             score: null
           }
         };
+      } else if (ind.key === 'onlineService') {
+        const p = data.parent;
+        if (p.metrics && p.metrics.length > 0) {
+          metrics = p.metrics.map((m) => ({
+            code: m.code,
+            name: m.name,
+            numerator: m.numerator ?? 0,
+            denominator: m.denominator ?? 0,
+            ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
+            score: m.score != null ? Number(m.score.toFixed(2)) : (m.maxScore === 0 ? null : 0),
+            maxScore: m.maxScore ?? 0,
+            applicable: m.applicable ?? true,
+            breakdown: m.breakdown || null,
+            note: m.dataQualityMessage || ''
+          }));
+        } else {
+          metrics = [];
+        }
       } else if (ind.key === 'payment') {
         const d = data.parent;
-        const ratio1 = d.totalDossierFinancialObligation > 0
-          ? Number(((d.totalDossierOnlinePaymentSuccess / d.totalDossierFinancialObligation) * 100).toFixed(2))
-          : 0;
-        const ratio2 = d.totalFeeDossierFormalityDistinct > 0
-          ? Number(((d.totalDossierOnlineFormalityPaymentSuccess / d.totalFeeDossierFormalityDistinct) * 100).toFixed(2))
-          : 0;
-        const ratio3 = (d.totalFeeFormality || d.totalFeeDossierFormalityDistinct) > 0
-          ? Number(((d.totalFeeDossierFormality / (d.totalFeeFormality || d.totalFeeDossierFormalityDistinct)) * 100).toFixed(2))
-          : 0;
+        if (d.metrics && d.metrics.length > 0) {
+          metrics = d.metrics.map((m) => ({
+            code: m.code,
+            name: m.name,
+            numerator: m.numerator ?? 0,
+            denominator: m.denominator ?? 0,
+            ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
+            score: m.score != null ? Number(m.score.toFixed(2)) : 0,
+            maxScore: m.maxScore ?? 0,
+            applicable: m.applicable ?? true,
+            breakdown: m.breakdown || null,
+            note: m.dataQualityMessage || ''
+          }));
+        } else {
+          const ratio1 = d.totalDossierFinancialObligation > 0
+            ? Number(((d.totalDossierOnlinePaymentSuccess / d.totalDossierFinancialObligation) * 100).toFixed(2))
+            : 0;
+          const ratio2 = d.totalFeeDossierFormalityDistinct > 0
+            ? Number(((d.totalDossierOnlineFormalityPaymentSuccess / d.totalFeeDossierFormalityDistinct) * 100).toFixed(2))
+            : 0;
+          const ratio3 = (d.totalFeeFormality || d.totalFeeDossierFormalityDistinct) > 0
+            ? Number(((d.totalFeeDossierFormality / (d.totalFeeFormality || d.totalFeeDossierFormalityDistinct)) * 100).toFixed(2))
+            : 0;
 
-        metrics = [
-          {
-            name: 'Tỷ lệ hồ sơ thanh toán trực tuyến',
-            desc: 'Số hồ sơ thanh toán trực tuyến thành công trên tổng số hồ sơ có nghĩa vụ tài chính',
-            numerator: d.totalDossierOnlinePaymentSuccess ?? 0,
-            denominator: d.totalDossierFinancialObligation ?? 0,
-            ratio: ratio1
-          },
-          {
-            name: 'Tỷ lệ TTHC có phát sinh giao dịch thanh toán trực tuyến',
-            desc: 'Số TTHC có phát sinh giao dịch thanh toán trực tuyến trên tổng số TTHC có phát sinh hồ sơ có thu phí',
-            numerator: d.totalDossierOnlineFormalityPaymentSuccess ?? 0,
-            denominator: d.totalFeeDossierFormalityDistinct ?? 0,
-            ratio: ratio2
-          },
-          {
-            name: 'Tỷ lệ TTHC có thu phí, lệ phí phát sinh hồ sơ',
-            desc: 'Số TTHC có thu phí, lệ phí có phát sinh hồ sơ trên tổng số TTHC có thu phí, lệ phí',
-            numerator: d.totalFeeDossierFormality ?? 0,
-            denominator: d.totalFeeFormality ?? d.totalFeeDossierFormalityDistinct ?? 0,
-            ratio: ratio3
-          }
-        ];
+          metrics = [
+            {
+              code: 'DOSSIER_ONLINE_PAYMENT',
+              name: 'Tỷ lệ hồ sơ có giao dịch thanh toán trực tuyến',
+              desc: 'Số hồ sơ thanh toán trực tuyến thành công trên tổng số hồ sơ có nghĩa vụ tài chính',
+              numerator: d.totalDossierOnlinePaymentSuccess ?? 0,
+              denominator: d.totalDossierFinancialObligation ?? 0,
+              ratio: ratio1,
+              score: 0,
+              maxScore: 6
+            },
+            {
+              code: 'FORMALITY_ONLINE_PAYMENT',
+              name: 'Tỷ lệ thủ tục hành chính có phát sinh thanh toán trực tuyến',
+              desc: 'Số TTHC có phát sinh giao dịch thanh toán trực tuyến trên tổng số TTHC có phát sinh hồ sơ có thu phí',
+              numerator: d.totalDossierOnlineFormalityPaymentSuccess ?? 0,
+              denominator: d.totalFeeDossierFormalityDistinct ?? 0,
+              ratio: ratio2,
+              score: 0,
+              maxScore: 2
+            },
+            {
+              code: 'FORMALITY_FEE_DOSSIER',
+              name: 'Tỷ lệ thủ tục hành chính có hồ sơ phát sinh nghĩa vụ tài chính',
+              desc: 'Số TTHC có thu phí, lệ phí phát sinh hồ sơ trên tổng số TTHC có thu phí, lệ phí',
+              numerator: d.totalFeeDossierFormality ?? 0,
+              denominator: d.totalFeeFormality ?? d.totalFeeDossierFormalityDistinct ?? 0,
+              ratio: ratio3,
+              score: 0,
+              maxScore: 2
+            }
+          ];
+        }
       }
     }
 
@@ -242,6 +301,8 @@ function analyzeData(collectionResult, previousSnapshot = null) {
           ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
           score: m.score != null ? Number(m.score.toFixed(2)) : 0,
           maxScore: m.maxScore ?? null,
+          applicable: m.applicable ?? true,
+          breakdown: m.breakdown || null,
           note: m.dataQualityMessage || ''
         }))
       };
@@ -283,9 +344,21 @@ function analyzeData(collectionResult, previousSnapshot = null) {
           isProgressDedicated: true,
           totalReceived,
           avgProcessingDays,
+          metrics: (item.metrics || []).map((m) => ({
+            code: m.code,
+            name: m.name,
+            numerator: m.numerator ?? null,
+            denominator: m.denominator ?? null,
+            ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
+            score: m.score != null ? Number(m.score.toFixed(2)) : 0,
+            maxScore: m.maxScore ?? 20,
+            applicable: m.applicable ?? true,
+            breakdown: m.breakdown || null,
+            note: m.dataQualityMessage || ''
+          })),
           onTime: {
-            name: 'Hồ sơ giải quyết đúng hạn',
-            desc: 'Số hồ sơ giải quyết đúng hạn (và trước hạn) trên tổng số hồ sơ tiếp nhận',
+            name: item.metrics?.[0]?.name || 'Tỷ lệ hồ sơ xử lý trước hạn, đúng hạn',
+            desc: 'Số hồ sơ giải quyết trước hạn, đúng hạn trên tổng số hồ sơ tiếp nhận',
             numerator: totalOnTime,
             denominator: totalReceived,
             ratio: onTimeRatio,
@@ -302,53 +375,98 @@ function analyzeData(collectionResult, previousSnapshot = null) {
           }
         };
       } else if (key === 'payment') {
-        const ratio1 = item.totalDossierFinancialObligation > 0
-          ? Number(((item.totalDossierOnlinePaymentSuccess / item.totalDossierFinancialObligation) * 100).toFixed(2))
-          : 0;
-        const ratio2 = item.totalFeeDossierFormalityDistinct > 0
-          ? Number(((item.totalDossierOnlineFormalityPaymentSuccess / item.totalFeeDossierFormalityDistinct) * 100).toFixed(2))
-          : 0;
-        const ratio3 = (item.totalFeeFormality || item.totalFeeDossierFormalityDistinct) > 0
-          ? Number(((item.totalFeeDossierFormality / (item.totalFeeFormality || item.totalFeeDossierFormalityDistinct)) * 100).toFixed(2))
-          : 0;
+        let paymentMetrics = [];
+        if (item.metrics && item.metrics.length > 0) {
+          paymentMetrics = item.metrics.map((m) => ({
+            code: m.code,
+            name: m.name,
+            numerator: m.numerator ?? null,
+            denominator: m.denominator ?? null,
+            ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
+            score: m.score != null ? Number(m.score.toFixed(2)) : 0,
+            maxScore: m.maxScore ?? 0,
+            applicable: m.applicable ?? true,
+            breakdown: m.breakdown || null,
+            note: m.dataQualityMessage || ''
+          }));
+        } else {
+          const ratio1 = item.totalDossierFinancialObligation > 0
+            ? Number(((item.totalDossierOnlinePaymentSuccess / item.totalDossierFinancialObligation) * 100).toFixed(2))
+            : 0;
+          const ratio2 = item.totalFeeDossierFormalityDistinct > 0
+            ? Number(((item.totalDossierOnlineFormalityPaymentSuccess / item.totalFeeDossierFormalityDistinct) * 100).toFixed(2))
+            : 0;
+          const ratio3 = (item.totalFeeFormality || item.totalFeeDossierFormalityDistinct) > 0
+            ? Number(((item.totalFeeDossierFormality / (item.totalFeeFormality || item.totalFeeDossierFormalityDistinct)) * 100).toFixed(2))
+            : 0;
+
+          paymentMetrics = [
+            {
+              code: 'DOSSIER_ONLINE_PAYMENT',
+              name: 'Tỷ lệ hồ sơ có giao dịch thanh toán trực tuyến',
+              desc: 'Số hồ sơ thanh toán trực tuyến thành công trên tổng số hồ sơ có nghĩa vụ tài chính',
+              numerator: item.totalDossierOnlinePaymentSuccess ?? 0,
+              denominator: item.totalDossierFinancialObligation ?? 0,
+              ratio: ratio1,
+              score: 0,
+              maxScore: 6
+            },
+            {
+              code: 'FORMALITY_ONLINE_PAYMENT',
+              name: 'Tỷ lệ thủ tục hành chính có phát sinh thanh toán trực tuyến',
+              desc: 'Số TTHC có phát sinh giao dịch thanh toán trực tuyến trên tổng số TTHC có phát sinh hồ sơ có thu phí',
+              numerator: item.totalDossierOnlineFormalityPaymentSuccess ?? 0,
+              denominator: item.totalFeeDossierFormalityDistinct ?? 0,
+              ratio: ratio2,
+              score: 0,
+              maxScore: 2
+            },
+            {
+              code: 'FORMALITY_FEE_DOSSIER',
+              name: 'Tỷ lệ thủ tục hành chính có hồ sơ phát sinh nghĩa vụ tài chính',
+              desc: 'Số TTHC có thu phí, lệ phí phát sinh hồ sơ trên tổng số TTHC có thu phí, lệ phí',
+              numerator: item.totalFeeDossierFormality ?? 0,
+              denominator: item.totalFeeFormality ?? item.totalFeeDossierFormalityDistinct ?? 0,
+              ratio: ratio3,
+              score: 0,
+              maxScore: 2
+            }
+          ];
+        }
 
         u.indicatorDetails.payment = {
           score,
           maxScore: item.totalMaxScore ?? 10,
           ratio: item.ratio != null ? Number(item.ratio.toFixed(2)) : 0,
           isPaymentDedicated: true,
-          metrics: [
-            {
-              name: 'Tỷ lệ hồ sơ thanh toán trực tuyến',
-              desc: 'Số hồ sơ thanh toán trực tuyến thành công trên tổng số hồ sơ có nghĩa vụ tài chính',
-              numerator: item.totalDossierOnlinePaymentSuccess ?? 0,
-              denominator: item.totalDossierFinancialObligation ?? 0,
-              ratio: ratio1
-            },
-            {
-              name: 'Tỷ lệ TTHC có phát sinh giao dịch thanh toán trực tuyến',
-              desc: 'Số TTHC có phát sinh giao dịch thanh toán trực tuyến trên tổng số TTHC có phát sinh hồ sơ có thu phí',
-              numerator: item.totalDossierOnlineFormalityPaymentSuccess ?? 0,
-              denominator: item.totalFeeDossierFormalityDistinct ?? 0,
-              ratio: ratio2
-            },
-            {
-              name: 'Tỷ lệ TTHC có thu phí, lệ phí phát sinh hồ sơ',
-              desc: 'Số TTHC có thu phí, lệ phí có phát sinh hồ sơ trên tổng số TTHC có thu phí, lệ phí',
-              numerator: item.totalFeeDossierFormality ?? 0,
-              denominator: item.totalFeeFormality ?? item.totalFeeDossierFormalityDistinct ?? 0,
-              ratio: ratio3
-            }
-          ]
+          metrics: paymentMetrics
         };
       } else if (key === 'onlineService') {
+        let osMetrics = [];
+        if (item.metrics && item.metrics.length > 0) {
+          osMetrics = item.metrics.map((m) => ({
+            code: m.code,
+            name: m.name,
+            numerator: m.numerator ?? null,
+            denominator: m.denominator ?? null,
+            ratio: m.ratio != null ? Number(m.ratio.toFixed(2)) : 0,
+            score: m.score != null ? Number(m.score.toFixed(2)) : (m.maxScore === 0 ? null : 0),
+            maxScore: m.maxScore ?? 0,
+            applicable: m.applicable ?? true,
+            breakdown: m.breakdown || null,
+            note: m.dataQualityMessage || ''
+          }));
+        } else {
+          osMetrics = [
+            { name: 'Tỷ lệ cung cấp dịch vụ công trực tuyến & nộp hồ sơ trực tuyến', numerator: null, denominator: null, ratio: item.ratio != null ? Number(item.ratio.toFixed(2)) : 0, score: score, maxScore: 12 }
+          ];
+        }
+
         u.indicatorDetails.onlineService = {
           score,
           maxScore: item.totalMaxScore ?? 12,
           ratio: item.ratio != null ? Number(item.ratio.toFixed(2)) : 0,
-          metrics: [
-            { name: 'Tỷ lệ cung cấp dịch vụ công trực tuyến & nộp hồ sơ trực tuyến', numerator: null, denominator: null, ratio: item.ratio != null ? Number(item.ratio.toFixed(2)) : 0, score: score, maxScore: 12 }
-          ]
+          metrics: osMetrics
         };
       }
     }
