@@ -21,15 +21,30 @@ const MINISTRY_PREFIX_MAP = {
 
 const BUSINESS_HOUSEHOLD_PROCEDURE_CODES = [
   '1.001266',
+  '1.00157',
   '1.001570',
   '1.001612',
+  '2.00072',
   '2.000720'
 ];
 
 /**
+ * Kiểm tra mã TTHC có thuộc nhóm Hộ kinh doanh hay không
+ * Hỗ trợ cả trường hợp Excel tự động rút gọn số 0 ở cuối (ví dụ: 2.000720 -> 2.00072, 1.001570 -> 1.00157)
+ */
+function isBusinessHouseholdProcedure(procedureCode) {
+  if (!procedureCode) return false;
+  const s = String(procedureCode).trim();
+  if (BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(s)) return true;
+  if (s.endsWith('0') && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(s.slice(0, -1))) return true;
+  if (BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(s + '0')) return true;
+  return false;
+}
+
+/**
  * Phân tích mã số hồ sơ TTHC
  * @param {string} dossierCode - Mã số hồ sơ (ví dụ: H15.50.05.13-261008-0975)
- * @param {string} [procedureCode] - Mã thủ tục hành chính nếu có (ví dụ: 1.001266)
+ * @param {string} [procedureCode] - Mã thủ tục hành chính nếu có (ví dụ: 1.001266, 2.00072)
  * @returns {object|null} Kết quả phân tích chi tiết
  */
 function parseDossierCode(dossierCode, procedureCode = null) {
@@ -63,7 +78,7 @@ function parseDossierCode(dossierCode, procedureCode = null) {
 
   if (isDigits) {
     if (seqLength === 4) {
-      if (cleanProcedureCode && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(cleanProcedureCode)) {
+      if (cleanProcedureCode && isBusinessHouseholdProcedure(cleanProcedureCode)) {
         portalType = 'BUSINESS_HOUSEHOLD'; // Hộ kinh doanh
         isBusinessHousehold = true;
       } else {
@@ -95,5 +110,6 @@ function parseDossierCode(dossierCode, procedureCode = null) {
 module.exports = {
   MINISTRY_PREFIX_MAP,
   BUSINESS_HOUSEHOLD_PROCEDURE_CODES,
+  isBusinessHouseholdProcedure,
   parseDossierCode
 };

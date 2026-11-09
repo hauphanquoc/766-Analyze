@@ -44,12 +44,13 @@ Các hồ sơ có phần đuôi số thứ tự gồm **4 chữ số** (thông t
 | Mã TTHC | Tên phân loại nhóm | Cột nhận diện trên file Excel |
 | :---: | :--- | :--- |
 | `1.001266` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
-| `1.001570` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
+| `1.00157` / `1.001570` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
 | `1.001612` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
-| `2.000720` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
+| `2.00072` / `2.000720` | **Hộ kinh doanh** | **Cột C** (Cột thứ 3) |
 
 *Ghi chú:*
 - Trong file Excel danh sách hồ sơ tải lên, cột mã TTHC mặc định nằm ở **Cột C**.
-- Nếu một hồ sơ có đuôi 4 số nhưng mã TTHC ở Cột C thuộc 1 trong 4 mã trên thì chuyển nhóm sang `Hộ kinh doanh` (không tính vào `Cổng Tỉnh`).
+- Hệ thống tự động nhận diện cả định dạng đầy đủ có số 0 ở cuối (`1.001570`, `2.000720`) và định dạng rút gọn do Excel tự định dạng số (`1.00157`, `2.00072`).
+- Nếu một hồ sơ có đuôi 4 số nhưng mã TTHC ở Cột C thuộc các mã trên thì chuyển nhóm sang `Hộ kinh doanh` (không tính vào `Cổng Tỉnh`).
 - Các hồ sơ đuôi 4 số còn lại vẫn giữ nguyên là `Cổng Tỉnh`.
 

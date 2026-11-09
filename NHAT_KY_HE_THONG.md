@@ -494,6 +494,20 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Modal Thanh toán trực tuyến (`openDedicatedPaymentModal`): Cập nhật huy hiệu mã tiêu chí, khung điểm chính thức (6đ - 2đ - 2đ) và thông điệp hướng dẫn chuẩn.
   - **Đồng bộ dữ liệu:** Chạy `npm run sync` cập nhật thành công snapshot `data/snapshots/2026-11-09.json` với 6/6 chỉ số chuẩn xác.
 
+### 37. Cập nhật Rule phân loại hồ sơ: Bổ sung mã TTHC 2.00072 và 1.00157 cho nhóm Hộ kinh doanh (09/11/2026)
+* **Yêu cầu:** Ở chức năng *Phân loại hồ sơ*, bổ sung thêm các mã thủ tục hành chính `2.00072` và `1.00157` vào danh sách nhận diện nhóm **Hộ kinh doanh** (khi hồ sơ có phần đuôi 4 số và Cột C chứa mã TTHC chỉ định).
+* **Xử lý toàn diện:**
+  - **Lưu trữ tri thức nghiệp vụ ([`.agents/rules/dossier-code-rules.md`](file:///f:/DVC%20QG%20C12/766-Analyze/.agents/rules/dossier-code-rules.md)):** Cập nhật bảng tra cứu mã TTHC thuộc nhóm Hộ kinh doanh; ghi nhận cơ chế nhận diện linh hoạt giữa định dạng số rút gọn từ Excel (`2.00072`, `1.00157`) và định dạng chuỗi đầy đủ (`2.000720`, `1.001570`).
+  - **Module phân tích mã hồ sơ ([`src/dossierParser.js`](file:///f:/DVC%20QG%20C12/766-Analyze/src/dossierParser.js)):**
+    * Bổ sung `2.00072` và `1.00157` vào hằng số `BUSINESS_HOUSEHOLD_PROCEDURE_CODES`.
+    * Thêm hàm `isBusinessHouseholdProcedure(code)` tự động xử lý trường hợp Excel cắt hoặc thêm số `0` ở cuối mã TTHC.
+  - **Giao diện Client & Động cơ phân loại ([`public/app.js`](file:///f:/DVC%20QG%20C12/766-Analyze/public/app.js)):**
+    * Cập nhật danh sách mã và hàm `isBusinessHouseholdProcedure(cleanTthc)` tại hàm phân loại `classifyCode()`.
+    * Cập nhật mô tả quy tắc trong Sheet `Tổng hợp thống kê` khi xuất file Excel phân loại.
+  - **Giao diện trực quan ([`public/index.html`](file:///f:/DVC%20QG%20C12/766-Analyze/public/index.html) & [`public/quy-tac-phan-loai-ho-so.svg`](file:///f:/DVC%20QG%20C12/766-Analyze/public/quy-tac-phan-loai-ho-so.svg)):**
+    * Tinh chỉnh thẻ thống kê trên thanh công cụ thành *Hộ kinh doanh: Các mã TTHC (Cột C)*.
+    * Cập nhật sơ đồ đồ họa vector nhánh 1B hiển thị các mã bổ sung `1.00157(0)` và `2.00072(0)`.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

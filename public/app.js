@@ -5668,10 +5668,21 @@ function initDossierSplitModule() {
   // Danh sách các mã TTHC thuộc nhóm Hộ kinh doanh khi hồ sơ có đuôi 4 số (Cột C)
   const BUSINESS_HOUSEHOLD_PROCEDURE_CODES = [
     '1.001266',
+    '1.00157',
     '1.001570',
     '1.001612',
+    '2.00072',
     '2.000720'
   ];
+
+  function isBusinessHouseholdProcedure(code) {
+    if (!code) return false;
+    const s = String(code).trim();
+    if (BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(s)) return true;
+    if (s.endsWith('0') && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(s.slice(0, -1))) return true;
+    if (BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(s + '0')) return true;
+    return false;
+  }
 
   // Bảng tra cứu quy chuẩn Cổng Bộ theo 2 số đầu của dãy số thứ tự 6-7 số
   const MINISTRY_RULES = {
@@ -6003,9 +6014,9 @@ function initDossierSplitModule() {
 
     if (parts.length >= 3) {
       const seq = parts[parts.length - 1].trim();
-      // 4 chữ số: Cổng Tỉnh HOẶC Hộ kinh doanh (nếu thuộc 4 mã TTHC chỉ định)
+      // 4 chữ số: Cổng Tỉnh HOẶC Hộ kinh doanh (nếu thuộc các mã TTHC chỉ định)
       if (/^\d{4}$/.test(seq)) {
-        if (cleanTthc && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(cleanTthc)) {
+        if (cleanTthc && isBusinessHouseholdProcedure(cleanTthc)) {
           return {
             key: 'BUSINESS_HOUSEHOLD',
             name: 'Hộ kinh doanh',
@@ -6064,7 +6075,7 @@ function initDossierSplitModule() {
     if (match) {
       const seq = match[1];
       if (seq.length === 4) {
-        if (cleanTthc && BUSINESS_HOUSEHOLD_PROCEDURE_CODES.includes(cleanTthc)) {
+        if (cleanTthc && isBusinessHouseholdProcedure(cleanTthc)) {
           return {
             key: 'BUSINESS_HOUSEHOLD',
             name: 'Hộ kinh doanh',
@@ -6465,7 +6476,7 @@ function initDossierSplitModule() {
         const ruleText = g.isProvince
           ? 'Số thứ tự 4 chữ số'
           : (g.isBusinessHousehold
-              ? 'Đuôi 4 số & Mã TTHC (1.001266, 1.001570, 1.001612, 2.000720)'
+              ? 'Đuôi 4 số & Mã TTHC (1.001266, 1.00157/1.001570, 1.001612, 2.00072/2.000720)'
               : (g.prefix ? `Mã tiền tố ${g.prefix}xxxx (6-7 số)` : 'Khác'));
         const agencyText = g.isProvince
           ? 'Cổng DVC Tỉnh Đắk Lắk'
