@@ -1093,7 +1093,7 @@ body::before {
 .bar-rose { background-color: #e11d48; }
 
 .btn-detail-link {
-  display: none !important;
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
   background: none;
@@ -1105,10 +1105,6 @@ body::before {
   padding: 4px 0;
   border-top: 1px dashed var(--border-color);
   padding-top: 8px;
-}
-
-body.is-logged-in .btn-detail-link {
-  display: flex !important;
 }
 
 .btn-detail-link:hover {

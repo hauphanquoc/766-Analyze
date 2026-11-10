@@ -1,5 +1,15 @@
 [
   {
+    "timestamp": "2026-11-09T23:00:15.384Z",
+    "type": "SYNC",
+    "date": "2026-11-10",
+    "durationMs": 12595,
+    "totalScore": 81.28,
+    "classification": "Tốt",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
     "timestamp": "2026-11-09T02:28:22.091Z",
     "type": "SYNC",
     "date": "2026-11-09",
@@ -466,15 +476,5 @@
     "totalScore": 65.74,
     "classification": "Trung bình",
     "success": true
-  },
-  {
-    "timestamp": "2026-10-11T23:00:09.284Z",
-    "type": "SYNC",
-    "date": "2026-10-12",
-    "durationMs": 6805,
-    "totalScore": 65.53,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 116
   }
 ]

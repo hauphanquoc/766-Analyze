@@ -508,6 +508,15 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Tinh chỉnh thẻ thống kê trên thanh công cụ thành *Hộ kinh doanh: Các mã TTHC (Cột C)*.
     * Cập nhật sơ đồ đồ họa vector nhánh 1B hiển thị các mã bổ sung `1.00157(0)` và `2.00072(0)`.
 
+### 38. Mở công khai xem chi tiết số liệu & tiêu chí con Bộ chỉ số 766 (10/11/2026)
+* **Yêu cầu:** Tại chức năng *Bộ chỉ số 766*, mở công khai tính năng nhấn xem chi tiết số liệu/tiêu chí con (không yêu cầu người dùng phải đăng nhập tài khoản).
+* **Xử lý toàn diện:**
+  - **Giao diện Client (`public/app.js`):**
+    * Hàm dựng bảng đơn vị (`renderUnitsTable()`): Bỏ điều kiện kiểm tra đăng nhập `if (loggedIn)` khi sinh ô điểm số; tất cả người dùng (khách vãng lai và cán bộ) đều thấy ô điểm dạng tương tác (`score-clickable`) có hiệu ứng hover và icon mũi tên xem chi tiết.
+    * Các hàm mở Modal (`openMetricModal`, `openUnitMetricModal`, `openDedicatedPaymentModal`, `openDedicatedProgressModal`): Bỏ hoàn toàn ràng buộc `if (!isLoggedIn()) return;`.
+  - **Định dạng Stylesheet (`public/styles.css`):**
+    * Nút liên kết chi tiết dưới 6 thẻ chỉ số toàn tỉnh (`.btn-detail-link`): Chuyển sang hiển thị mặc định (`display: flex !important;`), không còn bị ẩn khi chưa đăng nhập.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
@@ -525,12 +534,12 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - Hoặc mở PowerShell/CMD gõ: `npm run sync`
   - Quá trình thu thập (cả điểm Đắk Lắk và điểm 34 tỉnh) sẽ hoàn tất sau khoảng 5 - 7 giây.
 
-### 3. Đăng nhập và tra cứu chi tiết tiêu chí
-* Nhấn nút **"Đăng nhập"** ở góc trên bên phải màn hình.
-* Nhập tài khoản:
+### 3. Tra cứu chi tiết tiêu chí & Đăng nhập
+* **Tra cứu công khai:** Mọi người dùng có thể nhấp trực tiếp vào bất kỳ con số điểm nào trên Bảng xếp hạng hoặc nút *"Chi tiết..."* trên 6 thẻ chỉ số toàn tỉnh để mở popup xem đầy đủ các tiêu chí con, tử số, mẫu số, tỷ lệ % và phân loại mà **không cần đăng nhập**.
+* **Đăng nhập hệ thống:** Dành cho Cán bộ / Quản trị viên để sử dụng các tiện ích nâng cao (Báo cáo nhanh, Quản lý tài khoản):
+  - Nhấn nút **"Đăng nhập"** ở góc trên bên phải màn hình.
   - `admin` / `Admin@766` (Quản trị viên)
   - `canbo` / `Canbo@766` (Cán bộ nghiệp vụ)
-* Sau khi đăng nhập, nhấp vào bất kỳ con số điểm nào trên bảng để xem chi tiết hồ sơ/tiêu chí con.
 
 ### 4. Tra cứu vị trí lưu trữ dữ liệu
 * **File số liệu từng ngày của tỉnh:** Nằm trong thư mục `data/snapshots/` (dạng `YYYY-MM-DD.json`).
