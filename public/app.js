@@ -9096,13 +9096,13 @@ async function loadDvcWardList() {
       <tr>
         <td colspan="7" class="users-loading-cell">
           <div class="users-spinner"></div>
-          <span>Đang tải danh mục DVC cấp xã từ CSDL TTHC Quốc gia...</span>
+          <span>Đang kết nối CSDL TTHC tải toàn bộ danh mục DVC cấp xã (tự động phân trang theo lastId)...</span>
         </td>
       </tr>
     `;
   }
 
-  showToast('Đang kết nối CSDL TTHC để tải danh mục DVC cấp xã...', 'info');
+  showToast('Đang kết nối CSDL TTHC để tải toàn bộ danh mục DVC cấp xã...', 'info');
 
   try {
     const localToken = localStorage.getItem('dvc766_token');
@@ -9115,13 +9115,14 @@ async function loadDvcWardList() {
       body: JSON.stringify({
         token: token,
         cookie: dvcWardState.cookie,
-        limit: 500,
+        limit: 200,
         filter: {
           administrativeLevels: ['ward'],
           issuingAgencyIds: [],
           applyDepartmentIds: []
         },
-        lastId: ''
+        lastId: '',
+        fetchAll: true
       })
     });
 
@@ -9145,7 +9146,9 @@ async function loadDvcWardList() {
       showToast('Cổng CSDL TTHC trả về danh sách rỗng.', 'warning');
     }
 
+    const totalReported = data.total || list.length;
     dvcWardState.items = list;
+    dvcWardState.totalReported = totalReported;
 
     // Lưu cache vào sessionStorage
     try {
@@ -9155,7 +9158,7 @@ async function loadDvcWardList() {
     // Nếu các phần tử có sẵn phí trong list, lưu vào feesMap
     list.forEach(item => {
       const fees = item.fees || item.fee;
-      if (Array.isArray(fees) && fees.length > 0) {
+      if (Array.isArray(fees)) {
         dvcWardState.feesMap[item.id] = {
           loaded: true,
           loading: false,
@@ -9169,7 +9172,7 @@ async function loadDvcWardList() {
     updateDvcWardStats();
     filterAndRenderDvcWardTable();
     updateCsdlTokenBadge('valid', 'Token hợp lệ (Đã kết nối)');
-    showToast(`Đã tải thành công ${list.length} DVC cấp xã từ CSDL TTHC!`, 'success');
+    showToast(`Đã tải toàn bộ ${list.length}/${totalReported} DVC cấp xã từ CSDL TTHC!`, 'success');
 
   } catch (err) {
     console.error('Lỗi loadDvcWardList:', err);
@@ -9242,11 +9245,10 @@ function updateDvcWardStats() {
     if (feeInfo && feeInfo.loaded) {
       loadedCount++;
       const fees = feeInfo.fees || [];
-      const hasPositiveFee = fees.some(f => Number(f.amount || 0) > 0);
-      if (hasPositiveFee) {
+      if (fees.length > 0) {
         hasFeeCount++;
       } else {
-        freeCount++;
+        freeCount++; // Đại diện cho "Không có cấu hình"
       }
     }
   });
@@ -9290,13 +9292,11 @@ function filterAndRenderDvcWardTable() {
     } else if (feeFilter === 'has_fee') {
       if (!feeInfo || !feeInfo.loaded) return false;
       const fees = feeInfo.fees || [];
-      const hasCost = fees.some(f => Number(f.amount || 0) > 0);
-      if (!hasCost) return false;
-    } else if (feeFilter === 'free') {
+      if (fees.length === 0) return false;
+    } else if (feeFilter === 'no_config' || feeFilter === 'free') {
       if (!feeInfo || !feeInfo.loaded) return false;
       const fees = feeInfo.fees || [];
-      const hasCost = fees.some(f => Number(f.amount || 0) > 0);
-      if (hasCost) return false;
+      if (fees.length > 0) return false;
     }
 
     return true;
@@ -9373,7 +9373,7 @@ function filterAndRenderDvcWardTable() {
           </div>
         `;
       } else {
-        feeHtml = `<span class="fee-badge-free">✓ 0 đ (Miễn phí)</span>`;
+        feeHtml = `<span class="fee-badge-item fee-badge-no-config" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 500;">Không có cấu hình</span>`;
       }
     } else {
       feeHtml = `
@@ -9711,8 +9711,12 @@ function renderDvcModalContent(item, detail) {
           </tbody>
         </table>
       ` : `
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; color: #166534; font-size: 13px;">
-          ✓ <strong>Thủ tục này Miễn phí hoàn toàn:</strong> Không có khoản phí hoặc lệ phí nào được cấu hình thu đối với thủ tục hành chính này.
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; color: #475569; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">ℹ️</span>
+          <div>
+            <strong style="color: #0f172a;">Không có cấu hình:</strong>
+            <p style="margin: 3px 0 0; color: #64748b;">Thủ tục hành chính này không có cấu hình khoản phí hoặc lệ phí nào trên Cơ sở dữ liệu TTHC Quốc gia (mảng fees rỗng).</p>
+          </div>
         </div>
       `}
     </div>
@@ -9816,10 +9820,10 @@ async function exportDvcWardToExcel() {
           });
           feeText = lines.join('\n');
           const hasCost = feeInfo.fees.some(f => Number(f.amount || 0) > 0);
-          feeStatus = hasCost ? 'Có thu phí' : 'Miễn phí (0đ)';
+          feeStatus = 'Có thu phí';
         } else {
-          feeText = '0 đ (Miễn phí)';
-          feeStatus = 'Miễn phí (0đ)';
+          feeText = 'Không có cấu hình';
+          feeStatus = 'Không có cấu hình';
         }
       }
 

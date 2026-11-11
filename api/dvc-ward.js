@@ -272,6 +272,32 @@ async function makeCsdlRequest(path, bearerToken, bodyPayload = {}, manualCookie
   });
 }
 
+/**
+ * Trích xuất danh sách bản ghi từ cấu trúc phản hồi API
+ */
+function extractListItems(res) {
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res?.data)) return res.data;
+  if (Array.isArray(res?.data?.data)) return res.data.data;
+  if (Array.isArray(res?.data?.list)) return res.data.list;
+  if (Array.isArray(res?.data?.items)) return res.data.items;
+  if (Array.isArray(res?.data?.results)) return res.data.results;
+  if (Array.isArray(res?.list)) return res.list;
+  if (Array.isArray(res?.items)) return res.items;
+  return [];
+}
+
+/**
+ * Trích xuất tổng số bản ghi (total) từ phản hồi API
+ */
+function extractTotalCount(res) {
+  if (typeof res?.total === 'number') return res.total;
+  if (typeof res?.data?.total === 'number') return res.data.total;
+  if (typeof res?.data?.totalCount === 'number') return res.data.totalCount;
+  if (typeof res?.totalCount === 'number') return res.totalCount;
+  return 0;
+}
+
 module.exports = async function handler(req, res) {
   // CORS configuration
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -372,26 +398,80 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // ACTION 2: LIST FORMALITIES FOR WARD
+    // ACTION 2: LIST FORMALITIES FOR WARD (TỰ ĐỘNG PHÂN TRANG QUA lastId ĐỂ LẤY TOÀN BỘ)
     if (action === 'list') {
-      const limit = Number(body.limit) || 500;
+      const pageSize = 200; // Cổng CSDL TTHC giới hạn tối đa 200 bản ghi mỗi lượt gọi
       const filter = body.filter || {
         administrativeLevels: ['ward'],
         issuingAgencyIds: [],
         applyDepartmentIds: []
       };
-      const lastId = body.lastId || '';
 
-      const listResult = await makeCsdlRequest(
-        '/api/v1/configuring/formality-case-v2/list-apply-by-admin',
-        bearerToken,
-        { limit, filter, lastId },
-        manualCookie
-      );
+      const fetchAll = body.fetchAll !== false; // Mặc định tự động lấy tất cả các record
+      let allItems = [];
+      let currentLastId = body.lastId || '';
+      let totalRecords = 0;
+      let pageIndex = 1;
+      const maxPages = 30; // Giới hạn an toàn tối đa 6000 bản ghi
+
+      while (pageIndex <= maxPages) {
+        const listResult = await makeCsdlRequest(
+          '/api/v1/configuring/formality-case-v2/list-apply-by-admin',
+          bearerToken,
+          {
+            limit: pageSize,
+            filter: filter,
+            lastId: currentLastId
+          },
+          manualCookie
+        );
+
+        const pageItems = extractListItems(listResult);
+        const reportedTotal = extractTotalCount(listResult);
+        if (reportedTotal > 0) {
+          totalRecords = reportedTotal;
+        }
+
+        if (pageItems.length === 0) {
+          break;
+        }
+
+        allItems.push(...pageItems);
+
+        // Lấy ID của phần tử cuối cùng để làm lastId cho lượt tiếp theo
+        const lastItem = pageItems[pageItems.length - 1];
+        const nextLastId = lastItem?.id || lastItem?._id || lastItem?.caseId;
+
+        // Dừng nếu:
+        // 1. Không có nextLastId hoặc trùng currentLastId
+        // 2. Đã lấy đủ số lượng total (nếu total > 0)
+        // 3. Số bản ghi trả về ở trang này ít hơn pageSize (đã tới trang cuối cùng)
+        // 4. Chỉ yêu cầu lấy 1 trang (fetchAll === false)
+        if (
+          !nextLastId ||
+          nextLastId === currentLastId ||
+          (totalRecords > 0 && allItems.length >= totalRecords) ||
+          pageItems.length < pageSize ||
+          !fetchAll
+        ) {
+          break;
+        }
+
+        currentLastId = nextLastId;
+        pageIndex++;
+
+        // Nghỉ 150ms giữa các trang để an toàn với WAF
+        await new Promise(r => setTimeout(r, 150));
+      }
+
+      console.log(`[DVC Ward API] Đã tải xong danh mục DVC cấp xã: Tổng ${allItems.length}/${totalRecords || allItems.length} thủ tục qua ${pageIndex} trang.`);
 
       return res.status(200).json({
         success: true,
-        data: listResult
+        total: totalRecords || allItems.length,
+        count: allItems.length,
+        pages: pageIndex,
+        data: allItems
       });
     }
 
