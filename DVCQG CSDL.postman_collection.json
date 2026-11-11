@@ -1,0 +1,215 @@
+{
+  "info": {
+    "_postman_id": "196e0531-9b36-492c-8347-7d1048c3ac7e",
+    "name": "DVCQG CSDL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "206828",
+    "_collection_link": "https://go.postman.co/collection/206828-196e0531-9b36-492c-8347-7d1048c3ac7e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Danh sách DVC Cấp xã",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9,vi;q=0.8,en-GB;q=0.7,pl;q=0.6,vi-VN;q=0.5,pl-PL;q=0.4"
+          },
+          {
+            "key": "Authorization",
+            "value": "{{bearer_token_05sf}}UQmlNU0lzSW1semN5STZJbWgwZEhCek9pOHZjM052TG5adVpXbGtMbWR2ZGk1MmJpOWhkWFJvTDNKbFlXeHRjeTlqYVhScGVtVnVJaXdpWVhWa0lqb2lZV05qYjNWdWRDSXNJbk4xWWlJNklqQTNZemsyTkdObUxXUXhNV010TkRKbE1pMDVPR1U0TFRSaVpqWmxOVFU0WTJZek5TSXNJblI1Y0NJNklrSmxZWEpsY2lJc0ltRjZjQ0k2SW5OemJ5MWpNVEl0WTNOa2JDMTNaV0lpTENKemFXUWlPaUkxTldWaU0yUmtaQzA0TWpreUxUUmpZelV0T0daaU1pMWhNV001TkRoalpHVmlaakFpTENKaFkzSWlPaUl4SWl3aVlXeHNiM2RsWkMxdmNtbG5hVzV6SWpwYkltaDBkSEJ6T2k4dlkzTmtiSFIwYUdNdVpHbGphSFoxWTI5dVp5NW5iM1l1ZG00aVhTd2ljbVZoYkcxZllXTmpaWE56SWpwN0luSnZiR1Z6SWpwYkltUmxabUYxYkhRdGNtOXNaWE10WTJsMGFYcGxiaUlzSW05bVpteHBibVZmWVdOalpYTnpJaXdpZFcxaFgyRjFkR2h2Y21sNllYUnBiMjRpWFgwc0luSmxjMjkxY21ObFgyRmpZMlZ6Y3lJNmV5SmhZMk52ZFc1MElqcDdJbkp2YkdWeklqcGJJbTFoYm1GblpTMWhZMk52ZFc1MElpd2liV0Z1WVdkbExXRmpZMjkxYm5RdGJHbHVhM01pTENKMmFXVjNMWEJ5YjJacGJHVWlYWDE5TENKelkyOXdaU0k2SW05d1pXNXBaQ0JsYldGcGJDQndjbTltYVd4bElISnZiR1Z6SUhkbFlpMXZjbWxuYVc1eklpd2laVzFoYVd4ZmRtVnlhV1pwWldRaU9tWmhiSE5sTENKdVlXMWxJam9pVUVoQlRpQlJWZUc3a0VNZ1NPRzZyRlVpTENKd2NtVm1aWEp5WldSZmRYTmxjbTVoYldVaU9pSXdOall3T1RFd01EQTNOemtpTENKbmFYWmxibDl1WVcxbElqb2lVRWhCVGlJc0ltWmhiV2xzZVY5dVlXMWxJam9pVVZYaHU1QkRJRWpodXF4VkluMC5nOWcwb3ZNZGlISUo3dGhtMjdIZnc1a2JnRUxYNUNibHVKejVyc18yd0RxWG5rWGV6aS1hSDJlaFFCWUNEY2FXMGgyZ3lsajhzWkNFcGpLZ2ZjM0Jwc1NHOUxCZ0lublotVlJTNFpBa1RSd2labW1KV3U5bXJ1bHllZjlSanFDWjZ5X1VUT2hDRGxXMFJxLVpUTVBuSXJVX29pMjdyYWFNOVZVMTBfS2VuWGYyaWdCWmpIUTlJc1JuTHdObmhhWmlzZnVGdXltN2FaNXZERDQwN1d5dk1ySVNIVEhub3lCd0g4MXl1d19xR3lMQXhIdmxWQ0FnYUl5a3ZtZktkRmVlVjdMYzkyd3psOENwMVd6dHc3NXFnMS1ia2tTS0JMa0NiamV0NjBXYW5SclRSZjNtVklyR3ZLREFIcktkQVQteDNxTWN4eG5CeVk3RzBQalo0dWEweWciLCJyZWZyZXNoVG9rZW4iOiJleUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0lnT2lBaVNsZFVJaXdpYTJsa0lpQTZJQ0l3T1RZME16RXdNUzFtTm1NMUxUUTRNalV0T0RabU1TMDNPR1kzWm1Nd1pEVmhZek1pZlEuZXlKbGVIQWlPakUzT1RRek9EUTFOREVzSW1saGRDSTZNVGM1TkRNNE1qYzBNU3dpYW5ScElqb2lOVGRqTldWbE1ERXRNVEZrTXkwME9EY3hMV0ZpTVdRdFpHRmpNMk5pWWpoalptSmpJaXdpYVhOeklqb2lhSFIwY0hNNkx5OXpjMjh1ZG01bGFXUXVaMjkyTG5adUwyRjFkR2d2Y21WaGJHMXpMMk5wZEdsNlpXNGlMQ0poZFdRaU9pSm9kSFJ3Y3pvdkwzTnpieTUyYm1WcFpDNW5iM1l1ZG00dllYVjBhQzl5WldGc2JYTXZZMmwwYVhwbGJpSXNJbk4xWWlJNklqQTNZemsyTkdObUxXUXhNV010TkRKbE1pMDVPR1U0TFRSaVpqWmxOVFU0WTJZek5TSXNJblI1Y0NJNklsSmxabkpsYzJnaUxDSmhlbkFpT2lKemMyOHRZekV5TFdOelpHd3RkMlZpSWl3aWMybGtJam9pTlRWbFlqTmtaR1F0T0RJNU1pMDBZMk0xTFRobVlqSXRZVEZqT1RRNFkyUmxZbVl3SWl3aWMyTnZjR1VpT2lKdmNHVnVhV1FnWlcxaGFXd2djSEp2Wm1sc1pTQmlZWE5wWXlCelpYSjJhV05sWDJGalkyOTFiblFnWVdOeUlISnZiR1Z6SUhkbFlpMXZjbWxuYVc1ekluMC5GbTdTYjlraEh3VEZQM0I3b1hZZllGOW1SRk90dGNXTEJrQVJBWC1CQm9ZUTR6TVRQSF9Tc0ltM2dCc1dPb1VqeEtvYmctQjdaTkxPdHN1Y1FTVEhBQSIsImV4cGlyZXNJbiI6MTc5NDM4NDYwMzg2MS4wLCJyZWZyZXNoRXhwaXJlc0luIjoxNzk0Mzg0NjAzODYyLjAsInRva2VuVHlwZSI6IkJlYXJlciIsImlkVG9rZW4iOiJleUpoYkdjaU9pSlNVekkxTmlJc0luUjVjQ0lnT2lBaVNsZFVJaXdpYTJsa0lpQTZJQ0pSVURjd1JIbHpkVjlVWlRaTllXMVBhMjlVZDBkSFMxVkxUamN6YjFSQlgwZEdUMmd4Y2tkMWRXVkZJbjAuZXlKbGVIQWlPakUzT1RRek9EUTFOREVzSW1saGRDSTZNVGM1TkRNNE1qYzBNU3dpYW5ScElqb2lZalpsT1Rsa09UWXRPVE01TUMwME16ZGxMVGhsWVRrdE5qY3pZakppTW1ZMU4yVXdJaXdpYVhOeklqb2lhSFIwY0hNNkx5OXpjMjh1ZG01bGFXUXVaMjkyTG5adUwyRjFkR2d2Y21WaGJHMXpMMk5wZEdsNlpXNGlMQ0poZFdRaU9pSnpjMjh0WXpFeUxXTnpaR3d0ZDJWaUlpd2ljM1ZpSWpvaU1EZGpPVFkwWTJZdFpERXhZeTAwTW1VeUxUazRaVGd0TkdKbU5tVTFOVGhqWmpNMUlpd2lkSGx3SWpvaVNVUWlMQ0poZW5BaU9pSnpjMjh0WXpFeUxXTnpaR3d0ZDJWaUlpd2ljMmxrSWpvaU5UVmxZak5rWkdRdE9ESTVNaTAwWTJNMUxUaG1Zakl0WVRGak9UUTRZMlJsWW1Zd0lpd2lZWFJmYUdGemFDSTZJazF0TURkTlRFSTBWRE5TTFVWV2RYWkpRMWxxVjNjaUxDSmhZM0lpT2lJeElpd2laVzFoYVd4ZmRtVnlhV1pwWldRaU9tWmhiSE5sTENKdVlXMWxJam9pVUVoQlRpQlJWZUc3a0VNZ1NPRzZyRlVpTENKd2NtVm1aWEp5WldSZmRYTmxjbTVoYldVaU9pSXdOall3T1RFd01EQTNOemtpTENKbmFYWmxibDl1WVcxbElqb2lVRWhCVGlJc0ltWmhiV2xzZVY5dVlXMWxJam9pVVZYaHU1QkRJRWpodXF4VkluMC5OdllqY1JXUjU0MmltRWZLdDBpLWY2NU1xQUFUNVlmNlM1NlhCM3ZFaC1TTUU4YVlPVjhlSjlKLWQ5TzJwY1JyWXpvMm1YYXlPX3hEcWQzLTBYdml1MVVlUzh2dE1jejVnMUdFa3kzRFZBenhOeXJMV2VvajNmTkMwbDVSdkRnalBBRUZYdVVoS3lzand6UHFHYzNQY2RDSnEzWjlEcnk1aUZwTldJSm5zYkIybHVxb3FzczFuTkdfbzlEZ09JWUJ0Ri15VmxmbjVjV09VYTd0OGNsOGdqWkhKSTFQTE1DTGZoVms0em4tclJSM0FSNHVFR1hCSnVyTXdJNUtQQWFzVHBSYkhzMXhJYmczNHJ6d2ptS0hNZ0FJa0UxZkFNcmJnQW9hSUptSU9rMlVpWi1NcDJmVDhxRDNuY0x0UHNJbzc3ajRJMmp1eHJNT2RWZk1jaXY3VVEifSwiZXhwIjoxNzk0MzkwMDAzLCJpYXQiOjE3OTQzODI4MDN9.B8DBtEOkboq2viFDprb_qvKTyD6C1MnWgH1VPqBBS4c"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Is-Configuring-Request",
+            "value": "true"
+          },
+          {
+            "key": "Origin",
+            "value": "https://csdltthc.dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://csdltthc.dichvucong.gov.vn/ap-dung-dich-vu-cong?filter.administrativeLevels=ward&limit=10"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 ^(Windows NT 10.0; Win64; x64^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/157.0.0.0 Safari/537.36 Edg/157.0.0.0"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Not-A.Brand\";v=\"99\", \"Microsoft Edge\";v=\"157\", \"Chromium\";v=\"157\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "6934fd253e7e742df09eff6c5a8969fe=e40b713442248a4cd82581ee24600e46; BIGipServerPOOL-HTTPS-OCP-DMZ-D01=222362378.47873.0000; 00a11c3f6517414aac796eb4b373f1cf=cb3cf88051eb200fc1825dd6b04cce47; 92c5784ba130b3d682ef42b99c0af2e8=745ca59854112168c177d70f9415b7da; cd813b059b82768cd098df72c825bdba=fbb9af06421c202431b990f94af6ccc0; ttqg_dmz019526c1=014b634ae13079e7b46ec766f06926460f61d21054ecff970ff2d763c2235cebe0b550e83015cd963dc3611110f42c8ce21876214a9580ccd2c7279cfd1d6d2cba5ac5bd076bc7cef89e54aaeb83211274cc6a7366550a8050d5115b18889dcf869083ebbc1431922535cbb28bf8ed1f2b75bcaf9d420822696c01e543f5061491b5c52f900b282126d2e1199893d1076805603160; ttqg_dmz014fd818=014b634ae1a3f22c8ef2058ce0713bfcd07b559963bff3c87b28773bac83cd1c951a4888fbaf9e29d373c67bb64b6cc9206e561203"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"limit\": 500,\r\n    \"filter\": {\r\n        \"administrativeLevels\": [\r\n            \"ward\"\r\n        ],\r\n        \"issuingAgencyIds\": [],\r\n        \"applyDepartmentIds\": []\r\n    },\r\n    \"lastId\": \"\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://csdltthc.dichvucong.gov.vn/api/v1/configuring/formality-case-v2/list-apply-by-admin",
+          "protocol": "https",
+          "host": [
+            "csdltthc",
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "configuring",
+            "formality-case-v2",
+            "list-apply-by-admin"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cấu hình DVC",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json;odata=verbose"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "en-US,en;q=0.9,vi;q=0.8,en-GB;q=0.7,pl;q=0.6,vi-VN;q=0.5,pl-PL;q=0.4"
+          },
+          {
+            "key": "Authorization",
+            "value": "{{bearer_token_05sf}}UQmlNU0lzSW1semN5STZJbWgwZEhCek9pOHZjM052TG5adVpXbGtMbWR2ZGk1MmJpOWhkWFJvTDNKbFlXeHRjeTlqYVhScGVtVnVJaXdpWVhWa0lqb2lZV05qYjNWdWRDSXNJbk4xWWlJNklqQTNZemsyTkdObUxXUXhNV010TkRKbE1pMDVPR1U0TFRSaVpqWmxOVFU0WTJZek5TSXNJblI1Y0NJNklrSmxZWEpsY2lJc0ltRjZjQ0k2SW5OemJ5MWpNVEl0WTNOa2JDMTNaV0lpTENKemFXUWlPaUkxTldWaU0yUmtaQzA0TWpreUxUUmpZelV0T0daaU1pMWhNV001TkRoalpHVmlaakFpTENKaFkzSWlPaUl4SWl3aVlXeHNiM2RsWkMxdmNtbG5hVzV6SWpwYkltaDBkSEJ6T2k4dlkzTmtiSFIwYUdNdVpHbGphSFoxWTI5dVp5NW5iM1l1ZG00aVhTd2ljbVZoYkcxZllXTmpaWE56SWpwN0luSnZiR1Z6SWpwYkltUmxabUYxYkhRdGNtOXNaWE10WTJsMGFYcGxiaUlzSW05bVpteHBibVZmWVdOalpYTnpJaXdpZFcxaFgyRjFkR2h2Y21sNllYUnBiMjRpWFgwc0luSmxjMjkxY21ObFgyRmpZMlZ6Y3lJNmV5SmhZMk52ZFc1MElqcDdJbkp2YkdWeklqcGJJbTFoYm1GblpTMWhZMk52ZFc1MElpd2liV0Z1WVdkbExXRmpZMjkxYm5RdGJHbHVhM01pTENKMmFXVjNMWEJ5YjJacGJHVWlYWDE5TENKelkyOXdaU0k2SW05d1pXNXBaQ0JsYldGcGJDQndjbTltYVd4bElISnZiR1Z6SUhkbFlpMXZjbWxuYVc1eklpd2laVzFoYVd4ZmRtVnlhV1pwWldRaU9tWmhiSE5sTENKdVlXMWxJam9pVUVoQlRpQlJWZUc3a0VNZ1NPRzZyRlVpTENKd2NtVm1aWEp5WldSZmRYTmxjbTVoYldVaU9pSXdOall3T1RFd01EQTNOemtpTENKbmFYWmxibDl1WVcxbElqb2lVRWhCVGlJc0ltWmhiV2xzZVY5dVlXMWxJam9pVVZYaHU1QkRJRWpodXF4VkluMC5nOWcwb3ZNZGlISUo3dGhtMjdIZnc1a2JnRUxYNUNibHVKejVyc18yd0RxWG5rWGV6aS1hSDJlaFFCWUNEY2FXMGgyZ3lsajhzWkNFcGpLZ2ZjM0Jwc1NHOUxCZ0lublotVlJTNFpBa1RSd2labW1KV3U5bXJ1bHllZjlSanFDWjZ5X1VUT2hDRGxXMFJxLVpUTVBuSXJVX29pMjdyYWFNOVZVMTBfS2VuWGYyaWdCWmpIUTlJc1JuTHdObmhhWmlzZnVGdXltN2FaNXZERDQwN1d5dk1ySVNIVEhub3lCd0g4MXl1d19xR3lMQXhIdmxWQ0FnYUl5a3ZtZktkRmVlVjdMYzkyd3psOENwMVd6dHc3NXFnMS1ia2tTS0JMa0NiamV0NjBXYW5SclRSZjNtVklyR3ZLREFIcktkQVQteDNxTWN4eG5CeVk3RzBQalo0dWEweWciLCJyZWZyZXNoVG9rZW4iOiJleUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0lnT2lBaVNsZFVJaXdpYTJsa0lpQTZJQ0l3T1RZME16RXdNUzFtTm1NMUxUUTRNalV0T0RabU1TMDNPR1kzWm1Nd1pEVmhZek1pZlEuZXlKbGVIQWlPakUzT1RRek9EUTFOREVzSW1saGRDSTZNVGM1TkRNNE1qYzBNU3dpYW5ScElqb2lOVGRqTldWbE1ERXRNVEZrTXkwME9EY3hMV0ZpTVdRdFpHRmpNMk5pWWpoalptSmpJaXdpYVhOeklqb2lhSFIwY0hNNkx5OXpjMjh1ZG01bGFXUXVaMjkyTG5adUwyRjFkR2d2Y21WaGJHMXpMMk5wZEdsNlpXNGlMQ0poZFdRaU9pSm9kSFJ3Y3pvdkwzTnpieTUyYm1WcFpDNW5iM1l1ZG00dllYVjBhQzl5WldGc2JYTXZZMmwwYVhwbGJpSXNJbk4xWWlJNklqQTNZemsyTkdObUxXUXhNV010TkRKbE1pMDVPR1U0TFRSaVpqWmxOVFU0WTJZek5TSXNJblI1Y0NJNklsSmxabkpsYzJnaUxDSmhlbkFpT2lKemMyOHRZekV5TFdOelpHd3RkMlZpSWl3aWMybGtJam9pTlRWbFlqTmtaR1F0T0RJNU1pMDBZMk0xTFRobVlqSXRZVEZqT1RRNFkyUmxZbVl3SWl3aWMyTnZjR1VpT2lKdmNHVnVhV1FnWlcxaGFXd2djSEp2Wm1sc1pTQmlZWE5wWXlCelpYSjJhV05sWDJGalkyOTFiblFnWVdOeUlISnZiR1Z6SUhkbFlpMXZjbWxuYVc1ekluMC5GbTdTYjlraEh3VEZQM0I3b1hZZllGOW1SRk90dGNXTEJrQVJBWC1CQm9ZUTR6TVRQSF9Tc0ltM2dCc1dPb1VqeEtvYmctQjdaTkxPdHN1Y1FTVEhBQSIsImV4cGlyZXNJbiI6MTc5NDM4NDYwMzg2MS4wLCJyZWZyZXNoRXhwaXJlc0luIjoxNzk0Mzg0NjAzODYyLjAsInRva2VuVHlwZSI6IkJlYXJlciIsImlkVG9rZW4iOiJleUpoYkdjaU9pSlNVekkxTmlJc0luUjVjQ0lnT2lBaVNsZFVJaXdpYTJsa0lpQTZJQ0pSVURjd1JIbHpkVjlVWlRaTllXMVBhMjlVZDBkSFMxVkxUamN6YjFSQlgwZEdUMmd4Y2tkMWRXVkZJbjAuZXlKbGVIQWlPakUzT1RRek9EUTFOREVzSW1saGRDSTZNVGM1TkRNNE1qYzBNU3dpYW5ScElqb2lZalpsT1Rsa09UWXRPVE01TUMwME16ZGxMVGhsWVRrdE5qY3pZakppTW1ZMU4yVXdJaXdpYVhOeklqb2lhSFIwY0hNNkx5OXpjMjh1ZG01bGFXUXVaMjkyTG5adUwyRjFkR2d2Y21WaGJHMXpMMk5wZEdsNlpXNGlMQ0poZFdRaU9pSnpjMjh0WXpFeUxXTnpaR3d0ZDJWaUlpd2ljM1ZpSWpvaU1EZGpPVFkwWTJZdFpERXhZeTAwTW1VeUxUazRaVGd0TkdKbU5tVTFOVGhqWmpNMUlpd2lkSGx3SWpvaVNVUWlMQ0poZW5BaU9pSnpjMjh0WXpFeUxXTnpaR3d0ZDJWaUlpd2ljMmxrSWpvaU5UVmxZak5rWkdRdE9ESTVNaTAwWTJNMUxUaG1Zakl0WVRGak9UUTRZMlJsWW1Zd0lpd2lZWFJmYUdGemFDSTZJazF0TURkTlRFSTBWRE5TTFVWV2RYWkpRMWxxVjNjaUxDSmhZM0lpT2lJeElpd2laVzFoYVd4ZmRtVnlhV1pwWldRaU9tWmhiSE5sTENKdVlXMWxJam9pVUVoQlRpQlJWZUc3a0VNZ1NPRzZyRlVpTENKd2NtVm1aWEp5WldSZmRYTmxjbTVoYldVaU9pSXdOall3T1RFd01EQTNOemtpTENKbmFYWmxibDl1WVcxbElqb2lVRWhCVGlJc0ltWmhiV2xzZVY5dVlXMWxJam9pVVZYaHU1QkRJRWpodXF4VkluMC5OdllqY1JXUjU0MmltRWZLdDBpLWY2NU1xQUFUNVlmNlM1NlhCM3ZFaC1TTUU4YVlPVjhlSjlKLWQ5TzJwY1JyWXpvMm1YYXlPX3hEcWQzLTBYdml1MVVlUzh2dE1jejVnMUdFa3kzRFZBenhOeXJMV2VvajNmTkMwbDVSdkRnalBBRUZYdVVoS3lzand6UHFHYzNQY2RDSnEzWjlEcnk1aUZwTldJSm5zYkIybHVxb3FzczFuTkdfbzlEZ09JWUJ0Ri15VmxmbjVjV09VYTd0OGNsOGdqWkhKSTFQTE1DTGZoVms0em4tclJSM0FSNHVFR1hCSnVyTXdJNUtQQWFzVHBSYkhzMXhJYmczNHJ6d2ptS0hNZ0FJa0UxZkFNcmJnQW9hSUptSU9rMlVpWi1NcDJmVDhxRDNuY0x0UHNJbzc3ajRJMmp1eHJNT2RWZk1jaXY3VVEifSwiZXhwIjoxNzk0MzkwMDAzLCJpYXQiOjE3OTQzODI4MDN9.B8DBtEOkboq2viFDprb_qvKTyD6C1MnWgH1VPqBBS4c"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Is-Configuring-Request",
+            "value": "true"
+          },
+          {
+            "key": "Origin",
+            "value": "https://csdltthc.dichvucong.gov.vn"
+          },
+          {
+            "key": "Referer",
+            "value": "https://csdltthc.dichvucong.gov.vn/ap-dung-dich-vu-cong/cau-hinh-don-vi/019e765b-3568-746a-baed-ccf7b0ed2ceb"
+          },
+          {
+            "key": "Sec-Fetch-Dest",
+            "value": "empty"
+          },
+          {
+            "key": "Sec-Fetch-Mode",
+            "value": "cors"
+          },
+          {
+            "key": "Sec-Fetch-Site",
+            "value": "same-origin"
+          },
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 ^(Windows NT 10.0; Win64; x64^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/157.0.0.0 Safari/537.36 Edg/157.0.0.0"
+          },
+          {
+            "key": "sec-ch-ua",
+            "value": "\"Not-A.Brand\";v=\"99\", \"Microsoft Edge\";v=\"157\", \"Chromium\";v=\"157\""
+          },
+          {
+            "key": "sec-ch-ua-mobile",
+            "value": "?0"
+          },
+          {
+            "key": "sec-ch-ua-platform",
+            "value": "\"Windows\""
+          },
+          {
+            "key": "Cookie",
+            "value": "6934fd253e7e742df09eff6c5a8969fe=e40b713442248a4cd82581ee24600e46; BIGipServerPOOL-HTTPS-OCP-DMZ-D01=222362378.47873.0000; 00a11c3f6517414aac796eb4b373f1cf=cb3cf88051eb200fc1825dd6b04cce47; 92c5784ba130b3d682ef42b99c0af2e8=745ca59854112168c177d70f9415b7da; cd813b059b82768cd098df72c825bdba=fbb9af06421c202431b990f94af6ccc0; ttqg_dmz019526c1=014b634ae13079e7b46ec766f06926460f61d21054ecff970ff2d763c2235cebe0b550e83015cd963dc3611110f42c8ce21876214a9580ccd2c7279cfd1d6d2cba5ac5bd076bc7cef89e54aaeb83211274cc6a7366550a8050d5115b18889dcf869083ebbc1431922535cbb28bf8ed1f2b75bcaf9d420822696c01e543f5061491b5c52f900b282126d2e1199893d1076805603160; ttqg_dmz014fd818=014b634ae15039165a889d7d992345a5bcc3d6dde5c036c9651dc397dacc61728f0b4a5a3dc9d6bc3e743699ebd03108935c2d0406"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"id\":\"019e765b-3568-746a-baed-ccf7b0ed2ceb\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://csdltthc.dichvucong.gov.vn/api/v1/configuring/formality-case/get-by-admin",
+          "protocol": "https",
+          "host": [
+            "csdltthc",
+            "dichvucong",
+            "gov",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "configuring",
+            "formality-case",
+            "get-by-admin"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "bearer_token_05sf",
+      "secret": true
+    }
+  ]
+}

@@ -10911,3 +10911,407 @@ kbd {
   opacity: 1;
 }
 
+/* ==========================================================================
+   DANH MỤC DVC CẤP XÃ (CSDL TTHC QUỐC GIA - ADMIN)
+   ========================================================================== */
+.dvc-token-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 18px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.dvc-token-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dvc-token-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.dvc-token-icon {
+  font-size: 16px;
+}
+
+.dvc-token-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.dvc-token-badge.valid {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.dvc-token-badge.invalid {
+  background: #fff1f2;
+  color: #e11d48;
+  border-color: #fecdd3;
+}
+
+.dvc-token-badge.saved {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.dvc-token-help-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.dvc-token-help-btn:hover {
+  background: #dbeafe;
+}
+
+.dvc-token-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dvc-token-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+
+.dvc-token-input {
+  width: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  padding: 9px 64px 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.dvc-token-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.dvc-token-toggle-pwd,
+.dvc-token-clear-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #64748b;
+  font-size: 13px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.dvc-token-toggle-pwd {
+  right: 10px;
+}
+
+.dvc-token-clear-btn {
+  right: 36px;
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+.dvc-token-clear-btn:hover,
+.dvc-token-toggle-pwd:hover {
+  color: #0f172a;
+}
+
+/* Hướng dẫn F12 */
+.dvc-token-guide-box {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.dvc-guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #92400e;
+}
+
+.dvc-guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.dvc-guide-step .step-num {
+  background: #f59e0b;
+  color: #ffffff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.dvc-guide-step code {
+  background: #fef3c7;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-weight: 600;
+  color: #78350f;
+}
+
+/* Thanh Tiến độ Batch Tải phí */
+.dvc-batch-progress-box {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+}
+
+.dvc-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.dvc-progress-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dvc-progress-bar-bg {
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.dvc-progress-bar-fill {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  height: 100%;
+  transition: width 0.25s ease-out;
+}
+
+/* Empty & Notice States */
+.dvc-empty-notice {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+/* Badges for Fees in Table */
+.fee-list-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fee-badge-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.fee-badge-item.fee-money {
+  background: #fefce8;
+  border-color: #fef08a;
+  color: #854d0e;
+}
+
+.fee-badge-item strong {
+  font-weight: 700;
+}
+
+.fee-badge-free {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fee-badge-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.col-actions-dvc {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.btn-action-dvc {
+  padding: 5px 8px;
+  font-size: 12px;
+  border-radius: 5px;
+  line-height: 1;
+}
+
+/* Modal Chi tiết Cấu hình DVC */
+.modal-card-dvc {
+  max-width: 880px;
+  width: 95%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dvc-detail-section {
+  margin-bottom: 20px;
+}
+
+.dvc-detail-sec-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 6px;
+}
+
+.dvc-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.dvc-detail-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dvc-detail-cell label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.dvc-detail-cell span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.dvc-fee-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dvc-fee-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.dvc-fee-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+.dvc-fee-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dvc-raw-json-wrap {
+  margin-top: 12px;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+

@@ -54,6 +54,14 @@
       "dest": "/api/users.js?action=$1"
     },
     {
+      "src": "/api/dvc-ward",
+      "dest": "/api/dvc-ward.js"
+    },
+    {
+      "src": "/api/dvc-ward/(.*)",
+      "dest": "/api/dvc-ward.js?action=$1"
+    },
+    {
       "src": "/766donvi",
       "dest": "/api/766donvi.js"
     },

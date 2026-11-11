@@ -24,6 +24,7 @@ const provincesHandler = require('./api/provinces');
 const authHandler = require('./api/auth');
 const unit766Handler = require('./api/766donvi');
 const usersHandler = require('./api/users');
+const dvcWardHandler = require('./api/dvc-ward');
 
 app.all('/api/cron', (req, res) => cronHandler(req, res));
 app.all('/api/crawl', (req, res) => crawlHandler(req, res));
@@ -34,6 +35,8 @@ app.all('/api/auth', (req, res) => authHandler(req, res));
 app.all('/api/auth/:action', (req, res) => authHandler(req, res));
 app.all('/api/users', (req, res) => usersHandler(req, res));
 app.all('/api/users/:action', (req, res) => usersHandler(req, res));
+app.all('/api/dvc-ward', (req, res) => dvcWardHandler(req, res));
+app.all('/api/dvc-ward/:action', (req, res) => dvcWardHandler(req, res));
 
 // Zalo Bot API: Tra cứu điểm 766 theo đơn vị
 app.all('/766donvi', (req, res) => unit766Handler(req, res));

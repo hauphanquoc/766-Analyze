@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initProcedureQrModule();
   initQuickReportModule();
   initUsersManagementModule();
+  initDvcWardModule();
   initGuidesModule();
   loadInitialData();
 });
@@ -4530,11 +4531,15 @@ function updateAuthUI() {
     }
   }
 
-  // Quản lý hiển thị Menu Quản lý người dùng (CHỈ DÀNH RIÊNG CHO QUẢN TRỊ VIÊN ADMIN)
+  // Quản lý hiển thị Menu Quản lý người dùng & Danh mục DVC cấp xã (CHỈ DÀNH RIÊNG CHO QUẢN TRỊ VIÊN ADMIN)
   const adminGroup = document.getElementById('sidebar-group-admin');
   const navUsersItem = document.getElementById('nav-item-users-mgmt');
   const usersAuthLock = document.getElementById('users-auth-lock-card');
   const usersWorkspace = document.getElementById('users-workspace-wrap');
+
+  const navDvcWardItem = document.getElementById('nav-item-dvc-ward');
+  const dvcWardAuthLock = document.getElementById('dvc-ward-auth-lock-card');
+  const dvcWardWorkspace = document.getElementById('dvc-ward-workspace-wrap');
 
   if (adminGroup) {
     adminGroup.style.display = isAdmin ? 'block' : 'none';
@@ -4547,6 +4552,26 @@ function updateAuthUI() {
   }
   if (usersWorkspace) {
     usersWorkspace.style.display = isAdmin ? 'block' : 'none';
+  }
+
+  if (navDvcWardItem) {
+    navDvcWardItem.style.display = isAdmin ? 'inline-block' : 'none';
+  }
+  if (dvcWardAuthLock) {
+    dvcWardAuthLock.style.display = isAdmin ? 'none' : 'block';
+  }
+  if (dvcWardWorkspace) {
+    dvcWardWorkspace.style.display = isAdmin ? 'block' : 'none';
+  }
+
+  // Nếu không phải admin nhưng đang ở tab Admin thì chuyển về tab Cổng thông tin / 766
+  if (!isAdmin) {
+    const usersTabPane = document.getElementById('tab-content-users-mgmt');
+    const dvcWardTabPane = document.getElementById('tab-content-dvc-ward');
+    if ((usersTabPane && usersTabPane.classList.contains('active')) || (dvcWardTabPane && dvcWardTabPane.classList.contains('active'))) {
+      const defaultTabBtn = document.getElementById('tab-btn-portals') || document.getElementById('tab-btn-766');
+      if (defaultTabBtn) defaultTabBtn.click();
+    }
   }
 
   // Quản lý hiển thị Menu Hướng dẫn (Đang phát triển) - ẨN MENU KHI CHƯA ĐĂNG NHẬP (GIỐNG BÁO CÁO NHANH)
@@ -8720,6 +8745,1117 @@ function fallbackCopySimple(text) {
     showToast('Vui lòng bôi đen và nhấn Ctrl+C để sao chép', 'warning');
   }
   document.body.removeChild(ta);
+}
+
+/* ==========================================================================
+   MODULE: DANH MỤC DVC CẤP XÃ (CSDL TTHC DVCQG - QUYỀN ADMIN)
+   ========================================================================== */
+const dvcWardState = {
+  token: localStorage.getItem('csdl_bearer_token') || '',
+  items: [],
+  filteredItems: [],
+  feesMap: {}, // { [id]: { loaded: boolean, loading: boolean, fees: Array, raw: Object, error: string } }
+  searchTerm: '',
+  selectedCategory: 'all',
+  selectedFeeFilter: 'all',
+  isBatchRunning: false,
+  stopBatchRequested: false,
+  currentModalItem: null
+};
+
+// Chuẩn hóa token nhập vào
+function sanitizeCsdlToken(raw) {
+  if (!raw) return '';
+  let str = String(raw).trim();
+  if (str.startsWith('{') && str.endsWith('}')) {
+    try {
+      const obj = JSON.parse(str);
+      str = obj.access_token || obj.idToken || obj.token || str;
+    } catch (e) {}
+  }
+  str = str.replace(/^{{\s*[\w.-]+\s*}}/, '').trim();
+  if (str.toLowerCase().startsWith('bearer ')) {
+    str = str.slice(7).trim();
+  }
+  return str;
+}
+
+// Định dạng tiền tệ VND
+function formatDvcVnd(amount) {
+  if (amount === undefined || amount === null || amount === '') return '0 đ';
+  const n = Number(amount);
+  if (isNaN(n)) return String(amount);
+  if (n === 0) return '0 đ';
+  return new Intl.NumberFormat('vi-VN').format(n) + ' đ';
+}
+
+/**
+ * Khởi tạo module Danh mục DVC cấp xã
+ */
+function initDvcWardModule() {
+  const tokenInput = document.getElementById('dvc-ward-token-input');
+  const btnSaveToken = document.getElementById('btn-save-ward-token');
+  const btnTestToken = document.getElementById('btn-test-ward-token');
+  const btnFetchList = document.getElementById('btn-fetch-dvc-ward');
+  const btnToggleVis = document.getElementById('btn-toggle-ward-token-vis');
+  const btnClearToken = document.getElementById('btn-clear-ward-token');
+  const btnToggleGuide = document.getElementById('btn-toggle-token-guide');
+  const btnToggleTokenCard = document.getElementById('btn-toggle-token-card');
+  const btnBatchFees = document.getElementById('btn-batch-fetch-fees');
+  const btnStopBatch = document.getElementById('btn-stop-batch-fees');
+  const btnExportExcel = document.getElementById('btn-export-dvc-ward-excel');
+  const searchInput = document.getElementById('dvc-ward-search-input');
+  const searchClear = document.getElementById('dvc-ward-search-clear');
+  const filterCat = document.getElementById('dvc-ward-filter-cat');
+  const filterFee = document.getElementById('dvc-ward-filter-fee');
+  const detailModal = document.getElementById('dvc-ward-detail-modal');
+
+  // Khởi tạo giá trị token nếu đã có trong localStorage
+  if (tokenInput && dvcWardState.token) {
+    tokenInput.value = dvcWardState.token;
+    updateCsdlTokenBadge('saved', 'Đã lưu token (Sẵn sàng)');
+    if (btnClearToken) btnClearToken.style.display = 'inline-block';
+  }
+
+  // Lắng nghe sự kiện gõ ô token
+  if (tokenInput) {
+    tokenInput.addEventListener('input', () => {
+      if (btnClearToken) {
+        btnClearToken.style.display = tokenInput.value ? 'inline-block' : 'none';
+      }
+    });
+  }
+
+  // Nút Ẩn/Hiện token
+  if (btnToggleVis && tokenInput) {
+    btnToggleVis.addEventListener('click', () => {
+      const isPassword = tokenInput.type === 'password';
+      tokenInput.type = isPassword ? 'text' : 'password';
+      btnToggleVis.textContent = isPassword ? '🔒' : '👁️';
+      btnToggleVis.title = isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu';
+    });
+  }
+
+  // Nút Xóa token
+  if (btnClearToken && tokenInput) {
+    btnClearToken.addEventListener('click', () => {
+      tokenInput.value = '';
+      dvcWardState.token = '';
+      localStorage.removeItem('csdl_bearer_token');
+      updateCsdlTokenBadge('', 'Chưa cấu hình');
+      btnClearToken.style.display = 'none';
+      showToast('Đã xóa Bearer Token khỏi trình duyệt.', 'info');
+    });
+  }
+
+  // Nút Lưu token
+  if (btnSaveToken) {
+    btnSaveToken.addEventListener('click', saveCsdlToken);
+  }
+
+  // Nút Kiểm tra kết nối token
+  if (btnTestToken) {
+    btnTestToken.addEventListener('click', testCsdlToken);
+  }
+
+  // Nút Lấy dữ liệu DVC
+  if (btnFetchList) {
+    btnFetchList.addEventListener('click', loadDvcWardList);
+  }
+
+  // Nút Bật/Tắt hướng dẫn F12
+  if (btnToggleGuide) {
+    btnToggleGuide.addEventListener('click', () => {
+      const guideBox = document.getElementById('dvc-token-guide-box');
+      if (guideBox) {
+        guideBox.style.display = guideBox.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  }
+
+  // Nút Thu gọn/Mở rộng khung cấu hình token
+  if (btnToggleTokenCard) {
+    btnToggleTokenCard.addEventListener('click', () => {
+      const tokenBox = document.getElementById('dvc-ward-token-box');
+      if (tokenBox) {
+        tokenBox.style.display = tokenBox.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  }
+
+  // Nút Tải phí tất cả
+  if (btnBatchFees) {
+    btnBatchFees.addEventListener('click', startBatchFetchFees);
+  }
+
+  // Nút Dừng tải phí hàng loạt
+  if (btnStopBatch) {
+    btnStopBatch.addEventListener('click', () => {
+      dvcWardState.stopBatchRequested = true;
+      const textEl = document.getElementById('dvc-batch-progress-text');
+      if (textEl) textEl.textContent = 'Đang dừng tiến trình nạp phí...';
+    });
+  }
+
+  // Nút Xuất Excel
+  if (btnExportExcel) {
+    btnExportExcel.addEventListener('click', exportDvcWardToExcel);
+  }
+
+  // Ô Tìm kiếm
+  if (searchInput) {
+    let debounceTimer = null;
+    searchInput.addEventListener('input', () => {
+      const val = searchInput.value.trim();
+      dvcWardState.searchTerm = val;
+      if (searchClear) searchClear.style.display = val ? 'inline-block' : 'none';
+
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        filterAndRenderDvcWardTable();
+      }, 250);
+    });
+  }
+
+  if (searchClear && searchInput) {
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      dvcWardState.searchTerm = '';
+      searchClear.style.display = 'none';
+      filterAndRenderDvcWardTable();
+    });
+  }
+
+  // Dropdown lọc lĩnh vực
+  if (filterCat) {
+    filterCat.addEventListener('change', () => {
+      dvcWardState.selectedCategory = filterCat.value;
+      filterAndRenderDvcWardTable();
+    });
+  }
+
+  // Dropdown lọc trạng thái phí
+  if (filterFee) {
+    filterFee.addEventListener('change', () => {
+      dvcWardState.selectedFeeFilter = filterFee.value;
+      filterAndRenderDvcWardTable();
+    });
+  }
+
+  // Đóng modal khi bấm ra ngoài backdrop
+  if (detailModal) {
+    detailModal.addEventListener('click', (e) => {
+      if (e.target === detailModal) closeDvcDetailModal();
+    });
+  }
+
+  // Khôi phục dữ liệu đã tải từ sessionStorage nếu có
+  try {
+    const cached = sessionStorage.getItem('csdl_ward_list_cache');
+    if (cached) {
+      const items = JSON.parse(cached);
+      if (Array.isArray(items) && items.length > 0) {
+        dvcWardState.items = items;
+        populateDvcCategoryDropdown();
+        updateDvcWardStats();
+        filterAndRenderDvcWardTable();
+      }
+    }
+  } catch (e) {}
+}
+
+/**
+ * Cập nhật badge trạng thái Token
+ */
+function updateCsdlTokenBadge(statusClass, label) {
+  const badge = document.getElementById('dvc-token-status-badge');
+  if (!badge) return;
+  badge.className = `dvc-token-badge ${statusClass || ''}`.trim();
+  badge.textContent = label;
+}
+
+/**
+ * Lưu token vào localStorage
+ */
+function saveCsdlToken() {
+  const tokenInput = document.getElementById('dvc-ward-token-input');
+  if (!tokenInput) return;
+  const raw = tokenInput.value;
+  const clean = sanitizeCsdlToken(raw);
+
+  if (!clean) {
+    showToast('Vui lòng nhập hoặc dán Bearer Token trước khi lưu!', 'warning');
+    tokenInput.focus();
+    return;
+  }
+
+  dvcWardState.token = clean;
+  tokenInput.value = clean;
+  localStorage.setItem('csdl_bearer_token', clean);
+  updateCsdlTokenBadge('saved', 'Đã lưu token (Sẵn sàng)');
+  showToast('Đã lưu Bearer Token CSDL TTHC vào trình duyệt thành công!', 'success');
+}
+
+/**
+ * Kiểm tra kết nối token với máy chủ CSDL TTHC
+ */
+async function testCsdlToken() {
+  const tokenInput = document.getElementById('dvc-ward-token-input');
+  const token = sanitizeCsdlToken(tokenInput?.value || dvcWardState.token);
+
+  if (!token) {
+    showToast('Vui lòng dán Bearer Token để kiểm tra kết nối!', 'warning');
+    if (tokenInput) tokenInput.focus();
+    return;
+  }
+
+  updateCsdlTokenBadge('', 'Đang kiểm tra...');
+  showToast('Đang kiểm tra kết nối tới CSDL TTHC DVCQG...', 'info');
+
+  try {
+    const localToken = localStorage.getItem('dvc766_token');
+    const res = await fetch('/api/dvc-ward/test-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
+      },
+      body: JSON.stringify({ token })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      dvcWardState.token = token;
+      localStorage.setItem('csdl_bearer_token', token);
+      updateCsdlTokenBadge('valid', 'Token hợp lệ (Kết nối tốt)');
+      showToast('Xác thực Token thành công! Kết nối CSDL TTHC hoạt động tốt.', 'success');
+    } else {
+      updateCsdlTokenBadge('invalid', 'Token hết hạn / Không hợp lệ');
+      showToast(data.error || 'Token không hợp lệ hoặc đã hết hạn.', 'error');
+    }
+  } catch (err) {
+    updateCsdlTokenBadge('invalid', 'Lỗi kết nối');
+    showToast(`Không thể kết nối CSDL TTHC: ${err.message}`, 'error');
+  }
+}
+
+/**
+ * Gọi API tải danh sách DVC cấp xã
+ */
+async function loadDvcWardList() {
+  const token = dvcWardState.token || sanitizeCsdlToken(document.getElementById('dvc-ward-token-input')?.value);
+
+  if (!token) {
+    showToast('Vui lòng dán và Lưu Bearer Token trước khi lấy dữ liệu DVC!', 'warning');
+    const tokenInput = document.getElementById('dvc-ward-token-input');
+    if (tokenInput) tokenInput.focus();
+    return;
+  }
+
+  const tbody = document.getElementById('dvc-ward-table-tbody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="users-loading-cell">
+          <div class="users-spinner"></div>
+          <span>Đang tải danh mục DVC cấp xã từ CSDL TTHC Quốc gia...</span>
+        </td>
+      </tr>
+    `;
+  }
+
+  showToast('Đang kết nối CSDL TTHC để tải danh mục DVC cấp xã...', 'info');
+
+  try {
+    const localToken = localStorage.getItem('dvc766_token');
+    const res = await fetch('/api/dvc-ward/list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
+      },
+      body: JSON.stringify({
+        token: token,
+        limit: 500,
+        filter: {
+          administrativeLevels: ['ward'],
+          issuingAgencyIds: [],
+          applyDepartmentIds: []
+        },
+        lastId: ''
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Lỗi khi gọi API danh mục DVC cấp xã.');
+    }
+
+    // Trích xuất mảng dữ liệu linh hoạt
+    let list = [];
+    const root = data.data;
+    if (Array.isArray(root)) list = root;
+    else if (Array.isArray(root?.data)) list = root.data;
+    else if (Array.isArray(root?.data?.data)) list = root.data.data;
+    else if (Array.isArray(root?.data?.list)) list = root.data.list;
+    else if (Array.isArray(root?.data?.items)) list = root.data.items;
+    else if (Array.isArray(root?.list)) list = root.list;
+    else if (Array.isArray(root?.items)) list = root.items;
+
+    if (!list || list.length === 0) {
+      showToast('Cổng CSDL TTHC trả về danh sách rỗng.', 'warning');
+    }
+
+    dvcWardState.items = list;
+
+    // Lưu cache vào sessionStorage
+    try {
+      sessionStorage.setItem('csdl_ward_list_cache', JSON.stringify(list));
+    } catch (e) {}
+
+    // Nếu các phần tử có sẵn phí trong list, lưu vào feesMap
+    list.forEach(item => {
+      const fees = item.fees || item.fee;
+      if (Array.isArray(fees) && fees.length > 0) {
+        dvcWardState.feesMap[item.id] = {
+          loaded: true,
+          loading: false,
+          fees: fees,
+          raw: item
+        };
+      }
+    });
+
+    populateDvcCategoryDropdown();
+    updateDvcWardStats();
+    filterAndRenderDvcWardTable();
+    updateCsdlTokenBadge('valid', 'Token hợp lệ (Đã kết nối)');
+    showToast(`Đã tải thành công ${list.length} DVC cấp xã từ CSDL TTHC!`, 'success');
+
+  } catch (err) {
+    console.error('Lỗi loadDvcWardList:', err);
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="users-loading-cell" style="color: #dc2626;">
+            <div style="font-size: 24px; margin-bottom: 6px;">⚠️</div>
+            <strong>Không thể tải dữ liệu DVC cấp xã</strong>
+            <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">${escapeHtml(err.message)}</p>
+          </td>
+        </tr>
+      `;
+    }
+    showToast(err.message, 'error');
+  }
+}
+
+/**
+ * Đổ danh sách lĩnh vực vào dropdown bộ lọc
+ */
+function populateDvcCategoryDropdown() {
+  const filterCat = document.getElementById('dvc-ward-filter-cat');
+  if (!filterCat) return;
+
+  const currentVal = filterCat.value;
+  const categories = new Set();
+  dvcWardState.items.forEach(item => {
+    const name = item.category?.name || item.categoryName || item.field;
+    if (name) categories.add(name);
+  });
+
+  const sorted = Array.from(categories).sort((a, b) => a.localeCompare(b, 'vi'));
+  filterCat.innerHTML = '<option value="all">Tất cả lĩnh vực (' + sorted.length + ')</option>';
+
+  sorted.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    filterCat.appendChild(opt);
+  });
+
+  if (categories.has(currentVal)) {
+    filterCat.value = currentVal;
+  }
+}
+
+/**
+ * Cập nhật số liệu trên các chip thống kê
+ */
+function updateDvcWardStats() {
+  const statTotal = document.getElementById('stat-ward-total');
+  const statCats = document.getElementById('stat-ward-categories');
+  const statHasFee = document.getElementById('stat-ward-has-fee');
+  const statFree = document.getElementById('stat-ward-free');
+  const statLoaded = document.getElementById('stat-ward-loaded-fees');
+
+  const total = dvcWardState.items.length;
+  const categories = new Set();
+
+  let hasFeeCount = 0;
+  let freeCount = 0;
+  let loadedCount = 0;
+
+  dvcWardState.items.forEach(item => {
+    const catName = item.category?.name || item.categoryName;
+    if (catName) categories.add(catName);
+
+    const feeInfo = dvcWardState.feesMap[item.id];
+    if (feeInfo && feeInfo.loaded) {
+      loadedCount++;
+      const fees = feeInfo.fees || [];
+      const hasPositiveFee = fees.some(f => Number(f.amount || 0) > 0);
+      if (hasPositiveFee) {
+        hasFeeCount++;
+      } else {
+        freeCount++;
+      }
+    }
+  });
+
+  if (statTotal) statTotal.textContent = total ? total.toLocaleString('vi-VN') : '--';
+  if (statCats) statCats.textContent = categories.size ? categories.size : '--';
+  if (statHasFee) statHasFee.textContent = loadedCount ? hasFeeCount.toLocaleString('vi-VN') : '--';
+  if (statFree) statFree.textContent = loadedCount ? freeCount.toLocaleString('vi-VN') : '--';
+  if (statLoaded) statLoaded.textContent = `${loadedCount} / ${total || '--'}`;
+}
+
+/**
+ * Lọc và hiển thị dữ liệu bảng DVC cấp xã
+ */
+function filterAndRenderDvcWardTable() {
+  const search = (dvcWardState.searchTerm || '').toLowerCase();
+  const selectedCat = dvcWardState.selectedCategory;
+  const feeFilter = dvcWardState.selectedFeeFilter;
+
+  const filtered = dvcWardState.items.filter(item => {
+    // 1. Tìm kiếm văn bản
+    if (search) {
+      const code = (item.code || '').toLowerCase();
+      const formCode = (item.formalityCode || '').toLowerCase();
+      const formName = (item.formalityName || '').toLowerCase();
+      const catName = (item.category?.name || '').toLowerCase();
+      const match = code.includes(search) || formCode.includes(search) || formName.includes(search) || catName.includes(search);
+      if (!match) return false;
+    }
+
+    // 2. Lọc lĩnh vực
+    if (selectedCat !== 'all') {
+      const catName = item.category?.name || item.categoryName;
+      if (catName !== selectedCat) return false;
+    }
+
+    // 3. Lọc mức phí
+    const feeInfo = dvcWardState.feesMap[item.id];
+    if (feeFilter === 'not_loaded') {
+      if (feeInfo && feeInfo.loaded) return false;
+    } else if (feeFilter === 'has_fee') {
+      if (!feeInfo || !feeInfo.loaded) return false;
+      const fees = feeInfo.fees || [];
+      const hasCost = fees.some(f => Number(f.amount || 0) > 0);
+      if (!hasCost) return false;
+    } else if (feeFilter === 'free') {
+      if (!feeInfo || !feeInfo.loaded) return false;
+      const fees = feeInfo.fees || [];
+      const hasCost = fees.some(f => Number(f.amount || 0) > 0);
+      if (hasCost) return false;
+    }
+
+    return true;
+  });
+
+  dvcWardState.filteredItems = filtered;
+
+  // Cập nhật badge số lượng
+  const countBadge = document.getElementById('dvc-ward-count-badge');
+  if (countBadge) {
+    if (dvcWardState.items.length === 0) {
+      countBadge.textContent = 'Chưa có dữ liệu';
+    } else {
+      countBadge.textContent = `Hiển thị ${filtered.length} / ${dvcWardState.items.length} DVC`;
+    }
+  }
+
+  // Render bảng
+  const tbody = document.getElementById('dvc-ward-table-tbody');
+  if (!tbody) return;
+
+  if (dvcWardState.items.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="users-loading-cell">
+          <div class="dvc-empty-notice">
+            <span style="font-size: 28px;">📋</span>
+            <p style="margin: 8px 0 4px; font-weight: 600; color: #334155;">Chưa có dữ liệu DVC cấp xã</p>
+            <span style="color: #64748b; font-size: 13px;">Vui lòng nhập Bearer Token và nhấn <strong>"Lấy dữ liệu DVC"</strong> để tải danh mục từ CSDL TTHC Quốc gia.</span>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="users-loading-cell">
+          <div class="dvc-empty-notice">
+            <span style="font-size: 24px;">🔍</span>
+            <p style="margin: 8px 0 4px; font-weight: 600; color: #334155;">Không tìm thấy DVC nào phù hợp</p>
+            <span style="color: #64748b; font-size: 13px;">Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ chọn các bộ lọc.</span>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const rowsHtml = filtered.map((item, idx) => {
+    const feeInfo = dvcWardState.feesMap[item.id];
+    let feeHtml = '';
+
+    if (feeInfo?.loading) {
+      feeHtml = `
+        <span class="fee-badge-pending">
+          <span class="spinner-small" style="width:12px;height:12px;display:inline-block;"></span>
+          Đang tải phí...
+        </span>
+      `;
+    } else if (feeInfo?.loaded) {
+      const fees = feeInfo.fees || [];
+      if (fees.length > 0) {
+        feeHtml = `
+          <div class="fee-list-wrap">
+            ${fees.map(f => {
+              const name = escapeHtml(f.feeName || f.name || 'Phí');
+              const amt = formatDvcVnd(f.amount);
+              const isMoney = Number(f.amount || 0) > 0;
+              return `<span class="fee-badge-item ${isMoney ? 'fee-money' : ''}"><strong>${name}:</strong> ${amt}</span>`;
+            }).join('')}
+          </div>
+        `;
+      } else {
+        feeHtml = `<span class="fee-badge-free">✓ 0 đ (Miễn phí)</span>`;
+      }
+    } else {
+      feeHtml = `
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="fee-badge-pending">Chưa tải phí</span>
+          <button type="button" class="btn btn-sm btn-outline btn-action-dvc" onclick="fetchSingleDvcFee('${item.id}')" title="Tải chi tiết phí">
+            Tải phí
+          </button>
+        </div>
+      `;
+    }
+
+    return `
+      <tr data-item-id="${escapeHtml(item.id || '')}">
+        <td class="col-stt" style="text-align: center; color: #64748b;">${idx + 1}</td>
+        <td class="col-code"><span class="user-code-pill">${escapeHtml(item.formalityCode || '--')}</span></td>
+        <td class="col-name"><strong style="color: #0f172a;">${escapeHtml(item.formalityName || '--')}</strong></td>
+        <td class="col-dvc-code"><code>${escapeHtml(item.code || '--')}</code></td>
+        <td class="col-cat"><span class="user-unit-chip">${escapeHtml(item.category?.name || item.categoryName || 'Chung')}</span></td>
+        <td class="col-fees">${feeHtml}</td>
+        <td class="col-actions col-actions-dvc" style="text-align: center;">
+          <button type="button" class="btn btn-sm btn-secondary btn-action-dvc" onclick="openDvcDetailModal('${item.id}')" title="Xem chi tiết cấu hình DVC">
+            🔍 Xem
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  tbody.innerHTML = rowsHtml;
+}
+
+/**
+ * Tải chi tiết phí cho 1 thủ tục cụ thể
+ */
+async function fetchSingleDvcFee(id) {
+  if (!id) return;
+  const token = dvcWardState.token || sanitizeCsdlToken(document.getElementById('dvc-ward-token-input')?.value);
+  if (!token) {
+    showToast('Vui lòng lưu Bearer Token trước khi tải phí.', 'warning');
+    return;
+  }
+
+  dvcWardState.feesMap[id] = { loading: true, loaded: false };
+  filterAndRenderDvcWardTable();
+
+  try {
+    const localToken = localStorage.getItem('dvc766_token');
+    const res = await fetch('/api/dvc-ward/detail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
+      },
+      body: JSON.stringify({ token, id })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Lỗi khi gọi API chi tiết cấu hình DVC.');
+    }
+
+    const detail = data.data?.data || data.data || {};
+    const fees = Array.isArray(detail.fees) ? detail.fees : (Array.isArray(detail.fee) ? detail.fee : []);
+
+    dvcWardState.feesMap[id] = {
+      loaded: true,
+      loading: false,
+      fees: fees,
+      raw: detail
+    };
+
+    updateDvcWardStats();
+    filterAndRenderDvcWardTable();
+    showToast('Đã tải thành công thông tin phí thủ tục.', 'success');
+
+  } catch (err) {
+    console.error('Lỗi fetchSingleDvcFee:', err);
+    dvcWardState.feesMap[id] = {
+      loaded: false,
+      loading: false,
+      error: err.message
+    };
+    filterAndRenderDvcWardTable();
+    showToast(err.message, 'error');
+  }
+}
+
+/**
+ * Tự động tải phí cho tất cả các thủ tục theo batch
+ */
+async function startBatchFetchFees() {
+  if (dvcWardState.isBatchRunning) return;
+  const token = dvcWardState.token || sanitizeCsdlToken(document.getElementById('dvc-ward-token-input')?.value);
+
+  if (!token) {
+    showToast('Vui lòng lưu Bearer Token trước khi tải phí.', 'warning');
+    return;
+  }
+
+  // Danh sách các thủ tục chưa tải phí
+  const pendingItems = dvcWardState.items.filter(item => !dvcWardState.feesMap[item.id]?.loaded);
+  if (pendingItems.length === 0) {
+    showToast('Tất cả các thủ tục đã được nạp dữ liệu phí!', 'info');
+    return;
+  }
+
+  const progressBox = document.getElementById('dvc-ward-batch-progress');
+  const progressText = document.getElementById('dvc-batch-progress-text');
+  const progressFill = document.getElementById('dvc-batch-progress-fill');
+
+  if (progressBox) progressBox.style.display = 'block';
+
+  dvcWardState.isBatchRunning = true;
+  dvcWardState.stopBatchRequested = false;
+
+  const total = pendingItems.length;
+  let done = 0;
+  const batchSize = 10;
+
+  showToast(`Bắt đầu tải phí cho ${total} thủ tục...`, 'info');
+
+  const localToken = localStorage.getItem('dvc766_token');
+
+  for (let i = 0; i < pendingItems.length; i += batchSize) {
+    if (dvcWardState.stopBatchRequested) {
+      showToast('Đã dừng tiến trình nạp phí theo yêu cầu.', 'warning');
+      break;
+    }
+
+    const chunk = pendingItems.slice(i, i + batchSize);
+    const chunkIds = chunk.map(it => it.id);
+
+    try {
+      // Gọi endpoint batch-details
+      const res = await fetch('/api/dvc-ward/batch-details', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
+        },
+        body: JSON.stringify({ token, ids: chunkIds })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.results) {
+        chunkIds.forEach(id => {
+          const detailRes = data.results[id];
+          if (detailRes) {
+            const detail = detailRes.data || detailRes;
+            const fees = Array.isArray(detail.fees) ? detail.fees : (Array.isArray(detail.fee) ? detail.fee : []);
+            dvcWardState.feesMap[id] = {
+              loaded: true,
+              loading: false,
+              fees: fees,
+              raw: detail
+            };
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Batch chunk error:', err);
+    }
+
+    done += chunk.length;
+    const pct = Math.min(100, Math.round((done / total) * 100));
+
+    if (progressText) progressText.textContent = `Đang nạp dữ liệu phí: ${done} / ${total} thủ tục (${pct}%)`;
+    if (progressFill) progressFill.style.width = `${pct}%`;
+
+    // Cập nhật giao diện nhẹ
+    updateDvcWardStats();
+    filterAndRenderDvcWardTable();
+  }
+
+  dvcWardState.isBatchRunning = false;
+  if (progressBox) progressBox.style.display = 'none';
+
+  updateDvcWardStats();
+  filterAndRenderDvcWardTable();
+  showToast(`Đã hoàn thành nạp dữ liệu phí cho ${done} thủ tục!`, 'success');
+}
+
+/**
+ * Mở modal xem chi tiết cấu hình DVC
+ */
+async function openDvcDetailModal(id) {
+  const modal = document.getElementById('dvc-ward-detail-modal');
+  const titleEl = document.getElementById('dvc-modal-formality-name');
+  const bodyContent = document.getElementById('dvc-modal-body-content');
+  if (!modal || !bodyContent) return;
+
+  const item = dvcWardState.items.find(x => x.id === id);
+  if (!item) {
+    showToast('Không tìm thấy thông tin thủ tục.', 'error');
+    return;
+  }
+
+  dvcWardState.currentModalItem = item;
+  if (titleEl) titleEl.textContent = item.formalityName || 'Chi tiết cấu hình DVC';
+  modal.style.display = 'flex';
+
+  const feeInfo = dvcWardState.feesMap[id];
+  if (feeInfo && feeInfo.raw) {
+    renderDvcModalContent(item, feeInfo.raw);
+  } else {
+    bodyContent.innerHTML = `
+      <div class="users-loading-cell">
+        <div class="users-spinner"></div>
+        <span>Đang kết nối CSDL TTHC để tải chi tiết cấu hình...</span>
+      </div>
+    `;
+
+    const token = dvcWardState.token || sanitizeCsdlToken(document.getElementById('dvc-ward-token-input')?.value);
+    if (!token) {
+      bodyContent.innerHTML = `
+        <div class="users-loading-cell" style="color: #b45309;">
+          <p>Chưa có token để tải chi tiết từ máy chủ. Hiển thị thông tin tổng quan:</p>
+        </div>
+      `;
+      renderDvcModalContent(item, item);
+      return;
+    }
+
+    try {
+      const localToken = localStorage.getItem('dvc766_token');
+      const res = await fetch('/api/dvc-ward/detail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
+        },
+        body: JSON.stringify({ token, id })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Lỗi tải chi tiết cấu hình.');
+      }
+      const detail = data.data?.data || data.data || {};
+      const fees = Array.isArray(detail.fees) ? detail.fees : (Array.isArray(detail.fee) ? detail.fee : []);
+      dvcWardState.feesMap[id] = { loaded: true, loading: false, fees, raw: detail };
+      updateDvcWardStats();
+      renderDvcModalContent(item, detail);
+    } catch (err) {
+      bodyContent.innerHTML = `
+        <div class="users-loading-cell" style="color: #dc2626;">
+          <p>⚠️ ${escapeHtml(err.message)}</p>
+        </div>
+      `;
+    }
+  }
+}
+
+/**
+ * Đóng modal chi tiết
+ */
+function closeDvcDetailModal() {
+  const modal = document.getElementById('dvc-ward-detail-modal');
+  if (modal) modal.style.display = 'none';
+  dvcWardState.currentModalItem = null;
+}
+
+/**
+ * Render nội dung Modal Chi tiết DVC
+ */
+function renderDvcModalContent(item, detail) {
+  const bodyContent = document.getElementById('dvc-modal-body-content');
+  if (!bodyContent) return;
+
+  const fees = Array.isArray(detail.fees) ? detail.fees : (Array.isArray(detail.fee) ? detail.fee : []);
+  const jsonStr = JSON.stringify(detail, null, 2);
+
+  bodyContent.innerHTML = `
+    <!-- Section 1: Thông tin tổng quan -->
+    <div class="dvc-detail-section">
+      <div class="dvc-detail-sec-title">
+        <span>📋 Thông tin Thủ tục & Áp dụng</span>
+      </div>
+      <div class="dvc-detail-grid">
+        <div class="dvc-detail-cell">
+          <label>Mã thủ tục</label>
+          <span>${escapeHtml(item.formalityCode || detail.formalityCode || '--')}</span>
+        </div>
+        <div class="dvc-detail-cell">
+          <label>Mã Dịch vụ công</label>
+          <span><code>${escapeHtml(item.code || detail.code || '--')}</code></span>
+        </div>
+        <div class="dvc-detail-cell">
+          <label>Tên lĩnh vực</label>
+          <span>${escapeHtml(item.category?.name || detail.category?.name || 'Chung')}</span>
+        </div>
+        <div class="dvc-detail-cell">
+          <label>Cấp hành chính</label>
+          <span>Cấp xã / phường / thị trấn (Ward)</span>
+        </div>
+        <div class="dvc-detail-cell">
+          <label>Thời hạn giải quyết</label>
+          <span>${escapeHtml(detail.processingDuration || detail.duration || 'Theo quy định hiện hành')}</span>
+        </div>
+        <div class="dvc-detail-cell">
+          <label>ID cấu hình</label>
+          <span style="font-family: monospace; font-size: 11px;">${escapeHtml(item.id || '--')}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Bảng Danh mục Phí & Lệ phí -->
+    <div class="dvc-detail-section">
+      <div class="dvc-detail-sec-title">
+        <span>💰 Cấu hình Phí & Lệ phí (${fees.length} khoản)</span>
+      </div>
+      ${fees.length > 0 ? `
+        <table class="dvc-fee-table">
+          <thead>
+            <tr>
+              <th style="width: 45px; text-align: center;">STT</th>
+              <th style="min-width: 220px;">Tên khoản phí / lệ phí</th>
+              <th style="width: 140px; text-align: right;">Mức thu</th>
+              <th style="width: 110px;">Đơn vị tính</th>
+              <th>Mô tả / Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${fees.map((f, i) => `
+              <tr>
+                <td style="text-align: center; color: #64748b;">${i + 1}</td>
+                <td><strong>${escapeHtml(f.feeName || f.name || 'Phí / Lệ phí')}</strong></td>
+                <td style="text-align: right; font-weight: 700; color: ${Number(f.amount || 0) > 0 ? '#b45309' : '#059669'};">
+                  ${formatDvcVnd(f.amount)}
+                </td>
+                <td>${escapeHtml(f.unit || f.currency || 'VNĐ')}</td>
+                <td style="color: #64748b; font-size: 12px;">${escapeHtml(f.description || f.note || '--')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      ` : `
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; color: #166534; font-size: 13px;">
+          ✓ <strong>Thủ tục này Miễn phí hoàn toàn:</strong> Không có khoản phí hoặc lệ phí nào được cấu hình thu đối với thủ tục hành chính này.
+        </div>
+      `}
+    </div>
+
+    <!-- Section 3: JSON Dữ liệu gốc -->
+    <div class="dvc-detail-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span class="dvc-detail-sec-title" style="margin: 0; border: none;">⚙️ Dữ liệu JSON CSDL TTHC</span>
+        <button type="button" class="btn btn-sm btn-outline" onclick="copyTextToClipboard(JSON.stringify(dvcWardState.feesMap['${item.id}']?.raw || {}, null, 2))" style="font-size: 11px; padding: 3px 8px;">
+          Sao chép JSON
+        </button>
+      </div>
+      <pre class="dvc-raw-json-wrap">${escapeHtml(jsonStr)}</pre>
+    </div>
+  `;
+}
+
+/**
+ * Xuất dữ liệu danh mục DVC cấp xã ra Excel
+ */
+async function exportDvcWardToExcel() {
+  if (!dvcWardState.items.length) {
+    showToast('Chưa có dữ liệu DVC cấp xã để xuất Excel.', 'warning');
+    return;
+  }
+  if (typeof window.ExcelJS === 'undefined') {
+    showToast('Thư viện ExcelJS chưa tải xong. Vui lòng thử lại sau giây lát.', 'warning');
+    return;
+  }
+
+  showToast('Đang khởi tạo file Excel Danh mục DVC cấp xã...', 'info');
+
+  try {
+    const wb = new window.ExcelJS.Workbook();
+    wb.creator = 'Hệ thống Quản lý DVC 766';
+    wb.created = new Date();
+
+    const ws = wb.addWorksheet('DVC Cấp xã', {
+      views: [{ showGridLines: true }]
+    });
+
+    // Tiêu đề lớn
+    ws.mergeCells('A1:G1');
+    const titleRow = ws.getCell('A1');
+    titleRow.value = 'DANH MỤC DỊCH VỤ CÔNG CẤP XÃ (CƠ SỞ DỮ LIỆU TTHC QUỐC GIA)';
+    titleRow.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FF1E3A8A' } };
+    titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    ws.getRow(1).height = 30;
+
+    // Phụ đề
+    ws.mergeCells('A2:G2');
+    const subRow = ws.getCell('A2');
+    const dateStr = new Date().toLocaleDateString('vi-VN');
+    subRow.value = `Phạm vi áp dụng: Cấp xã/phường/thị trấn • Ngày xuất: ${dateStr} • Tổng số: ${dvcWardState.items.length} thủ tục`;
+    subRow.font = { name: 'Arial', size: 10, italic: true, color: { argb: 'FF475569' } };
+    subRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    ws.getRow(2).height = 20;
+
+    // Header bảng tại dòng 4
+    const headers = [
+      'STT',
+      'Mã thủ tục',
+      'Tên thủ tục hành chính',
+      'Mã DVC',
+      'Tên lĩnh vực',
+      'Khoản phí / Lệ phí cấu hình',
+      'Trạng thái thu phí'
+    ];
+    const headerRow = ws.addRow(headers);
+    headerRow.height = 28;
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1D4ED8' }
+      };
+      cell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF94A3B8' } },
+        bottom: { style: 'thin', color: { argb: 'FF94A3B8' } },
+        left: { style: 'thin', color: { argb: 'FF94A3B8' } },
+        right: { style: 'thin', color: { argb: 'FF94A3B8' } }
+      };
+    });
+
+    // Đổ dữ liệu
+    const itemsToExport = dvcWardState.filteredItems.length ? dvcWardState.filteredItems : dvcWardState.items;
+
+    itemsToExport.forEach((item, idx) => {
+      const feeInfo = dvcWardState.feesMap[item.id];
+      let feeText = 'Chưa tải thông tin phí';
+      let feeStatus = 'Chưa nạp';
+
+      if (feeInfo && feeInfo.loaded) {
+        if (feeInfo.fees && feeInfo.fees.length > 0) {
+          const lines = feeInfo.fees.map(f => {
+            const name = f.feeName || f.name || 'Phí';
+            const amt = formatDvcVnd(f.amount);
+            return `${name}: ${amt}`;
+          });
+          feeText = lines.join('\n');
+          const hasCost = feeInfo.fees.some(f => Number(f.amount || 0) > 0);
+          feeStatus = hasCost ? 'Có thu phí' : 'Miễn phí (0đ)';
+        } else {
+          feeText = '0 đ (Miễn phí)';
+          feeStatus = 'Miễn phí (0đ)';
+        }
+      }
+
+      const row = ws.addRow([
+        idx + 1,
+        item.formalityCode || '',
+        item.formalityName || '',
+        item.code || '',
+        item.category?.name || 'Chung',
+        feeText,
+        feeStatus
+      ]);
+
+      row.height = feeText.includes('\n') ? 40 : 24;
+
+      row.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
+      row.getCell(2).alignment = { vertical: 'middle', horizontal: 'center' };
+      row.getCell(3).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+      row.getCell(4).alignment = { vertical: 'middle', horizontal: 'center' };
+      row.getCell(5).alignment = { vertical: 'middle', horizontal: 'left' };
+      row.getCell(6).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+      row.getCell(7).alignment = { vertical: 'middle', horizontal: 'center' };
+
+      // Zebra striping
+      if (idx % 2 === 1) {
+        row.eachCell(cell => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF8FAFC' }
+          };
+        });
+      }
+
+      row.eachCell(cell => {
+        cell.font = { name: 'Arial', size: 9.5 };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+        };
+      });
+    });
+
+    // Column widths
+    ws.columns = [
+      { width: 6 },  // STT
+      { width: 16 }, // Mã TT
+      { width: 45 }, // Tên TT
+      { width: 18 }, // Mã DVC
+      { width: 22 }, // Lĩnh vực
+      { width: 40 }, // Phí
+      { width: 18 }  // Trạng thái
+    ];
+
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const filename = `Danh_Muc_DVC_Cap_Xa_CSDL_TTHC_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`Đã xuất thành công tệp "${filename}"!`, 'success');
+  } catch (err) {
+    console.error('Lỗi xuất Excel DVC cấp xã:', err);
+    showToast('Lỗi khi xuất file Excel: ' + err.message, 'error');
+  }
 }
 
 

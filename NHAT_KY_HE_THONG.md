@@ -517,6 +517,35 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Định dạng Stylesheet (`public/styles.css`):**
     * Nút liên kết chi tiết dưới 6 thẻ chỉ số toàn tỉnh (`.btn-detail-link`): Chuyển sang hiển thị mặc định (`display: flex !important;`), không còn bị ẩn khi chưa đăng nhập.
 
+### 39. Xây dựng Chức năng "Danh mục DVC cấp xã" Kết nối CSDL TTHC Quốc gia (11/11/2026)
+* **Yêu cầu:**
+  - Tích hợp 2 API từ CSDL TTHC Quốc gia (`DVCQG CSDL.postman_collection.json`):
+    1. Tra cứu danh sách DVC cấp xã: `POST /api/v1/configuring/formality-case-v2/list-apply-by-admin`
+    2. Xem chi tiết cấu hình DVC: `POST /api/v1/configuring/formality-case/get-by-admin`
+  - Menu: Thêm mục *"Danh mục DVC cấp xã"* trong nhóm `HỆ THỐNG & QUẢN TRỊ` trên Sidebar; **chỉ hiển thị với quyền Quản trị viên (Admin)**.
+  - Cho phép người dùng nhập Bearer Token trên giao diện và lưu trữ linh hoạt.
+  - Hiển thị danh sách DVC cấp xã gồm đầy đủ các trường: Mã thủ tục (`formalityCode`), Tên thủ tục (`formalityName`), Mã DVC (`code`), Tên lĩnh vực (`category.name`) và bảng chi tiết mảng `fees` (`feeName`, `amount`).
+* **Xử lý toàn diện:**
+  - **Backend Proxy (`api/dvc-ward.js`):**
+    * Xác thực phiên đăng nhập người dùng và kiểm tra vai trò Quản trị viên (`role === 'admin'`).
+    * Proxy bảo mật vượt qua rào cản CORS và bỏ qua chứng chỉ số nội bộ Ban Cơ yếu/VNPT (`rejectUnauthorized: false`).
+    * Hỗ trợ 4 hành vi (action): `list` (lấy 500 DVC cấp xã), `detail` (lấy chi tiết cấu hình & bảng phí của 1 thủ tục), `batch-details` (nạp đồng thời 5-50 thủ tục), `test-token` (kiểm tra hạn dùng token).
+    * Bộ lọc làm sạch Bearer Token tự động loại bỏ tiền tố JSON, Postman variables hoặc cú pháp thừa.
+  - **Định tuyến hệ thống (`dev-server.js` & `vercel.json`):**
+    * Tích hợp endpoint `/api/dvc-ward` và `/api/dvc-ward/:action` trên máy chủ Express và môi trường đám mây Vercel Serverless.
+  - **Giao diện Client (`public/index.html` & `public/styles.css`):**
+    * Thêm menu `#nav-item-dvc-ward` có biểu tượng khóa quản trị 🛡️ trong nhóm Admin.
+    * Giao diện làm việc đồng bộ `users-unified-card`: Thẻ cấu hình Token (ô nhập password có nút ẩn/hiện, nút Lưu token, Kiểm tra kết nối, Hướng dẫn F12 từng bước).
+    * Dải chip thống kê: Tổng DVC cấp xã, Số lĩnh vực, TTHC có thu phí, TTHC miễn phí, Số thủ tục đã nạp phí.
+    * Thanh công cụ lọc & tìm kiếm: Ô tìm kiếm đa năng (mã TT, tên TT, mã DVC, lĩnh vực), Dropdown lọc theo lĩnh vực, Dropdown lọc theo mức thu phí.
+    * Thanh tiến độ animated nạp phí hàng loạt (`#dvc-ward-batch-progress`) kèm nút dừng linh hoạt.
+    * Bảng dữ liệu phẳng chuẩn Gov-tech với các chip phân loại phí rõ ràng (phí thu tiền, miễn phí 0đ, chưa nạp) và nút thao tác nhanh.
+    * Modal xem chi tiết cấu hình DVC (`#dvc-ward-detail-modal`): Xem tổng quan thông tin thủ tục, bảng danh mục đầy đủ các khoản phí/lệ phí và khung JSON kỹ thuật.
+    * Tính năng Xuất Excel chuyên nghiệp (`exportDvcWardToExcel`): Sử dụng ExcelJS kết xuất file `.xlsx` định dạng màu chuẩn nhận diện, có căn lề, viền bảng và định dạng tiền tệ.
+  - **Logic điều khiển (`public/app.js`):**
+    * Tích hợp hàm `initDvcWardModule()` vào chu trình khởi động DOM.
+    * Cập nhật `updateAuthUI()`: Tự động ẩn/hiện menu, bảo vệ màn hình khi chưa đăng nhập Admin hoặc tự động chuyển tab an toàn nếu cán bộ/khách vãng lai cố truy cập.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
