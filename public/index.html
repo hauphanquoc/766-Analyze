@@ -5397,6 +5397,17 @@
                 </button>
               </div>
 
+              <!-- Tùy chọn Cookie WAF thủ công nếu cần -->
+              <div class="dvc-cookie-input-row" style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                <div class="dvc-token-input-wrap">
+                  <input type="text" id="dvc-ward-cookie-input" class="dvc-token-input" placeholder="Cookie WAF (Tùy chọn: Tự động thu thập hoặc dán thêm Cookie nếu cần vượt tường lửa WAF)" autocomplete="off" />
+                  <button type="button" class="dvc-token-clear-btn" id="btn-clear-ward-cookie" title="Xóa cookie" style="display: none;">✕</button>
+                </div>
+                <button type="button" class="btn btn-secondary" id="btn-save-ward-cookie" title="Lưu Cookie WAF">
+                  Lưu Cookie
+                </button>
+              </div>
+
               <!-- Hướng dẫn F12 có thể thu gọn -->
               <div id="dvc-token-guide-box" class="dvc-token-guide-box" style="display: none;">
                 <div class="dvc-guide-steps">

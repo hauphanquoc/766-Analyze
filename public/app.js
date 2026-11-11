@@ -8752,6 +8752,7 @@ function fallbackCopySimple(text) {
    ========================================================================== */
 const dvcWardState = {
   token: localStorage.getItem('csdl_bearer_token') || '',
+  cookie: localStorage.getItem('csdl_waf_cookie') || '',
   items: [],
   filteredItems: [],
   feesMap: {}, // { [id]: { loaded: boolean, loading: boolean, fees: Array, raw: Object, error: string } }
@@ -8845,6 +8846,43 @@ function initDvcWardModule() {
       updateCsdlTokenBadge('', 'Chưa cấu hình');
       btnClearToken.style.display = 'none';
       showToast('Đã xóa Bearer Token khỏi trình duyệt.', 'info');
+    });
+  }
+
+  // Khởi tạo ô Cookie WAF nếu có
+  const cookieInput = document.getElementById('dvc-ward-cookie-input');
+  const btnSaveCookie = document.getElementById('btn-save-ward-cookie');
+  const btnClearCookie = document.getElementById('btn-clear-ward-cookie');
+
+  if (cookieInput && dvcWardState.cookie) {
+    cookieInput.value = dvcWardState.cookie;
+    if (btnClearCookie) btnClearCookie.style.display = 'inline-block';
+  }
+
+  if (cookieInput) {
+    cookieInput.addEventListener('input', () => {
+      if (btnClearCookie) {
+        btnClearCookie.style.display = cookieInput.value ? 'inline-block' : 'none';
+      }
+    });
+  }
+
+  if (btnSaveCookie && cookieInput) {
+    btnSaveCookie.addEventListener('click', () => {
+      const cleanCookie = cookieInput.value.trim();
+      dvcWardState.cookie = cleanCookie;
+      localStorage.setItem('csdl_waf_cookie', cleanCookie);
+      showToast('Đã lưu Cookie WAF vào trình duyệt!', 'success');
+    });
+  }
+
+  if (btnClearCookie && cookieInput) {
+    btnClearCookie.addEventListener('click', () => {
+      cookieInput.value = '';
+      dvcWardState.cookie = '';
+      localStorage.removeItem('csdl_waf_cookie');
+      btnClearCookie.style.display = 'none';
+      showToast('Đã xóa Cookie WAF.', 'info');
     });
   }
 
@@ -9020,7 +9058,7 @@ async function testCsdlToken() {
         'Content-Type': 'application/json',
         ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
       },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ token, cookie: dvcWardState.cookie })
     });
 
     const data = await res.json();
@@ -9076,6 +9114,7 @@ async function loadDvcWardList() {
       },
       body: JSON.stringify({
         token: token,
+        cookie: dvcWardState.cookie,
         limit: 500,
         filter: {
           administrativeLevels: ['ward'],
@@ -9389,7 +9428,7 @@ async function fetchSingleDvcFee(id) {
         'Content-Type': 'application/json',
         ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
       },
-      body: JSON.stringify({ token, id })
+      body: JSON.stringify({ token, cookie: dvcWardState.cookie, id })
     });
 
     const data = await res.json();
@@ -9476,7 +9515,7 @@ async function startBatchFetchFees() {
           'Content-Type': 'application/json',
           ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
         },
-        body: JSON.stringify({ token, ids: chunkIds })
+        body: JSON.stringify({ token, cookie: dvcWardState.cookie, ids: chunkIds })
       });
 
       const data = await res.json();
@@ -9567,7 +9606,7 @@ async function openDvcDetailModal(id) {
           'Content-Type': 'application/json',
           ...(localToken ? { Authorization: `Bearer ${localToken}` } : {})
         },
-        body: JSON.stringify({ token, id })
+        body: JSON.stringify({ token, cookie: dvcWardState.cookie, id })
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
