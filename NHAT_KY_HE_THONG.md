@@ -546,6 +546,15 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
     * Tích hợp hàm `initDvcWardModule()` vào chu trình khởi động DOM.
     * Cập nhật `updateAuthUI()`: Tự động ẩn/hiện menu, bảo vệ màn hình khi chưa đăng nhập Admin hoặc tự động chuyển tab an toàn nếu cán bộ/khách vãng lai cố truy cập.
 
+### 40. Khôi phục quyền Cán bộ xem chi tiết chỉ tiêu con Bộ chỉ số 766 (12/11/2026)
+* **Yêu cầu:** Tại chức năng *Bộ chỉ số 766*, tiện ích nhấn vào các con số điểm/tiêu chí để mở popup xem chỉ tiêu con chuyển lại về chế độ **yêu cầu đăng nhập tài khoản Cán bộ / Admin** mới xem được.
+* **Xử lý toàn diện:**
+  - **Giao diện Client (`public/app.js`):**
+    * Hàm dựng bảng đơn vị (`renderUnitsTable()`): Khôi phục điều kiện `loggedIn = Boolean(appState.currentUser)`. Chỉ khi đã đăng nhập thì ô điểm số mới có class `score-clickable` kèm hiệu ứng hover và icon mũi tên mở chi tiết; người dùng chưa đăng nhập chỉ thấy ô điểm số thuần văn bản.
+    * Các hàm mở Modal (`openMetricModal`, `openUnitMetricModal`, `openDedicatedPaymentModal`, `openDedicatedProgressModal`): Bổ sung kiểm tra `if (!isLoggedIn())`, bật Toast nhắc nhở *"Vui lòng đăng nhập tài khoản Cán bộ để xem chi tiết chỉ tiêu con"* và tự động mở popup đăng nhập.
+  - **Định dạng Stylesheet (`public/styles.css`):**
+    * Nút liên kết chi tiết dưới 6 thẻ chỉ số toàn tỉnh (`.btn-detail-link`): Khôi phục ẩn mặc định (`display: none !important;`) và chỉ hiển thị khi có class `body.is-logged-in`.
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN

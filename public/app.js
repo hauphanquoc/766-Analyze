@@ -1070,15 +1070,20 @@ function renderUnitsTable() {
       const grade = u.classification || { label: '-', color: '#64748b' };
       const gradeLabel = (grade.label === 'Yếu / Kém' || grade.label === 'Yếu/Kém') ? 'Yếu' : grade.label;
 
+      const loggedIn = Boolean(appState.currentUser);
       const scoreCell = (val, indKey, title) => {
         const formatted = (val ?? 0).toFixed(2);
-        return `
-          <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', '${indKey}')" title="${title}">
-            <span class="score-clickable-inner">
-              <span>${formatted}</span>
-              <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </span>
-          </td>`;
+        if (loggedIn) {
+          return `
+            <td style="text-align: right;" class="score-clickable" onclick="openUnitMetricModal('${escapeHtml(u.departmentId)}', '${indKey}')" title="${title}">
+              <span class="score-clickable-inner">
+                <span>${formatted}</span>
+                <svg class="score-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </span>
+            </td>`;
+        } else {
+          return `<td style="text-align: right;">${formatted}</td>`;
+        }
       };
 
       tr.innerHTML = `
@@ -1153,6 +1158,12 @@ function renderPagination(totalPages, activePage) {
  * Open Modal to show detailed sub-criteria for PROVINCE
  */
 window.openMetricModal = function (indKey) {
+  if (!isLoggedIn()) {
+    showToast('Vui lòng đăng nhập tài khoản Cán bộ để xem chi tiết chỉ tiêu con.', 'warning');
+    if (typeof openLoginModal === 'function') openLoginModal();
+    return;
+  }
+
   // If progress indicator, route to dedicated progress form
   if (indKey === 'progress') {
     openDedicatedProgressModal(null, true);
@@ -1193,6 +1204,12 @@ window.openMetricModal = function (indKey) {
  * Open Modal to show detailed sub-criteria for a SUBORDINATE UNIT
  */
 window.openUnitMetricModal = function (unitId, indKey) {
+  if (!isLoggedIn()) {
+    showToast('Vui lòng đăng nhập tài khoản Cán bộ để xem chi tiết chỉ tiêu con.', 'warning');
+    if (typeof openLoginModal === 'function') openLoginModal();
+    return;
+  }
+
   // If progress indicator, route to dedicated progress form
   if (indKey === 'progress') {
     openDedicatedProgressModal(unitId, false);
@@ -1238,6 +1255,11 @@ window.openUnitMetricModal = function (unitId, indKey) {
  * [FORM RIÊNG] Open Dedicated Form for Thanh toán trực tuyến (3 chỉ tiêu con)
  */
 window.openDedicatedPaymentModal = function (unitId, isProvince = false) {
+  if (!isLoggedIn()) {
+    showToast('Vui lòng đăng nhập tài khoản Cán bộ để xem chi tiết chỉ tiêu con.', 'warning');
+    if (typeof openLoginModal === 'function') openLoginModal();
+    return;
+  }
   let unitName = '';
   let scoreVal = 0;
   let metrics = [];
@@ -1324,6 +1346,11 @@ window.closePaymentModal = function () {
  * [FORM RIÊNG] Open Dedicated Form for Tiến độ giải quyết (Chỉ số 2)
  */
 window.openDedicatedProgressModal = function (unitId, isProvince = false) {
+  if (!isLoggedIn()) {
+    showToast('Vui lòng đăng nhập tài khoản Cán bộ để xem chi tiết chỉ tiêu con.', 'warning');
+    if (typeof openLoginModal === 'function') openLoginModal();
+    return;
+  }
   let unitName = '';
   let indCode = '';
   let totalReceived = 0;
