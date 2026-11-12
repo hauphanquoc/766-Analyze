@@ -132,6 +132,20 @@ async function saveSnapshot(analyzedData, options = {}) {
  * Get snapshot by date
  */
 async function getSnapshot(date) {
+  // 0. On Vercel / Cloud serverless with Redis, check Redis first to ensure live data
+  if (redisClient && process.env.VERCEL) {
+    try {
+      const data = await redisClient.get(`dvc:snapshot:${date}`);
+      if (data) {
+        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+        memoryCache.snapshots.set(date, parsed);
+        return parsed;
+      }
+    } catch (err) {
+      console.error('[Storage] Redis get error:', err.message);
+    }
+  }
+
   // 1. Check local disk first with mtime (ensures external sync updates are instantly loaded)
   try {
     const filePath = path.join(SNAPSHOTS_DIR, `${date}.json`);
