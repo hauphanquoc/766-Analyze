@@ -35,9 +35,31 @@ const CRITERIA_DEFINITIONS = [
 ];
 
 /**
- * Extract only the 6 main criteria (without smaller sub-metrics)
+ * Assign competition rank (1224) based on a numeric value extractor function.
+ * If 2 units have identical score (within 0.001), they receive the same rank.
  */
-function extractMainIndicators(scores = {}, indicatorDetails = {}) {
+function calculateCompetitionRanks(units, scoreExtractor) {
+  const sorted = [...units].sort((a, b) => scoreExtractor(b) - scoreExtractor(a));
+  const rankMap = new Map();
+  let currentRank = 1;
+  for (let i = 0; i < sorted.length; i++) {
+    const sCurr = scoreExtractor(sorted[i]);
+    if (i > 0) {
+      const sPrev = scoreExtractor(sorted[i - 1]);
+      if (Math.abs(sCurr - sPrev) > 0.001) {
+        currentRank = i + 1;
+      }
+    }
+    rankMap.set(sorted[i].departmentCode, currentRank);
+  }
+  return rankMap;
+}
+
+/**
+ * Extract only the 6 main criteria (without smaller sub-metrics)
+ * Computes competition ranking for each criterion within the unit's group (e.g. Cấp Xã) and province
+ */
+function extractMainIndicators(scores = {}, indicatorDetails = {}, unitContext = null, availableUnits = [], groupUnits = []) {
   return CRITERIA_DEFINITIONS.map((def) => {
     const detail = indicatorDetails[def.key] || {};
     const score = scores[def.key] != null
@@ -48,12 +70,42 @@ function extractMainIndicators(scores = {}, indicatorDetails = {}) {
       ? Number(Number(detail.ratio).toFixed(2))
       : (maxScore > 0 ? Number(((score / maxScore) * 100).toFixed(2)) : 0);
 
+    let rankInGroup = null;
+    let groupTotal = null;
+    let groupLabel = null;
+    let rank = null;
+    let totalUnits = null;
+
+    if (unitContext && groupUnits && groupUnits.length > 0) {
+      const getVal = (u) => {
+        if (u.scores && u.scores[def.key] != null) return Number(u.scores[def.key]);
+        if (u.indicatorDetails && u.indicatorDetails[def.key]?.score != null) return Number(u.indicatorDetails[def.key].score);
+        return 0;
+      };
+
+      const groupRankMap = calculateCompetitionRanks(groupUnits, getVal);
+      rankInGroup = groupRankMap.get(unitContext.departmentCode) || null;
+      groupTotal = groupUnits.length;
+      groupLabel = unitContext.groupLabel || (unitContext.group === 'COMMUNE' ? 'Cấp Xã' : 'Cấp Tỉnh');
+
+      if (availableUnits && availableUnits.length > 0) {
+        const provRankMap = calculateCompetitionRanks(availableUnits, getVal);
+        rank = provRankMap.get(unitContext.departmentCode) || null;
+        totalUnits = availableUnits.length;
+      }
+    }
+
     return {
       key: def.key,
       name: def.name,
       score,
       maxScore,
-      ratio
+      ratio,
+      rankInGroup,
+      groupTotal,
+      groupLabel,
+      rank,
+      totalUnits
     };
   });
 }
@@ -87,7 +139,10 @@ function buildZaloChatMessage(data) {
 
   indicators.forEach((ind, idx) => {
     const numIcon = icons[idx] || `[${idx + 1}]`;
-    lines.push(`${numIcon} ${ind.name}: ${ind.score} / ${ind.maxScore} đ (${ind.ratio}%)`);
+    const rankText = ind.rankInGroup && ind.groupTotal
+      ? ` (${ind.rankInGroup}/${ind.groupTotal} ${ind.groupLabel || 'Cấp Xã'})`
+      : '';
+    lines.push(`${numIcon} ${ind.name}: ${ind.score} / ${ind.maxScore} đ (${ind.ratio}%)${rankText}`);
   });
 
   lines.push('──────────────────────────────');
@@ -307,8 +362,8 @@ module.exports = async function handler(req, res) {
     const groupUnits = availableUnits.filter((u) => u.group === matchedUnit.group);
     const groupTotal = groupUnits.length;
 
-    // 8. Extract only 6 main indicators (clean, concise)
-    const indicators = extractMainIndicators(matchedUnit.scores, matchedUnit.indicatorDetails);
+    // 8. Extract only 6 main indicators (clean, concise) with competition ranking
+    const indicators = extractMainIndicators(matchedUnit.scores, matchedUnit.indicatorDetails, matchedUnit, availableUnits, groupUnits);
 
     const responseData = {
       date,

@@ -566,6 +566,19 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Định tuyến máy chủ (`dev-server.js` & `vercel.json`):**
     * Mở các route `/766sosanh`, `/766sosanh/:code`, `/api/766sosanh`, `/api/766sosanh/:code` trên cả Local Express server và Vercel Cloud Serverless.
 
+### 42. Bổ sung Xếp hạng từng Tiêu chí (so sánh theo Cấp Xã / Khối) vào API Tra cứu 766 (`/766`, `/766donvi`) (14/11/2026)
+* **Yêu cầu:** Tại API tra cứu điểm 766 của đơn vị, bổ sung thêm thứ hạng riêng của từng tiêu chí trong 6 tiêu chí chính so với các đơn vị cùng cấp (ví dụ: `(21/102 Cấp Xã)`). Nếu 2 đơn vị bằng điểm nhau thì nhận cùng thứ hạng.
+* **Xử lý toàn diện:**
+  - **Thuật toán Xếp hạng Cạnh tranh (`api/766donvi.js`):**
+    * Tích hợp hàm `calculateCompetitionRanks()`: Tự động xếp hạng 1224 chuẩn cho từng tiêu chí trong khối (`groupUnits`, e.g. 102 Cấp Xã) và toàn tỉnh (`availableUnits`, 115 đơn vị).
+    * Đơn vị có cùng điểm số (sai số < 0.001) được xếp đồng hạng.
+  - **Nâng cấp Đầu ra API & Tin nhắn Bot Zalo:**
+    * Thêm `rankInGroup`, `groupTotal`, `groupLabel`, `rank`, `totalUnits` vào từng item của mảng `indicators`.
+    * Định dạng tin nhắn Zalo bổ sung thông tin thứ hạng: `4️⃣ Số hóa hồ sơ: 18.31 / 22 đ (83.23%) (2/102 Cấp Xã)`.
+  - **Mở rộng Định tuyến Route:**
+    * Bổ sung route alias ngắn gọn `/766`, `/766/:code`, `/api/766`, `/api/766/:code` trỏ về `unit766Handler` trên cả Local và Vercel.
+
+
 
 ---
 
@@ -633,23 +646,23 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 
 ## V. TÀI LIỆU API CHO BOT ZALO / CHATBOT
 
-### 1. API Tra cứu điểm 766 theo đơn vị (`/766donvi`)
+### 1. API Tra cứu điểm 766 theo đơn vị (`/766donvi` và `/766`)
 
 * **Endpoint:**
-  - `GET /766donvi?ma=H15.100` hoặc `GET /api/766donvi?code=H15.100`
-  - `GET /766donvi/:code` (ví dụ `/766donvi/H15.100`)
-  - `POST /766donvi` với body JSON: `{"code": "H15.100"}` hoặc `{"ma": "H15.100"}`
+  - `GET /766?ma=H15.101` hoặc `GET /766donvi?ma=H15.101` hoặc `GET /api/766?code=H15.101`
+  - `GET /766/:code` hoặc `GET /766donvi/:code` (ví dụ `/766/H15.101`)
+  - `POST /766` hoặc `POST /766donvi` với body JSON: `{"code": "H15.101"}` hoặc `{"ma": "101"}`
 * **Tham số đầu vào:**
-  - `ma` / `code` / `madonvi`: Mã đơn vị (ví dụ `H15.100`, `H15.15`) hoặc `H15` (toàn tỉnh), hoặc tên đơn vị (`Buôn Ma Thuột`, `Sở Tư pháp`).
-  - `format`: (tùy chọn) `json` (mặc định) hoặc `text` (trả về văn bản thuần).
+  - `ma` / `code` / `madonvi` / `q`: Mã đơn vị (ví dụ `H15.101`, `101`, `H15.15`) hoặc `H15` (toàn tỉnh), hoặc tên đơn vị (`Tân An`, `Buôn Ma Thuột`).
+  - `format`: (tùy chọn) `json` (mặc định) hoặc `text` (trả về văn bản thuần định dạng sẵn cho Bot Zalo).
   - `date`: (tùy chọn) Ngày cần xem dạng `YYYY-MM-DD`. Nếu không truyền sẽ lấy **ngày mới nhất** trong database.
 * **Dữ liệu trả về:**
   - `success`: `true/false`
-  - `data.date`: Ngày dữ liệu (ví dụ `2026-10-23`)
+  - `data.date`: Ngày dữ liệu (ví dụ `2026-11-14`)
   - `data.unit`: Thông tin đơn vị, mã, tên, cấp bậc, thứ hạng toàn tỉnh, thứ hạng khối, tổng điểm, xếp loại
   - `data.summary`: Tóm tắt điểm 6 nhóm chỉ số
-  - `data.indicators`: Chi tiết 6 nhóm chỉ số kèm đầy đủ **tất cả các tiêu chí con** (tên, mã, tử số/mẫu số, tỷ lệ %, điểm đạt được, điểm tối đa)
-  - `data.chatMessage`: Chuỗi tin nhắn văn bản format sẵn với icon/emoji chuyên nghiệp dành riêng cho Bot Zalo gửi trực tiếp vào khung chat.
+  - `data.indicators`: Chi tiết 6 nhóm chỉ số kèm **thứ hạng riêng của từng tiêu chí** trong khối (`rankInGroup`, ví dụ Cấp Xã) và toàn tỉnh (`rank`). Quy tắc xếp hạng chuẩn Competition Ranking (1224) - các đơn vị bằng điểm nhau nhận cùng thứ hạng.
+  - `data.chatMessage`: Chuỗi tin nhắn văn bản format sẵn với icon/emoji chuyên nghiệp kèm thứ hạng tiêu chí con `(x/102 Cấp Xã)` cho Bot Zalo.
 
 ### 2. API So sánh Biến động Điểm 766 theo đơn vị (`/766sosanh`)
 

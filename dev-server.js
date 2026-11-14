@@ -40,6 +40,10 @@ app.all('/api/dvc-ward', (req, res) => dvcWardHandler(req, res));
 app.all('/api/dvc-ward/:action', (req, res) => dvcWardHandler(req, res));
 
 // Zalo Bot API: Tra cứu điểm 766 theo đơn vị
+app.all('/766', (req, res) => unit766Handler(req, res));
+app.all('/766/:code', (req, res) => unit766Handler(req, res));
+app.all('/api/766', (req, res) => unit766Handler(req, res));
+app.all('/api/766/:code', (req, res) => unit766Handler(req, res));
 app.all('/766donvi', (req, res) => unit766Handler(req, res));
 app.all('/766donvi/:code', (req, res) => unit766Handler(req, res));
 app.all('/api/766donvi', (req, res) => unit766Handler(req, res));
