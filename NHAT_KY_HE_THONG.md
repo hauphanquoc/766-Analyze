@@ -555,6 +555,18 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - **Định dạng Stylesheet (`public/styles.css`):**
     * Nút liên kết chi tiết dưới 6 thẻ chỉ số toàn tỉnh (`.btn-detail-link`): Khôi phục ẩn mặc định (`display: none !important;`) và chỉ hiển thị khi có class `body.is-logged-in`.
 
+### 41. Xây dựng API So sánh Điểm 766 hôm nay với hôm trước theo Đơn vị cho Bot Zalo (/766sosanh) (14/11/2026)
+* **Yêu cầu:** Xây dựng API trả về dữ liệu so sánh điểm 766 của đơn vị giữa ngày hôm nay với ngày trước đó theo mã đơn vị, phục vụ Chatbot / Bot Zalo gọi lấy số liệu dạng báo cáo nhanh tinh gọn (chỉ điểm tổng và 6 nhóm chỉ tiêu lớn).
+* **Xử lý toàn diện:**
+  - **Module API (`api/766sosanh.js`):**
+    * Tự động xác định 2 mốc snapshot mới nhất (`today` và `yesterday` liền kề) từ storage, hỗ trợ tùy biến mốc ngày so sánh (`dateTo`, `dateFrom`).
+    * Hỗ trợ đa dạng phương thức nhận dạng mã đơn vị: Mã đầy đủ (`H15.100`), phần đuôi (`100`, `.100`), mã toàn tỉnh (`H15`, `TINH`), và tìm kiếm tên tiếng Việt không dấu.
+    * Tinh gọn chỉ tính toán điểm tổng, biến động điểm ($\Delta$), thứ hạng toàn tỉnh, thứ hạng khối, và 6 nhóm chỉ tiêu chính (Công khai minh bạch, Tiến độ, DVCTT, Số hóa, Thanh toán, Hài lòng).
+    * Hỗ trợ định dạng `format=json` (dữ liệu có cấu trúc) và `format=text` (văn bản thuần format sẵn icon 📈/📉/➖ tối ưu cho Zalo).
+  - **Định tuyến máy chủ (`dev-server.js` & `vercel.json`):**
+    * Mở các route `/766sosanh`, `/766sosanh/:code`, `/api/766sosanh`, `/api/766sosanh/:code` trên cả Local Express server và Vercel Cloud Serverless.
+
+
 ---
 
 ## III. HƯỚNG DẪN VẬN HÀNH DÀNH CHO CÁN BỘ / QUẢN TRỊ VIÊN
@@ -609,6 +621,7 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
 | `api/provinces.js` | API Serverless cung cấp dữ liệu bảng xếp hạng 766 các tỉnh. |
 | `api/data.js` | API Serverless cung cấp dữ liệu snapshot điểm 766 của tỉnh Đắk Lắk. |
 | `api/766donvi.js` | API tra cứu điểm 766 theo đơn vị phục vụ Bot Zalo/Chatbot (`/766donvi`, `/api/766donvi`). |
+| `api/766sosanh.js` | API so sánh biến động điểm 766 của đơn vị giữa hôm nay và ngày liền trước (`/766sosanh`, `/api/766sosanh`). |
 | `public/` | Mã nguồn giao diện Web Frontend (HTML, CSS, JS). |
 | `data/snapshots/` | Thư mục lưu snapshot dữ liệu lịch sử từng ngày của tỉnh Đắk Lắk. |
 | `data/provinces/` | Thư mục lưu lịch sử xếp hạng 766 các tỉnh theo ngày. |
@@ -637,5 +650,48 @@ Hệ thống hoạt động theo mô hình **Tách biệt An toàn (Local Only)*
   - `data.summary`: Tóm tắt điểm 6 nhóm chỉ số
   - `data.indicators`: Chi tiết 6 nhóm chỉ số kèm đầy đủ **tất cả các tiêu chí con** (tên, mã, tử số/mẫu số, tỷ lệ %, điểm đạt được, điểm tối đa)
   - `data.chatMessage`: Chuỗi tin nhắn văn bản format sẵn với icon/emoji chuyên nghiệp dành riêng cho Bot Zalo gửi trực tiếp vào khung chat.
+
+### 2. API So sánh Biến động Điểm 766 theo đơn vị (`/766sosanh`)
+
+* **Mục đích:** Cung cấp dữ liệu so sánh biến động điểm số của đơn vị giữa ngày hôm nay với ngày liền kề trước đó (hoặc giữa 2 ngày tùy chọn). Tối ưu gọn nhẹ cho Bot Zalo / Chatbot, chỉ trả về điểm tổng và điểm của 6 nhóm chỉ tiêu lớn.
+* **Endpoint:**
+  - `GET /766sosanh?ma=H15.100` hoặc `GET /api/766sosanh?code=H15.100`
+  - `GET /766sosanh/:code` (ví dụ `/766sosanh/H15.100`)
+  - `POST /766sosanh` với body JSON: `{"code": "H15.100"}` hoặc `{"ma": "H15.100"}`
+* **Tham số đầu vào:**
+  - `ma` / `code` / `madonvi` / `q`: Mã đơn vị (ví dụ `H15.100`, `100`, `H15.15`, `15`) hoặc `H15` (toàn tỉnh), hoặc tên đơn vị (`Buôn Ma Thuột`, `Sở Văn hóa`).
+  - `dateTo`: (tùy chọn) Ngày so sánh dạng `YYYY-MM-DD` (mặc định: ngày mới nhất trong database).
+  - `dateFrom`: (tùy chọn) Ngày đối chiếu dạng `YYYY-MM-DD` (mặc định: ngày liền kề trước `dateTo`).
+  - `format`: (tùy chọn) `json` (mặc định) hoặc `text` (trả về văn bản định dạng sẵn với biểu tượng tăng/giảm cho Bot Zalo).
+* **Dữ liệu trả về (JSON):**
+  - `success`: `true/false`
+  - `data.dateTo` / `data.dateFrom`: Hai mốc ngày so sánh (`YYYY-MM-DD`)
+  - `data.dateToVn` / `data.dateFromVn`: Hai mốc ngày định dạng VN (`DD/MM/YYYY`)
+  - `data.unit`: Thông tin đơn vị, mã, tên, cấp, khối, tổng điểm hôm nay (`scoreToday`), tổng điểm hôm trước (`scoreYesterday`), độ biến động điểm (`deltaScore`), xếp loại, thứ hạng tỉnh và khối (`rankToday`, `rankYesterday`, `deltaRank`, `rankInGroupToday`, `deltaRankInGroup`).
+  - `data.indicators`: Danh sách 6 nhóm chỉ số lớn với điểm hôm nay, điểm hôm trước, độ biến động ($\Delta$), tỷ lệ % và điểm tối đa.
+  - `data.chatMessage`: Tin nhắn định dạng sẵn với icon 📈 (tăng), 📉 (giảm), ➖ (giữ nguyên) cho Bot Zalo.
+* **Ví dụ mẫu tin nhắn Bot Zalo:**
+  ```text
+  📊 SO SÁNH BIẾN ĐỘNG CHỈ SỐ 766 DVCQG
+  🏢 Đơn vị: UBND phường Buôn Ma Thuột
+  🏷️ Mã đơn vị: H15.100 | Cấp Xã / Đơn vị trực thuộc
+  📅 Thời gian: 14/11/2026 so với 13/11/2026
+  ──────────────────────────────
+  🏆 Tổng điểm: 73.48 / 100đ (Trước: 72.86đ | 📈 +0.62đ)
+  🎖️ Xếp loại: Khá
+  📈 Thứ hạng tỉnh: #53/115 toàn tỉnh (📉 Giảm 8 bậc)
+  👥 Khối Cấp Xã: #47/102 (📉 Giảm 8 bậc)
+  ──────────────────────────────
+  📋 BIẾN ĐỘNG 6 NHÓM TIÊU CHÍ:
+  1️⃣ Công khai, minh bạch: 6/6đ (Trước: 6đ | ➖ 0.00đ)
+  2️⃣ Tiến độ giải quyết: 19.85/20đ (Trước: 19.86đ | 📉 -0.01đ)
+  3️⃣ Dịch vụ công trực tuyến: 7.08/10đ (Trước: 7.05đ | 📈 +0.03đ)
+  4️⃣ Số hóa hồ sơ: 16.69/22đ (Trước: 16.64đ | 📈 +0.05đ)
+  5️⃣ Thanh toán trực tuyến: 5.86/10đ (Trước: 5.31đ | 📈 +0.55đ)
+  6️⃣ Mức độ hài lòng: 18/18đ (Trước: 18đ | ➖ 0.00đ)
+  ──────────────────────────────
+  💡 Tra cứu thêm: Gửi mã đơn vị (ví dụ: H15.100, H15.15, H15)
+  ```
+
 
 

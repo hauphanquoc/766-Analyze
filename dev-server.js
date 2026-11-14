@@ -23,6 +23,7 @@ const exportHandler = require('./api/export');
 const provincesHandler = require('./api/provinces');
 const authHandler = require('./api/auth');
 const unit766Handler = require('./api/766donvi');
+const unit766CompareHandler = require('./api/766sosanh');
 const usersHandler = require('./api/users');
 const dvcWardHandler = require('./api/dvc-ward');
 
@@ -43,6 +44,12 @@ app.all('/766donvi', (req, res) => unit766Handler(req, res));
 app.all('/766donvi/:code', (req, res) => unit766Handler(req, res));
 app.all('/api/766donvi', (req, res) => unit766Handler(req, res));
 app.all('/api/766donvi/:code', (req, res) => unit766Handler(req, res));
+
+// Zalo Bot API: So sánh điểm 766 hôm nay với hôm trước theo đơn vị
+app.all('/766sosanh', (req, res) => unit766CompareHandler(req, res));
+app.all('/766sosanh/:code', (req, res) => unit766CompareHandler(req, res));
+app.all('/api/766sosanh', (req, res) => unit766CompareHandler(req, res));
+app.all('/api/766sosanh/:code', (req, res) => unit766CompareHandler(req, res));
 
 // Fallback to index.html for SPA
 app.use((req, res) => {

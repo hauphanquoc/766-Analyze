@@ -1,5 +1,25 @@
 [
   {
+    "timestamp": "2026-11-13T23:00:09.003Z",
+    "type": "SYNC",
+    "date": "2026-11-14",
+    "durationMs": 7255,
+    "totalScore": 85.27,
+    "classification": "Tốt",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
+    "timestamp": "2026-11-12T23:00:09.223Z",
+    "type": "SYNC",
+    "date": "2026-11-13",
+    "durationMs": 7463,
+    "totalScore": 84.69,
+    "classification": "Tốt",
+    "success": true,
+    "unitsCount": 115
+  },
+  {
     "timestamp": "2026-11-12T03:39:56.843Z",
     "type": "MANUAL_UPDATE_SCORES",
     "date": "2026-11-12",
@@ -460,23 +480,5 @@
     "classification": "Trung bình",
     "success": true,
     "unitsCount": 115
-  },
-  {
-    "timestamp": "2026-10-14T23:00:09.662Z",
-    "type": "SYNC",
-    "date": "2026-10-15",
-    "durationMs": 7017,
-    "totalScore": 65.87,
-    "classification": "Trung bình",
-    "success": true,
-    "unitsCount": 115
-  },
-  {
-    "timestamp": "2026-10-14T23:00:07.397Z",
-    "type": "LOCAL_CRON_6AM",
-    "date": "2026-10-15",
-    "totalScore": 65.87,
-    "classification": "Trung bình",
-    "success": true
   }
 ]

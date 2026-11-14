@@ -78,6 +78,22 @@
       "dest": "/api/766donvi.js?code=$1"
     },
     {
+      "src": "/766sosanh",
+      "dest": "/api/766sosanh.js"
+    },
+    {
+      "src": "/766sosanh/(.*)",
+      "dest": "/api/766sosanh.js?code=$1"
+    },
+    {
+      "src": "/api/766sosanh",
+      "dest": "/api/766sosanh.js"
+    },
+    {
+      "src": "/api/766sosanh/(.*)",
+      "dest": "/api/766sosanh.js?code=$1"
+    },
+    {
       "handle": "filesystem"
     },
     {
